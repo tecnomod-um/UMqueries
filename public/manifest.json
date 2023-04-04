@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "UMU BioQueries",
+  "name": "UMU BioQueries: The best tool to browse through health-related knowledge graphs.",
   "icons": [
     {
       "src": "favicon.ico",
