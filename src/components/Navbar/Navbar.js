@@ -1,18 +1,18 @@
 
 import { Link, useMatch, useResolvedPath } from "react-router-dom"
 import NavbarStyles from "./Navbar.module.css";
+import logo from "../../resources/icons/logo.webp";
 
 export default function Navbar() {
     return (
-        <nav className="nav">
-            <Link to="/" className="logo">
-                Main
+        <nav className={NavbarStyles.navbar}>
+            <Link to="/" className={NavbarStyles.logo}>
+            <img src={logo} width={50} height={50} />
             </Link>
-            <ul className="nav-links">
-                <input type="checkbox" className="checkbox_toggle" />
-                <label for="checkbox_toggle" className="hamburger">&#9776;</label>
-
-                <div className="menu">
+            <ul className={NavbarStyles.navlinks}>
+                <input type="checkbox" className={NavbarStyles.checkbox_toggle} />
+                <label for="checkbox_toggle" className={NavbarStyles.hamburger}>&#9776;</label>
+                <div className={NavbarStyles.menu}>
                     <li><CustomLink to="/">Home</CustomLink></li>
                     <li><CustomLink to="/queries">Queries</CustomLink></li>
                     <li><CustomLink to="/about">About</CustomLink></li>
