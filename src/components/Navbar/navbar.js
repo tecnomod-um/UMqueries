@@ -1,13 +1,13 @@
 
 import { Link, useMatch, useResolvedPath } from "react-router-dom"
-import NavbarStyles from "./Navbar.module.css";
-import logo from "../../resources/icons/logo.webp";
+import NavbarStyles from "./navbar.module.css";
+import logo from "../../resources/images/umu_coat.png";
 
 export default function Navbar() {
     return (
         <nav className={NavbarStyles.navbar}>
             <Link to="/" className={NavbarStyles.logo}>
-            <img src={logo} width={50} height={50} />
+                <img src={logo} width={40} height={40} alt="Home menu, displaying University of Murcia's logo." />
             </Link>
             <ul className={NavbarStyles.navlinks}>
                 <input type="checkbox" className={NavbarStyles.checkbox_toggle} />
@@ -20,7 +20,6 @@ export default function Navbar() {
             </ul>
 
         </nav>
-
     )
 }
 

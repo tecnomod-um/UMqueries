@@ -1,5 +1,5 @@
 import React from "react";
-import AboutStyles from "./About.module.css";
+import AboutStyles from "./about.module.css";
 
 // Main view
 function About() {

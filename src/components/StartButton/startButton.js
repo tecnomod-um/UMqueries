@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import StartButtonStyles from "./StartButton.module.css";
+import StartButtonStyles from "./startButton.module.css";
 
 function StartButton() {
     return (
         <Link to={'/queries'}>
-            <button className={StartButton.button}>
+            <button className={StartButtonStyles.button}>
                 Go to query page
             </button>
         </Link>

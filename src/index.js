@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
-import Navbar from "./components/Navbar/Navbar";
-import Main from "./pages/Main";
-import Queries from "./pages/Queries";
-import About from "./pages/About";
+import Navbar from "./components/Navbar/navbar";
+import Main from "./pages/main";
+import Queries from "./pages/queries";
+import About from "./pages/about";
 
 
 import querydataJson from "./data/querydata.json";

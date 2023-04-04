@@ -1,5 +1,5 @@
 import React from "react";
-import QueriesStyles from "./Queries.module.css";
+import QueriesStyles from "./queries.module.css";
 
 // Main view
 function Queries() {
