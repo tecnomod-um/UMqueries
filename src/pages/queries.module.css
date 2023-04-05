@@ -1,0 +1,31 @@
+.container {
+    padding: 10px;
+    margin: auto;
+    background-color: #ecebeb;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.constraint_container {
+    flex: 1;
+    padding: 1em;
+    border: solid;
+}
+
+.graph_container {
+    flex: 2;
+    padding: 1em;
+    border: solid;
+    display: flex;
+    flex-direction: column;
+}
+
+.graph {
+    flex: 2;
+    border: solid;
+}
+
+.tray {
+    border: solid;
+}

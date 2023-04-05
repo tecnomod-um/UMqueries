@@ -7,6 +7,7 @@ function About() {
         <span>
             <h1>UMU - ABOUT</h1>
             <div className={AboutStyles.container}>
+                Contact info
             </div>
         </span>
     );

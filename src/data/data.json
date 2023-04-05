@@ -1,0 +1,94 @@
+{
+  "elements": [
+    {
+      "id": 1,
+      "name": "tubulin",
+      "type": "protein",
+      "code": "PREFIX11223344"
+    },
+    {
+      "id": 2,
+      "name": "keratin",
+      "type": "protein",
+      "code": "PREFIX22334455"
+    },
+    {
+      "id": 3,
+      "name": "myosin",
+      "type": "protein",
+      "code": "PREFIX33445566"
+    },
+    {
+      "id": 4,
+      "name": "dystrophin",
+      "type": "protein",
+      "code": "PREFIX44556677"
+    },
+    {
+      "id": 5,
+      "name": "elastin",
+      "type": "protein",
+      "code": "PREFIX55667788"
+    },
+    {
+      "id": 6,
+      "name": "fibrin",
+      "type": "protein",
+      "code": "PREFIX66778899"
+    },
+    {
+      "id": 7,
+      "name": "hemoglobin",
+      "type": "protein",
+      "code": "PREFIX77889900"
+    },
+    {
+      "id": 8,
+      "name": "apolipoprotein C-III",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 9,
+      "name": "catalase",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 10,
+      "name": "checkpoint kinase 2",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 11,
+      "name": "clock circadian regulator",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 12,
+      "name": "cardiotrophin 1",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 13,
+      "name": "drebrin 1",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 14,
+      "name": "elastin",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    },
+    {
+      "id": 15,
+      "name": "granulin",
+      "type": "gene",
+      "code": "PREFIXGENE"
+    }
+  ]
+}
