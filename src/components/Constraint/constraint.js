@@ -1,13 +1,21 @@
 import React from 'react';
+import ConstraintStyles from "./constraint.module.css";
 
-function Constraint({ element }) {
+function Constraint({ element, onElementClick }) {
+
+    const addElementNode = (e) => {
+        e.preventDefault();
+        onElementClick(element.id, element.prefix);
+        console.log(element.id + ' node was added to graph.');
+      }
+
+
+      
     return (
-        <div>
-            <div>
-                <h2>{element.name}</h2>
-                <p>({element.type}) {element.code}</p>
-            </div>
-        </div>
+        <li className={ConstraintStyles.li} onClick={addElementNode}>
+                <h2>{element.id}</h2>
+                <p>{element.prefix}</p>
+        </li>
     )
 }
 

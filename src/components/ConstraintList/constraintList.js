@@ -2,13 +2,13 @@ import React from 'react';
 import ConstraintListStyles from "./constraintList.module.css";
 import Constraint from '../Constraint/constraint';
 
-function ConstraintList({ filteredElements }) {
-    const filtered = filteredElements.map(element => <Constraint key={element.id} element={element} />);
+function ConstraintList({ filteredElements, onElementClick}) {
+    const filtered = filteredElements.map(element => <Constraint key={element.id} element={element} onElementClick={onElementClick} />);
     return (
-        <div>
+        <ul>
             {filtered
             }
-        </div>
+        </ul>
     );
 }
 
