@@ -5,7 +5,7 @@ function Constraint({ element, addNode }) {
 
     const addElementNode = (e) => {
         e.preventDefault();
-        addNode(element.id, element.uri);
+        addNode(element.id, element.uri, 'red');
     }
 
     return (

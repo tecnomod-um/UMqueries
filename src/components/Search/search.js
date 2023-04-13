@@ -25,7 +25,7 @@ function Search({ details, addNode}) {
 
     function constraintList() {
         return (
-            <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', height: '70vh' }}>
+            <div className={SearchStyles.scroll} style={{ overflowY: 'scroll',overflowX: 'hidden', height: '70vh' }}>
                 <ConstraintList filteredElements={filteredElements} addNode={addNode}/>
             </div>
         );

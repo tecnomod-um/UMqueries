@@ -11,11 +11,11 @@ function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
 
-    function addNode(nodeLabel, nodeTitle) {
+    function addNode(nodeLabel, nodeTitle, nodeColor) {
         var newId = 0;
         if (nodes.length > 0)
             newId = nodes.slice(-1)[0].id + 1;
-        setNodes([...nodes, { id: newId, label: nodeLabel, title: nodeTitle }]);
+        setNodes([...nodes, { id: newId, label: nodeLabel, title: nodeTitle, color: nodeColor }]);
         //setEdges([...edges, { from: nodes.slice(-1)[0].id, to: newId }]);
     }
 
