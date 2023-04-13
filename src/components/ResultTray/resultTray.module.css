@@ -1,0 +1,101 @@
+  .menu-trigger {
+      background: #ffffff;
+      border-radius: 90px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      border: none;
+      vertical-align: middle;
+      transition: box-shadow 0.4s ease;
+      margin-left: auto;
+      /* Strictly for positioning */
+  }
+
+  .menu-trigger:hover {
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .menu-trigger span {
+      font-weight: 700;
+      vertical-align: middle;
+      font-size: 14px;
+      margin: 0 10px;
+  }
+
+  .menu-trigger img {
+      border-radius: 90px;
+  }
+
+  .menu {
+      background: #ffffff;
+      border-radius: 8px;
+      position: absolute;
+      top: 60px;
+      right: 0;
+      width: 300px;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+  }
+
+  .menu.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+  }
+
+  .menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+  }
+
+  .menu li {
+      border-bottom: 1px solid #dddddd;
+  }
+
+  .menu li a {
+      text-decoration: none;
+      color: #333333;
+      padding: 15px 20px;
+      display: block;
+  }
+
+  .big_button {
+    margin: 10%;
+    text-align: center;
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    margin: 20px;
+    height: 55px;
+    text-align: center;
+    border: none;
+    background-size: 300% 100%;
+    border-radius: 15px;
+    moz-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+    background-image: linear-gradient(to right,#c22535, #eb3941, #e14e53, #e2373f);
+    box-shadow: 0 5px 15px rgba(242, 97, 103, .4);
+  }
+  
+  .big_button:hover {
+    background-position: 100% 0;
+    moz-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+  }
+  
+  .big_button:focus {
+    outline: none;
+  }

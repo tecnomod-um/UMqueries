@@ -8,16 +8,15 @@ const elements = searchElements.elements;
 
 // Main view
 function Queries() {
-    const [nodes, setNodes] = useState([{ id: 1, label: 'Node 1', title: 'node 1 tootip text' },
-    { id: 2, label: 'Node 2', title: 'node 2 tootip text' },
-    { id: 3, label: 'Node 3', title: 'node 3 tootip text' }]);
-    const [edges, setEdges] = useState([{ from: 1, to: 2 },
-    { from: 1, to: 3 }]);
+    const [nodes, setNodes] = useState([]);
+    const [edges, setEdges] = useState([]);
 
     function addNode(nodeLabel, nodeTitle) {
-        var newId = nodes.slice(-1)[0].id +1;
+        var newId = 0;
+        if (nodes.length > 0)
+            newId = nodes.slice(-1)[0].id + 1;
         setNodes([...nodes, { id: newId, label: nodeLabel, title: nodeTitle }]);
-        setEdges([...edges, { from: nodes.slice(-1)[0].id, to: newId }]);
+        //setEdges([...edges, { from: nodes.slice(-1)[0].id, to: newId }]);
     }
 
     return (
@@ -25,13 +24,13 @@ function Queries() {
             <h1>UMU - QUERIES</h1>
             <div className={QueriesStyles.container}>
                 <div className={QueriesStyles.constraint_container}>
-                    <Search details={elements} onElementClick={addNode} />
+                    <Search details={elements} addNode={addNode} />
                 </div><div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
                         <Graph nodes={nodes} edges={edges}></Graph>
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray></ResultTray>
+                        <ResultTray addNode={addNode}></ResultTray>
                     </div>
                 </div>
             </div>

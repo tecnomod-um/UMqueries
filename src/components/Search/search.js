@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ConstraintList from '../ConstraintList/constraintList';
 import SearchStyles from "./search.module.css";
 
-function Search({ details, onElementClick}) {
+function Search({ details, addNode}) {
     const [searchField, setSearchField] = useState("");
     const filteredElements = details.filter(
         element => {
@@ -26,7 +26,7 @@ function Search({ details, onElementClick}) {
     function constraintList() {
         return (
             <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', height: '70vh' }}>
-                <ConstraintList filteredElements={filteredElements} onElementClick={onElementClick}/>
+                <ConstraintList filteredElements={filteredElements} addNode={addNode}/>
             </div>
         );
     }

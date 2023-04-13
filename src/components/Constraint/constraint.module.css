@@ -1,4 +1,9 @@
 li:hover {
     margin-left: 10px;
+    margin-right: -10px;
     color: #6d1e19;
+}
+
+li {
+    transition: all .2s ease;
 }

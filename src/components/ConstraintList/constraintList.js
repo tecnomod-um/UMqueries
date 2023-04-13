@@ -2,8 +2,8 @@ import React from 'react';
 import ConstraintListStyles from "./constraintList.module.css";
 import Constraint from '../Constraint/constraint';
 
-function ConstraintList({ filteredElements, onElementClick}) {
-    const filtered = filteredElements.map(element => <Constraint key={element.id} element={element} onElementClick={onElementClick} />);
+function ConstraintList({ filteredElements, addNode }) {
+    const filtered = filteredElements.map(element => <Constraint key={element.id} element={element} addNode={addNode} />);
     return (
         <ul>
             {filtered
