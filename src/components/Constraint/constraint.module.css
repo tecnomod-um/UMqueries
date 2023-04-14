@@ -1,9 +1,36 @@
-li:hover {
+.element:hover {
     margin-left: 10px;
     margin-right: -10px;
-    color: #6d1e19;
 }
 
-li {
+.element {
     transition: all .2s ease;
+}
+
+.gene:hover {
+    color: #460606;
+}
+
+.protein:hover {
+    color: #0c3650
+}
+
+.crm:hover {
+    color: #20310f;
+}
+
+.tad:hover {
+    color: #432901;
+}
+
+.omim:hover {
+    color: #3f3c00;
+}
+
+.go:hover {
+    color: #550c51;
+}
+
+.mi:hover {
+    color: #3a332f;
 }

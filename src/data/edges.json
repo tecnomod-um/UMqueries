@@ -1,0 +1,954 @@
+{
+    "gene": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "https://w3id.org/biolink/vocab/category",
+            "property label": "category",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity in Biolink model"
+        },
+        {
+            "property": "http://purl.org/dc/terms/hasVersion",
+            "property label": "has version",
+            "object node type": "resource",
+            "entity to be represented in the object node": "genome assembly"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/GENO_0000906",
+            "property label": "on strand",
+            "object node type": "literal",
+            "entity to be represented in the object node": "stand"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000003",
+            "property label": "end point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "end position",
+            "example object node ": 114408708
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000004",
+            "property label": "start point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "start position",
+            "example object node ": 114353911
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0001025",
+            "property label": "located in",
+            "object node type": "resource",
+            "entity to be represented in the object node": "chromosome"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#exactMatch",
+            "property label": "has exact match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (equivalents)"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#altLabel",
+            "property label": "has synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "alternative label"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            "property label": "has name",
+            "object node type": "literal",
+            "entity to be represented in the object node": "preferred label"
+        },
+        {
+            "property": "http://schema.org/evidenceOrigin",
+            "property label": "has evidence origin",
+            "object node type": "resource",
+            "entity to be represented in the object node": "URL original source"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_010078",
+            "property label": "encodes",
+            "object node type": "resource",
+            "entity to be represented in the object node": "protein"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000253",
+            "property label": "has source",
+            "object node type": "resource",
+            "entity to be represented in the object node": "database of reference"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0000052",
+            "property label": "characteristic of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "organism"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#closeMatch",
+            "property label": "has close match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (similar close)"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#definition",
+            "property label": "has definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "description of the entity"
+        }
+    ],
+    "protein": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#sameAs",
+            "property label": "is equivalent to",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (equivalents)"
+        },
+        {
+            "property": "http://schema.org/evidenceLevel",
+            "property label": "has evidence level",
+            "object node type": "literal",
+            "entity to be represented in the object node": "type of evidence that supports the existence of the protein"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000772",
+            "property label": "has evidence",
+            "object node type": "resource",
+            "entity to be represented in the object node": "PMID article of reference"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#altLabel",
+            "property label": "has synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "alternative label"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            "property label": "has name",
+            "object node type": "literal",
+            "entity to be represented in the object node": "preferred label"
+        },
+        {
+            "property": "http://schema.org/evidenceOrigin",
+            "property label": "has evidence origin",
+            "object node type": "resource",
+            "entity to be represented in the object node": "URL original source"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000253",
+            "property label": "has source",
+            "object node type": "resource",
+            "entity to be represented in the object node": "database of reference"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0000052",
+            "property label": "characteristic of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "organism"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#closeMatch",
+            "property label": "has close match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (similar close)"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#definition",
+            "property label": "has definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "description of the entity"
+        }
+    ],
+    "crm": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+            "property label": "is defined by",
+            "object node type": "resource",
+            "entity to be represented in the object node": "methodology that provides evidence"
+        },
+        {
+            "property": "https://w3id.org/biolink/vocab/category",
+            "property label": "category",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity in Biolink model"
+        },
+        {
+            "property": "http://purl.org/dc/terms/hasVersion",
+            "property label": "has version",
+            "object node type": "resource",
+            "entity to be represented in the object node": "genome assembly"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000003",
+            "property label": "end point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "end position"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000004",
+            "property label": "start point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "start position"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0001025",
+            "property label": "located in",
+            "object node type": "resource",
+            "entity to be represented in the object node": "chromosome"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#exactMatch",
+            "property label": "has exact match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (equivalents)"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002331",
+            "property label": "involved in",
+            "object node type": "resource",
+            "entity to be represented in the object node": "disease"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000772",
+            "property label": "has evidence",
+            "object node type": "resource",
+            "entity to be represented in the object node": "PMID article of reference"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#altLabel",
+            "property label": "has synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "alternative label"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            "property label": "has name",
+            "object node type": "literal",
+            "entity to be represented in the object node": "preferred label"
+        },
+        {
+            "property": "http://schema.org/evidenceOrigin",
+            "property label": "has evidence origin",
+            "object node type": "resource",
+            "entity to be represented in the object node": "URL original source"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000253",
+            "property label": "has source",
+            "object node type": "resource",
+            "entity to be represented in the object node": "database of reference"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0000052",
+            "property label": "characteristic of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "organism"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#closeMatch",
+            "property label": "has close match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (similar close)"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#definition",
+            "property label": "has definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "description of the entity"
+        },
+        {
+            "property": "https://w3id.org/linkml/is_a",
+            "property label": "is a",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class from Biolink model"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037208",
+            "property label": "derived from anatomic part",
+            "object node type": "resource",
+            "entity to be represented in the object node": "anatomical structure in which it has been identified"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037209",
+            "property label": "derived from cell",
+            "object node type": "resource",
+            "entity to be represented in the object node": "cell type in which it has been identified"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037210",
+            "property label": "derived from cell line",
+            "object node type": "resource",
+            "entity to be represented in the object node": "cell line in which it has been identified"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002436",
+            "property label": "molecularly interacts with",
+            "object node type": "resource",
+            "entity to be represented in the object node": "transcriptional factor with which it interacts"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002428",
+            "property label": "involved in regulation of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "target gene"
+        }
+    ],
+    "tad": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+            "property label": "is defined by",
+            "object node type": "resource",
+            "entity to be represented in the object node": "methodology that provides evidence"
+        },
+        {
+            "property": "https://w3id.org/biolink/vocab/category",
+            "property label": "category",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity in Biolink model"
+        },
+        {
+            "property": "http://purl.org/dc/terms/hasVersion",
+            "property label": "has version",
+            "object node type": "resource",
+            "entity to be represented in the object node": "genome assembly"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000003",
+            "property label": "end point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "end position"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/OGI_1000004",
+            "property label": "start point of interval",
+            "object node type": "literal",
+            "entity to be represented in the object node": "start position"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0001025",
+            "property label": "located in",
+            "object node type": "resource",
+            "entity to be represented in the object node": "chromosome"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#exactMatch",
+            "property label": "has exact match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (equivalents)"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000772",
+            "property label": "has evidence",
+            "object node type": "resource",
+            "entity to be represented in the object node": "PMID article of reference"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#altLabel",
+            "property label": "has synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "alternative label"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            "property label": "has name",
+            "object node type": "literal",
+            "entity to be represented in the object node": "preferred label"
+        },
+        {
+            "property": "http://schema.org/evidenceOrigin",
+            "property label": "has evidence origin",
+            "object node type": "resource",
+            "entity to be represented in the object node": "URL original source"
+        },
+        {
+            "property": "http://semanticscience.org/resource/SIO_000253",
+            "property label": "has source",
+            "object node type": "resource",
+            "entity to be represented in the object node": "database of reference"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0000052",
+            "property label": "characteristic of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "organism"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#closeMatch",
+            "property label": "has close match",
+            "object node type": "resource",
+            "entity to be represented in the object node": "resource in other source (similar close)"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#definition",
+            "property label": "has definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "description of the entity"
+        },
+        {
+            "property": "https://w3id.org/linkml/is_a",
+            "property label": "is a",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class from Biolink model"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037208",
+            "property label": "derived from anatomic part",
+            "object node type": "resource",
+            "entity to be represented in the object node": "anatomical structure in which it has been identified"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037209",
+            "property label": "derived from cell",
+            "object node type": "resource",
+            "entity to be represented in the object node": "cell type in which it has been identified"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/CLO_0037210",
+            "property label": "derived from cell line",
+            "object node type": "resource",
+            "entity to be represented in the object node": "cell line in which it has been identified"
+        }
+    ],
+    "omim": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#label",
+            "property label": "label",
+            "object node type": "literal",
+            "entity to be represented in the object node": "property label"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#comment",
+            "property label": "comment",
+            "object node type": "literal",
+            "entity to be represented in the object node": "comment about property"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#versionInfo",
+            "property label": "versionInfo",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ontology version"
+        },
+        {
+            "property": "http://bioportal.bioontology.org/ontologies/umls/tui",
+            "property label": "Term Under Investigation",
+            "object node type": "literal",
+            "entity to be represented in the object node": "classification of terms under review"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#notation",
+            "property label": "notation",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ID in OMIM"
+        },
+        {
+            "property": "http://bioportal.bioontology.org/ontologies/umls/cui",
+            "property label": "cui",
+            "object node type": "literal",
+            "entity to be represented in the object node": "Concept Unique Identifier"
+        },
+        {
+            "property": "http://bioportal.bioontology.org/ontologies/umls/hasSTY",
+            "property label": "Semantic type UMLS property",
+            "object node type": "resource",
+            "entity to be represented in the object node": "semantic type of the medical concept in UMLS"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/GENELOCUS",
+            "property label": "Gene Locus",
+            "object node type": "literal",
+            "entity to be represented in the object node": "locus of the associated gene"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/GENESYMBOL",
+            "property label": "Gene Symbol",
+            "object node type": "literal",
+            "entity to be represented in the object node": "symbol of the associated gene"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/MIMTYPE",
+            "property label": "OMIM Entry Type",
+            "object node type": "literal",
+            "entity to be represented in the object node": "category in which the OMIM entry is classified"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/MIMTYPEMEANING",
+            "property label": "OMIM MimType Meaning",
+            "object node type": "literal",
+            "entity to be represented in the object node": "meaning of the 'OMIM TYPE category"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/MIMTYPEVALUE",
+            "property label": "OMIM MimType Value",
+            "object node type": "literal",
+            "entity to be represented in the object node": "type of genetic disorder associated with the entry"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/MOVED_FROM",
+            "property label": "Moved from",
+            "object node type": "literal",
+            "entity to be represented in the object node": "previous OMIM entry"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/SOS",
+            "property label": "Scope Statement",
+            "object node type": "literal",
+            "entity to be represented in the object node": "description or commentary"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/allelic_variant_of",
+            "property label": "Allelic variant of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "OMIM entry of which it is a variant"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/has_allelic_variant",
+            "property label": "Has allelic variant",
+            "object node type": "resource",
+            "entity to be represented in the object node": "OMIM entries of the variants"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/has_inheritance_type",
+            "property label": "Has inheritance type",
+            "object node type": "resource",
+            "entity to be represented in the object node": "inheritance pattern"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/has_manifestation",
+            "property label": "Has manifestation",
+            "object node type": "resource",
+            "entity to be represented in the object node": "clinical manifestations or specific symptoms"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/has_phenotype",
+            "property label": "Has phenotype",
+            "object node type": "resource",
+            "entity to be represented in the object node": "phenotype"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/manifestation_of",
+            "property label": "Manifestation of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "OMIM entry where the manifestation happens"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/phenotype_of",
+            "property label": "Phenotype of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "OMIM entry where the phenotype happens"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#altLabel",
+            "property label": "has synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "alternative label"
+        },
+        {
+            "property": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            "property label": "has name",
+            "object node type": "literal",
+            "entity to be represented in the object node": "preferred label"
+        },
+        {
+            "property": "http://purl.bioontology.org/ontology/OMIM/inheritance_type_of",
+            "property label": "Inheritance type of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "OMIM entry that has the inheritance pattern"
+        }
+    ],
+    "ontology": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#label",
+            "property label": "label",
+            "object node type": "literal",
+            "entity to be represented in the object node": "label"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#comment",
+            "property label": "comment",
+            "object node type": "literal",
+            "entity to be represented in the object node": "comment"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#deprecated",
+            "property label": "deprecated",
+            "object node type": "literal",
+            "entity to be represented in the object node": "boolean on whether the entity is obsolete"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#versionIRI",
+            "property label": "versionIRI",
+            "object node type": "resource",
+            "entity to be represented in the object node": "version IRI of the ontology"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasExactSynonym",
+            "property label": "has_exact_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "label synonym"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/BFO_0000050",
+            "property label": "part of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "entity of which it is part"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0000115",
+            "property label": "definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "definition"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0000231",
+            "property label": "has obsolescence reason",
+            "object node type": "resource",
+            "entity to be represented in the object node": "obsolescence reason"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0100001",
+            "property label": "term replaced by",
+            "object node type": "resource",
+            "entity to be represented in the object node": "replacement entity"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002211",
+            "property label": "regulates",
+            "object node type": "resource",
+            "entity to be represented in the object node": "regulated entity"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002212",
+            "property label": "negatively regulates",
+            "object node type": "resource",
+            "entity to be represented in the object node": "negatively regulated entity"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/RO_0002213",
+            "property label": "positively regulates",
+            "object node type": "resource",
+            "entity to be represented in the object node": "positively regulated entity"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#consider",
+            "property label": "consider",
+            "object node type": "literal",
+            "entity to be represented in the object node": "substitute for an obsolete term"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#default-namespace",
+            "property label": "has_default_namespace",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ontology name"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId",
+            "property label": "has_alternative_id",
+            "object node type": "literal",
+            "entity to be represented in the object node": "id of alternative entity"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym",
+            "property label": "has_broad_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "broad synonym or alias"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
+            "property label": "has_dbxref",
+            "object node type": "literal",
+            "entity to be represented in the object node": "external cross-references"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym",
+            "property label": "has_narrow_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "narrow synonym or alias"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasOBOFormatVersion",
+            "property label": "has_obo_format_version",
+            "object node type": "literal",
+            "entity to be represented in the object node": "obo format version"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+            "property label": "has_obo_namespace",
+            "object node type": "literal",
+            "entity to be represented in the object node": "obo namespace"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym",
+            "property label": "has_related_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "related synonym"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#id",
+            "property label": "id",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ID in the ontology"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+            "property label": "in_subset",
+            "object node type": "resource",
+            "entity to be represented in the object node": "category"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#shorthand",
+            "property label": "shorthand",
+            "object node type": "literal",
+            "entity to be represented in the object node": "acronym or abbreviation"
+        }
+    ],
+    "interaction": [
+        {
+            "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "property label": "is instance of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "type of entity"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "property label": "is subclass of",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental class"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+            "property label": "subPropertyOf",
+            "object node type": "resource",
+            "entity to be represented in the object node": "parental property"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#label",
+            "property label": "label",
+            "object node type": "literal",
+            "entity to be represented in the object node": "label"
+        },
+        {
+            "property": "http://www.w3.org/2000/01/rdf-schema#comment",
+            "property label": "comment",
+            "object node type": "literal",
+            "entity to be represented in the object node": "comment"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#deprecated",
+            "property label": "deprecated",
+            "object node type": "literal",
+            "entity to be represented in the object node": "boolean on whether the entity is obsolete"
+        },
+        {
+            "property": "http://www.w3.org/2002/07/owl#versionIRI",
+            "property label": "versionIRI",
+            "object node type": "resource",
+            "entity to be represented in the object node": "version IRI of the ontology"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasExactSynonym",
+            "property label": "has_exact_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "label synonym"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0000115",
+            "property label": "definition",
+            "object node type": "literal",
+            "entity to be represented in the object node": "definition"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0000231",
+            "property label": "has obsolescence reason",
+            "object node type": "resource",
+            "entity to be represented in the object node": "obsolescence reason"
+        },
+        {
+            "property": "http://purl.obolibrary.org/obo/IAO_0100001",
+            "property label": "term replaced by",
+            "object node type": "resource",
+            "entity to be represented in the object node": "replacement entity"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#default-namespace",
+            "property label": "has_default_namespace",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ontology name"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId",
+            "property label": "has_alternative_id",
+            "object node type": "literal",
+            "entity to be represented in the object node": "id of alternative entity"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym",
+            "property label": "has_broad_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "broad synonym or alias"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
+            "property label": "has_dbxref",
+            "object node type": "literal",
+            "entity to be represented in the object node": "external cross-references"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym",
+            "property label": "has_narrow_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "narrow synonym or alias"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasOBOFormatVersion",
+            "property label": "has_obo_format_version",
+            "object node type": "literal",
+            "entity to be represented in the object node": "obo format version"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+            "property label": "has_obo_namespace",
+            "object node type": "literal",
+            "entity to be represented in the object node": "obo namespace"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym",
+            "property label": "has_related_synonym",
+            "object node type": "literal",
+            "entity to be represented in the object node": "related synonym"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#id",
+            "property label": "id",
+            "object node type": "literal",
+            "entity to be represented in the object node": "ID in the ontology"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+            "property label": "in_subset",
+            "object node type": "resource",
+            "entity to be represented in the object node": "category"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#created_by",
+            "property label": "created_by",
+            "object node type": "literal",
+            "entity to be represented in the object node": "name or institution responsible of the entity"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#creation_date",
+            "property label": "creation_date",
+            "object node type": "literal",
+            "entity to be represented in the object node": "date of creation"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#date",
+            "property label": "date",
+            "object node type": "literal",
+            "entity to be represented in the object node": "date last modification"
+        },
+        {
+            "property": "http://www.geneontology.org/formats/oboInOwl#saved-by",
+            "property label": "saved-by",
+            "object node type": "literal",
+            "entity to be represented in the object node": "author last modification"
+        }
+    ]
+}

@@ -1,471 +1,371 @@
 {
+	"gene": [
+		{
+			"id": "GNHS00000005972",
+			"prefix": "http://rdf.biogateway.eu/gene/9606/",
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972"
+		},
+		{
+			"id": "GNHS00000005972#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/gene/9606/",
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972#dbsuper"
+		},
+		{
+			"id": "GNHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984"
+		},
+		{
+			"id": "GNHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/gene/9606/",
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984#dbsuper"
+		}
+	],
+	"protein": [
+		{
+			"id": "PROTHS00000005972",
+			"prefix": "http://rdf.biogateway.eu/protein/9606/",
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972"
+		},
+		{
+			"id": "PROTHS00000005972#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/protein/9606/",
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972#dbsuper"
+		},
+		{
+			"id": "PROTHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/protein/9606/",
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984"
+		},
+		{
+			"id": "PROTHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/protein/9606/",
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984#dbsuper"
+		}
+	],
 	"crm": [
 		{
 			"id": "CRMHS00000005972",
 			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0001013",
-			"http://purl.obolibrary.org/obo/CLO_0037209": ["http://purl.obolibrary.org/obo/BTO_0000443", "http://purl.obolibrary.org/obo/CL_0000136"],
-			"http://purl.obolibrary.org/obo/OGI_1000003": 187750675,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 187725358,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000003.12",
-			"http://purl.obolibrary.org/obo/RO_0002428": "http://rdf.biogateway.eu/gene/9606/BCL6",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://schema.org/evidenceOrigin": "https://asntech.org/dbsuper/details.php?se_id=SE_00148",
-			"http://semanticscience.org/resource/SIO_000253": "https://asntech.org/dbsuper/",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/24119843",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000226", "http://purl.obolibrary.org/obo/MI_0402", "http://purl.obolibrary.org/obo/NCIT_C106048", "http://purl.obolibrary.org/obo/NCIT_C25449", "http://purl.obolibrary.org/obo/OBI_0001954", "http://www.ebi.ac.uk/efo/EFO_0004176"],
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://purl.obolibrary.org/obo/SO_0000727",
-			"http://www.w3.org/2004/02/skos/core#definition": "Cis-regulatory module located in Homo sapiens chr3 between 187725358 and 187750675",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "crm/CRMHS00000005972"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972"
 		},
 		{
 			"id": "CRMHS00000005972#dbsuper",
 			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972#dbsuper",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0001013",
-			"http://purl.obolibrary.org/obo/CLO_0037209": ["http://purl.obolibrary.org/obo/BTO_0000443", "http://purl.obolibrary.org/obo/CL_0000136"],
-			"http://purl.obolibrary.org/obo/OGI_1000003": 187750675,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 187725358,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000003.12",
-			"http://purl.obolibrary.org/obo/RO_0002428": "http://rdf.biogateway.eu/gene/9606/BCL6",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://schema.org/evidenceOrigin": "https://asntech.org/dbsuper/details.php?se_id=SE_00148",
-			"http://semanticscience.org/resource/SIO_000253": "https://asntech.org/dbsuper/",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/24119843",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000226", "http://purl.obolibrary.org/obo/MI_0402", "http://purl.obolibrary.org/obo/NCIT_C106048", "http://purl.obolibrary.org/obo/NCIT_C25449", "http://purl.obolibrary.org/obo/OBI_0001954", "http://www.ebi.ac.uk/efo/EFO_0004176"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "crm#CRMHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972#dbsuper"
 		},
 		{
 			"id": "CRMHS00000005984",
 			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0000178",
-			"http://purl.obolibrary.org/obo/CLO_0037209": "http://purl.obolibrary.org/obo/CL_0000236",
-			"http://purl.obolibrary.org/obo/CLO_0037210": "http://purl.obolibrary.org/obo/CLO_0037063",
-			"http://purl.obolibrary.org/obo/OGI_1000003": 188124088,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 188083088,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000003.12",
-			"http://purl.obolibrary.org/obo/RO_0002428": "http://rdf.biogateway.eu/gene/9606/LPP",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://schema.org/evidenceOrigin": "https://asntech.org/dbsuper/details.php?se_id=SE_60921",
-			"http://semanticscience.org/resource/SIO_000253": "https://asntech.org/dbsuper/",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/24332044",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000226", "http://purl.obolibrary.org/obo/MI_0402", "http://purl.obolibrary.org/obo/NCIT_C106048", "http://purl.obolibrary.org/obo/NCIT_C25449", "http://purl.obolibrary.org/obo/OBI_0001954", "http://www.ebi.ac.uk/efo/EFO_0004176"],
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://purl.obolibrary.org/obo/SO_0000727",
-			"http://www.w3.org/2004/02/skos/core#definition": "Cis-regulatory module located in Homo sapiens chr3 between 188083088 and 188124088",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "crm/CRMHS00000005984"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984"
 		},
 		{
 			"id": "CRMHS00000005984#dbsuper",
 			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984#dbsuper",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0000178",
-			"http://purl.obolibrary.org/obo/CLO_0037209": "http://purl.obolibrary.org/obo/CL_0000236",
-			"http://purl.obolibrary.org/obo/CLO_0037210": "http://purl.obolibrary.org/obo/CLO_0037063",
-			"http://purl.obolibrary.org/obo/OGI_1000003": 188124088,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 188083088,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000003.12",
-			"http://purl.obolibrary.org/obo/RO_0002428": "http://rdf.biogateway.eu/gene/9606/LPP",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://schema.org/evidenceOrigin": "https://asntech.org/dbsuper/details.php?se_id=SE_60921",
-			"http://semanticscience.org/resource/SIO_000253": "https://asntech.org/dbsuper/",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/24332044",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000226", "http://purl.obolibrary.org/obo/MI_0402", "http://purl.obolibrary.org/obo/NCIT_C106048", "http://purl.obolibrary.org/obo/NCIT_C25449", "http://purl.obolibrary.org/obo/OBI_0001954", "http://www.ebi.ac.uk/efo/EFO_0004176"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "crm#CRMHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984#dbsuper"
+		},
+		{
+			"id": "CRMHS00000005992",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005992"
+		},
+		{
+			"id": "CRMHS00000005992#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005992#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006042",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006042"
+		},
+		{
+			"id": "CRMHS00000006042#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006042#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006108",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006108"
+		},
+		{
+			"id": "CRMHS00000006108#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006108#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006142",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006142"
+		},
+		{
+			"id": "CRMHS00000006142#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006142#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006143",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006143"
+		},
+		{
+			"id": "CRMHS00000006143#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006143#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006144",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006144"
+		},
+		{
+			"id": "CRMHS00000006144#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006144#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006145",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006145"
+		},
+		{
+			"id": "CRMHS00000006145#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006145#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006146",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006146"
+		},
+		{
+			"id": "CRMHS00000006146#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006146#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006147",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006147"
+		},
+		{
+			"id": "CRMHS00000006147#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006147#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006148",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006148"
+		},
+		{
+			"id": "CRMHS00000006148#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006148#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006149",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006149"
+		},
+		{
+			"id": "CRMHS00000006149#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006149#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006150",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006150"
+		},
+		{
+			"id": "CRMHS00000006150#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006150#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006151",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006151"
+		},
+		{
+			"id": "CRMHS00000006151#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006151#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006152",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006152"
+		},
+		{
+			"id": "CRMHS00000006152#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006152#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006153",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006153"
+		},
+		{
+			"id": "CRMHS00000006153#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006153#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006154",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006154"
+		},
+		{
+			"id": "CRMHS00000006154#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006154#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006155",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006155"
+		},
+		{
+			"id": "CRMHS00000006155#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006155#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006156",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006156"
+		},
+		{
+			"id": "CRMHS00000006156#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006156#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006157",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006157"
+		},
+		{
+			"id": "CRMHS00000006157#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006157#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006158",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006158"
+		},
+		{
+			"id": "CRMHS00000006158#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006158#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006159",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006159"
+		},
+		{
+			"id": "CRMHS00000006159#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006159#dbsuper"
+		},
+		{
+			"id": "CRMHS00000006160",
+			"prefix": "http://rdf.biogateway.eu/crm/9606/",
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006160"
 		}
 	],
 	"tad": [
 		{
-			"id": "TADHS00000000001",
+			"id": "TADHS00000005972",
 			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000001",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0002048",
-			"http://purl.obolibrary.org/obo/CLO_0037209": "http://purl.obolibrary.org/obo/CL_0000082",
-			"http://purl.obolibrary.org/obo/CLO_0037210": ["http://purl.obolibrary.org/obo/BTO_0000018", "http://purl.obolibrary.org/obo/CLO_0001601"],
-			"http://purl.obolibrary.org/obo/OGI_1000003": 3720000,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 800000,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000001.11",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://semanticscience.org/resource/SIO_000253": "http://3dgenome.fsm.northwestern.edu/index.html",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/30286773",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000238", "http://purl.obolibrary.org/obo/OBI_0002440", "http://www.ebi.ac.uk/efo/EFO_0007693"],
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://purl.obolibrary.org/obo/SO_0002304",
-			"http://www.w3.org/2004/02/skos/core#definition": "Topologically associated domain located in Homo sapiens chr1 between 800000 and 3720000",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "tad/TADHS00000000001"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972"
 		},
 		{
-			
-			"id": "TADHS00000000001#3dgb",
+			"id": "TADHS00000005972#dbsuper",
 			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000001#3dgb",
-			"http://purl.obolibrary.org/obo/CLO_0037208": "http://purl.obolibrary.org/obo/UBERON_0002048",
-			"http://purl.obolibrary.org/obo/CLO_0037209": "http://purl.obolibrary.org/obo/CL_0000082",
-			"http://purl.obolibrary.org/obo/CLO_0037210": ["http://purl.obolibrary.org/obo/BTO_0000018", "http://purl.obolibrary.org/obo/CLO_0001601"],
-			"http://purl.obolibrary.org/obo/OGI_1000003": 3720000,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 800000,
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000001.11",
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://semanticscience.org/resource/SIO_000253": "http://3dgenome.fsm.northwestern.edu/index.html",
-			"http://semanticscience.org/resource/SIO_000772": "http://identifiers.org/pubmed/30286773",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://rdf.biogateway.eu/tad/9606/TADHS00000000001",
-			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy": ["http://purl.obolibrary.org/obo/ECO_0000238", "http://purl.obolibrary.org/obo/OBI_0002440", "http://www.ebi.ac.uk/efo/EFO_0007693"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "tad#TADHS00000000001#3dgb"
-		}
-	],
-	"gene": [
-		{
-			"id": "A1BG",
-			"prefix": "http://rdf.biogateway.eu/gene/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/A1BG",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": ["http://semanticscience.org/resource/SIO_010035", "http://rdf.biogateway.eu/gene/9606/chr-19"],
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://purl.obolibrary.org/obo/GENO_0000906": "-",
-			"http://purl.obolibrary.org/obo/OGI_1000003": 58353492,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 58345183,
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000019.10",
-			"http://www.w3.org/2004/02/skos/core#exactMatch": "http://identifiers.org/ncbigene/1",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A1BG",
-			"http://schema.org/evidenceOrigin": ["http://uniprot.org/uniprot/M0R009", "http://uniprot.org/uniprot/P04217"],
-			"http://semanticscience.org/resource/SIO_010078": ["http://rdf.biogateway.eu/prot/9606/M0R009", "http://rdf.biogateway.eu/prot/9606/P04217"],
-			"http://purl.obolibrary.org/obo/RO_0000052": ["http://purl.obolibrary.org/obo/NCBITaxon_9606"],
-			"http://www.w3.org/2004/02/skos/core#closeMatch": ["http://identifiers.org/ensembl/ENSG00000121410.12", "http://identifiers.org/ncbigene/1"],
-			"http://www.w3.org/2004/02/skos/core#definition": "Homo sapiens gene A1BG"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972#dbsuper"
 		},
 		{
-			"id": "A1CF",
-			"prefix": "http://rdf.biogateway.eu/gene/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/A1CF",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": ["http://semanticscience.org/resource/SIO_010035", "http://rdf.biogateway.eu/gene/9606/chr-10"],
-			"http://purl.org/dc/terms/hasVersion": "https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39",
-			"http://purl.obolibrary.org/obo/GENO_0000906": "-",
-			"http://purl.obolibrary.org/obo/OGI_1000003": 50885666,
-			"http://purl.obolibrary.org/obo/OGI_1000004": 50799409,
-			"http://purl.obolibrary.org/obo/RO_0001025": "https://www.ncbi.nlm.nih.gov/nuccore/NC_000010.11",
-			"http://www.w3.org/2004/02/skos/core#exactMatch": ["http://identifiers.org/ncbigene/29974", "http://identifiers.org/ncbigene/29974"],
-			"http://www.w3.org/2004/02/skos/core#altLabel": ["ACF", "ASP"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A1CF",
-			"http://schema.org/evidenceOrigin": ["http://uniprot.org/uniprot/F8W9F8", "http://uniprot.org/uniprot/Q5T0W7", "http://uniprot.org/uniprot/Q9NQ94"],
-			"http://semanticscience.org/resource/SIO_010078": ["http://rdf.biogateway.eu/prot/9606/F8W9F8", "http://rdf.biogateway.eu/prot/9606/Q5T0W7", "http://rdf.biogateway.eu/prot/9606/Q9NQ94"],
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://www.w3.org/2004/02/skos/core#closeMatch": ["http://identifiers.org/ensembl/ENSG00000148584.15", "http://identifiers.org/ncbigene/29974"],
-			"http://www.w3.org/2004/02/skos/core#definition": "Homo sapiens gene A1CF"
-		}
-	],
-	"prot": [
-		{
-			"id": "A0A024R0Y4",
-			"prefix": "http://rdf.biogateway.eu/prot/9606/",
-			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R0Y4",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": ["http://rdf.biogateway.eu/prot/9606/chr-17", "http://semanticscience.org/resource/SIO_010043"],
-			"http://www.w3.org/2002/07/owl#sameAs": "http://uniprot.org/uniprot/A0A024R0Y4",
-			"http://schema.org/evidenceLevel": "3.0",
-			"http://semanticscience.org/resource/SIO_000772": ["http://identifiers.org/pubmed/11181995", "http://identifiers.org/pubmed/16625196", "http://identifiers.org/pubmed/23186163", "http://identifiers.org/pubmed/28112733"],
-			"http://www.w3.org/2004/02/skos/core#altLabel": ["TADA2A", "A0A024R0Y4"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A0A024R0Y4_HUMAN",
-			"http://schema.org/evidenceOrigin": "http://uniprot.org/uniprot/A0A024R0Y4",
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://www.w3.org/2004/02/skos/core#definition": "Transcriptional adapter"
+			"id": "TADHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/tad/9606/",
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984"
 		},
 		{
-			"id": "A0A024R4K9",
-			"prefix": "http://rdf.biogateway.eu/prot/9606/",
-			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R4K9",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": ["http://rdf.biogateway.eu/prot/9606/chr-7", "http://semanticscience.org/resource/SIO_010043"],
-			"http://www.w3.org/2002/07/owl#sameAs": "http://uniprot.org/uniprot/A0A024R4K9",
-			"http://schema.org/evidenceLevel": "1.0",
-			"http://semanticscience.org/resource/SIO_000772": ["http://identifiers.org/pubmed/11181995", "http://identifiers.org/pubmed/12853948", "http://identifiers.org/pubmed/24275569"],
-			"http://www.w3.org/2004/02/skos/core#altLabel": ["TMEM120A", "A0A024R4K9"],
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A0A024R4K9_HUMAN",
-			"http://schema.org/evidenceOrigin": "http://uniprot.org/uniprot/A0A024R4K9",
-			"http://purl.obolibrary.org/obo/RO_0000052": "http://purl.obolibrary.org/obo/NCBITaxon_9606",
-			"http://www.w3.org/2004/02/skos/core#definition": "Ion channel TACAN"
+			"id": "TADHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/tad/9606/",
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984#dbsuper"
 		}
 	],
 	"omim": [
 		{
-			"id": "100700",
-			"prefix": "http://purl.bioontology.org/ontology/OMIM/",
-			"uri": "http://purl.bioontology.org/ontology/OMIM/100700",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://bioportal.bioontology.org/ontologies/umls/tui": "T047",
-			"http://www.w3.org/2004/02/skos/core#notation": "100700",
-			"http://bioportal.bioontology.org/ontologies/umls/cui": "C1332135",
-			"http://bioportal.bioontology.org/ontologies/umls/hasSTY": "http://purl.bioontology.org/ontology/STY/T047",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPE": "0",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPEMEANING": "Other, mainly phenotypes with suspected mendelian basis",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPEVALUE": "none",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "ACHARD SYNDROME"@en
+			"id": "OMIMHS00000005972",
+			"prefix": "http://rdf.biogateway.eu/omim/9606/",
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972"
 		},
 		{
-			"id": "102660",
-			"prefix": "http://purl.bioontology.org/ontology/OMIM/",
-			"uri": "http://purl.bioontology.org/ontology/OMIM/102660",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://bioportal.bioontology.org/ontologies/umls/tui": "T191",
-			"http://www.w3.org/2004/02/skos/core#notation": "102660",
-			"http://bioportal.bioontology.org/ontologies/umls/cui": "C0334556",
-			"http://bioportal.bioontology.org/ontologies/umls/hasSTY": "http://purl.bioontology.org/ontology/STY/T191",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPE": "0",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPEMEANING": "Other, mainly phenotypes with suspected mendelian basis",
-			"http://purl.bioontology.org/ontology/OMIM/MIMTYPEVALUE": "none",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "ADAMANTINOMA OF LONG BONES"@en
+			"id": "OMIMHS00000005972#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/omim/9606/",
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972#dbsuper"
+		},
+		{
+			"id": "OMIMHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/omim/9606/",
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984"
+		},
+		{
+			"id": "OMIMHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/omim/9606/",
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984#dbsuper"
 		}
 	],
-	"go": [
+	"ontology": [
 		{
-			"id": "GO_1900526",
-			"prefix": "http://purl.obolibrary.org/obo/",
-			"uri": "http://purl.obolibrary.org/obo/GO_1900526",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#label": "obsolete negative regulation of phosphatidylserine biosynthetic process by negative regulation of transcription from RNA polymerase II promoter",
-			"http://www.w3.org/2000/01/rdf-schema#comment": "This term was obsoleted because it represents a GO-CAM model.",
-			"http://www.w3.org/2002/07/owl#deprecated": "true",
-			"http://www.geneontology.org/formats/oboInOwl#hasExactSynonym": ["negative regulation of phosphatidylserine biosynthesis by negative regulation of transcription from RNA polymerase II promoter", "negative regulation of phosphatidylserine anabolism by negative regulation of transcription from RNA polymerase II promoter", "negative regulation of phosphatidylserine formation by negative regulation of transcription from RNA polymerase II promoter", "negative regulation of phosphatidylserine synthesis by negative regulation of transcription from RNA polymerase II promoter"],
-			"http://purl.obolibrary.org/obo/IAO_0000115": "OBSOLETE. Any process that stops, prevents, or reduces the frequency, rate or extent of phosphatidylserine biosynthetic process by stopping, preventing, or reducing the frequency, rate or extent of transcription from an RNA polymerase II promoter.",
-			"http://www.geneontology.org/formats/oboInOwl#hasOBONamespace": "biological_process",
-			"http://www.geneontology.org/formats/oboInOwl#id": "GO:1900526"
+			"id": "GOHS00000005972",
+			"prefix": "http://rdf.biogateway.eu/go/9606/",
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972"
 		},
 		{
-			"id": "GO_1900528",
-			"prefix": "http://purl.obolibrary.org/obo/",
-			"uri": "http://purl.obolibrary.org/obo/GO_1900528",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#label": "obsolete regulation of cell shape involved in G1 to G0 transition",
-			"http://www.w3.org/2000/01/rdf-schema#comment": "This term was made obsolete because it represents a phenotype.",
-			"http://www.w3.org/2002/07/owl#deprecated": "true"^^<http://www.w3.org/2001/XMLSchema#boolean>",
-			"http://www.geneontology.org/formats/oboInOwl#hasExactSynonym": ["regulation of cell shape involved in G1 to G0 transition", "regulation of cell shape involved in G1/G0 transition", "regulation of cell shape involved in establishment of cell quiescence"],
-			"http://purl.obolibrary.org/obo/IAO_0000115": "OBSOLETE. Any regulation of cell shape that is involved in G1 to G0 transition."^^<http://www.w3.org/2001/XMLSchema#string>",
-			"http://www.geneontology.org/formats/oboInOwl#hasOBONamespace": "biological_process",
-			"http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym": ["regulation of cell shape involved in stationary phase", "regulation of cell shape involved in cell cycle quiescence"],
-			"http://www.geneontology.org/formats/oboInOwl#id": "GO:1900528"
+			"id": "GOHS00000005972#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/go/9606/",
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972#dbsuper"
+		},
+		{
+			"id": "GOHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/go/9606/",
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984"
+		},
+		{
+			"id": "GOHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/go/9606/",
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984#dbsuper"
 		}
 	],
-	"mi": [
+	"interaction": [
 		{
-			"id": "MI_0001",
-			"prefix": "http://purl.obolibrary.org/obo/",
-			"uri": "http://purl.obolibrary.org/obo/MI_0001",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "nodeID://b156403",
-			"http://www.w3.org/2000/01/rdf-schema#label": "interaction detection method",
-			"http://www.geneontology.org/formats/oboInOwl#hasExactSynonym": "interaction detect",
-			"http://purl.obolibrary.org/obo/IAO_0000115": "Method to determine the interaction.",
-			"http://www.geneontology.org/formats/oboInOwl#hasOBONamespace": "PSI-MI",
-			"http://www.geneontology.org/formats/oboInOwl#id": "MI:0001",
-			"http://www.geneontology.org/formats/oboInOwl#inSubset": ["http://purl.obolibrary.org/obo/mi#Drugable", "http://purl.obolibrary.org/obo/mi#PSI-MI_slim"]
+			"id": "MIHS00000005972",
+			"prefix": "http://rdf.biogateway.eu/mi/9606/",
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972"
 		},
 		{
-			"id": "MI_0002",
-			"prefix": "http://purl.obolibrary.org/obo/",
-			"uri": "http://purl.obolibrary.org/obo/MI_0002",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "nodeID://b156406",
-			"http://www.w3.org/2000/01/rdf-schema#label": "participant identification method",
-			"http://www.geneontology.org/formats/oboInOwl#hasExactSynonym": ["participant detection", "participant ident"],
-			"http://purl.obolibrary.org/obo/IAO_0000115": "Method to determine the molecules involved in the interaction.",
-			"http://www.geneontology.org/formats/oboInOwl#hasOBONamespace": "PSI-MI",
-			"http://www.geneontology.org/formats/oboInOwl#id": "MI:0002",
-			"http://www.geneontology.org/formats/oboInOwl#inSubset": "http://purl.obolibrary.org/obo/mi#PSI-MI_slim"
-		}
-	],
-	"gene2phen": [
-		{
-			"id": "hgncsymb!AAAS--omim!231550",
-			"prefix": "http://rdf.biogateway.eu/gene-phen/",
-			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AAAS--omim!231550",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.bioontology.org/ontology/OMIM/231550",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002331",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/gene/9606/AAAS",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "AAAS--231550",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between gene AAAS and disease [Achalasia-addisonianism-alacrima syndrome (AAAS) ]"
-		}, 
-		{
-			"id": "hgncsymb!AARS1--omim!613287",
-			"prefix": "http://rdf.biogateway.eu/gene-phen/",
-			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AARS1--omim!613287",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.bioontology.org/ontology/OMIM/613287",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002331",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/gene/9606/AARS1",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "AARS1--613287",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between gene AARS1 and disease [Charcot-Marie-Tooth disease 2N (CMT2N) ]"
-	],
-	"prot2bp": [
-		{
-			"id": "uniprot!P58004--obo!GO_0001932",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!P58004--obo!GO_0001932",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0001932",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002331",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/P58004",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "P58004--GO:0001932",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein P58004 and biological process GO:0001932"
+			"id": "MIHS00000005972#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/mi/9606/",
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972#dbsuper"
 		},
 		{
-			
-			"id": "uniprot!P58004--obo!GO_0006111",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!P58004--obo!GO_0006111",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0006111",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002331",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "	http://rdf.biogateway.eu/prot/9606/P58004",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "P58004--GO:0006111",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein P58004 and biological process GO:0006111"
-		}
-	],
-	"prot2cc": [
-		{
-			"id": "uniprot!A0A1W2PRE5--obo!GO_0005886",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A1W2PRE5--obo!GO_0005886",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0005886",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/BFO_0000050",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/A0A1W2PRE5",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A0A1W2PRE5--GO:0005886",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein A0A1W2PRE5 and cellular component GO:0005886"
+			"id": "MIHS00000005984",
+			"prefix": "http://rdf.biogateway.eu/mi/9606/",
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984"
 		},
 		{
-			"id": "uniprot!A0A1W2PRE5--obo!GO_0016020",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A1W2PRE5--obo!GO_0016020",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0016020",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/BFO_0000050",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/A0A1W2PRE5",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "A0A1W2PRE5--GO:0016020",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein A0A1W2PRE5 and cellular component GO:0016020"
-		}
-	],
-	"prot2mf": [
-		{
-			"id": "uniprot!I3L4A6--obo!GO_0004672",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!I3L4A6--obo!GO_0004672",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0004672",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002327",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/I3L4A6",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "I3L4A6--GO:0004672",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein I3L4A6 and molecular function GO:0004672"
-		},
-		{
-			"id": "uniprot!I3L4A6--obo!GO_0005524",
-			"prefix": "http://rdf.biogateway.eu/prot-onto/",
-			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!I3L4A6--obo!GO_0005524",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://purl.obolibrary.org/obo/GO_0005524",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/BFO_0000050",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/I3L4A6",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "I3L4A6--GO:0005524",
-			"http://www.w3.org/2004/02/skos/core#definition": "Association between protein I3L4A6 and molecular function GO:0005524"
-		}
-	],
-	"prot2prot": [
-		{
-			"id": "uniprot!Q15067--uniprot!P22314",
-			"prefix": "http://rdf.biogateway.eu/prot-prot/",
-			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!Q15067--uniprot!P22314",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://rdf.biogateway.eu/prot/9606/P22314",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002436",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/Q15067",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "Q15067--P22314",
-			"http://www.w3.org/2004/02/skos/core#definition": "Pair of molecular interactors Q15067 and P22314"
-		},
-		{
-			"id": "uniprot!Q15067--uniprot!P61088",
-			"prefix": "http://rdf.biogateway.eu/prot-prot/",
-			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!Q15067--uniprot!P61088",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://rdf.biogateway.eu/prot/9606/P61088",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002436",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "	http://rdf.biogateway.eu/prot/9606/Q15067",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "Q15067--P61088",
-			"http://www.w3.org/2004/02/skos/core#definition": "Pair of molecular interactors Q15067 and P61088"
-		}
-	],
-	"tfac2gene": [
-		{
-			"id": "prot!9606/A1YPR0--gene!9606/CDKN1A",
-			"prefix": "http://rdf.biogateway.eu/reg2utarg/",
-			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A1YPR0--gene!9606/CDKN1A",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://rdf.biogateway.eu/gene/9606/CDKN1A",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002428",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "http://rdf.biogateway.eu/prot/9606/A1YPR0",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "involved in regulation of",
-			"http://www.w3.org/2004/02/skos/core#definition": "9606/A1YPR0 involved in regulation of 9606/CDKN1A"
-		},
-		{
-			"id": "prot!9606/A1YPR0--gene!9606/FASN",
-			"prefix": "http://rdf.biogateway.eu/reg2utarg/",
-			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A1YPR0--gene!9606/FASN",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "http://www.w3.org/2002/07/owl#Class",
-			"http://www.w3.org/2000/01/rdf-schema#subClassOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object": "http://rdf.biogateway.eu/gene/9606/FASN",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate": "http://purl.obolibrary.org/obo/RO_0002428",
-			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject": "	http://rdf.biogateway.eu/prot/9606/A1YPR0",
-			"http://www.w3.org/2004/02/skos/core#prefLabel": "involved in regulation of",
-			"http://www.w3.org/2004/02/skos/core#definition": "9606/A1YPR0 involved in regulation of 9606/FASN"
+			"id": "MIHS00000005984#dbsuper",
+			"prefix": "http://rdf.biogateway.eu/mi/9606/",
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984#dbsuper"
 		}
 	]
 }
-
-
-
-
-
-
-
-
-
-
-			
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

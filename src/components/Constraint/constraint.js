@@ -1,17 +1,16 @@
 import React from 'react';
 import ConstraintStyles from "./constraint.module.css";
 
-function Constraint({ element, addNode }) {
+function Constraint({ id, data, type, addNode }) {
 
     const addElementNode = (e) => {
         e.preventDefault();
-        addNode(element.id, element.uri, 'red');
+        addNode(id, data, type);
     }
-
     return (
-        <li className={ConstraintStyles.li} onClick={addElementNode}>
-            <h2>{element.id}</h2>
-            <p>{element.uri}</p>
+        <li className={`${ConstraintStyles.element} ${ConstraintStyles[type]}`} onClick={addElementNode}>
+            <h2>{id}</h2>
+            <p>{data}</p>
         </li>
     )
 }
