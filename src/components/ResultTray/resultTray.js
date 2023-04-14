@@ -1,7 +1,7 @@
 import { Dropdown, DropdownMenuItem } from '../Dropdown/dropdown';
 import ResultTrayStyles from "./resultTray.module.css";
 
-function ResultTray({ geneProperties, proteinProperties, crmProperties, tadProperties, omimProperties, goProperties, miProperties, addNode }) {
+function ResultTray({ addNode, selectedNode, propertyList }) {
     const addGene = (e) => {
         e.preventDefault();
         addNode("Any Gene", "This node acts as a Gene wildcard.", "gene");
@@ -30,10 +30,17 @@ function ResultTray({ geneProperties, proteinProperties, crmProperties, tadPrope
         e.preventDefault();
         addNode("Any MI", "This node acts as a Mollecullar Interaction wildcard.", "mi");
     }
+
+    var buttonLabel;
+    if (selectedNode != null) {
+        buttonLabel = "Add property to " + selectedNode.type + "...";
+    } else buttonLabel = "Select a node";
+
     return (
         <span>
             <div className={ResultTrayStyles.container_row}>
                 <Dropdown
+                    keepOpen
                     trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer1}`}>Add variable...</button>}
                     menu={[
                         <DropdownMenuItem onClick={addGene}>
@@ -63,32 +70,8 @@ function ResultTray({ geneProperties, proteinProperties, crmProperties, tadPrope
             <div className={ResultTrayStyles.container_row}>
                 <Dropdown
                     keepOpen
-                    // eslint-disable-next-line no-restricted-globals
-                    open={open}
-                    trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer2}`}>Add properties...</button>}
-                    menu={[
-                        <DropdownMenuItem onClick={addGene}>
-                            Gene
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addProtein}>
-                            Protein
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addCRM}>
-                            CRM
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addTAD}>
-                            TAD
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addOmim}>
-                            Omim
-                        </DropdownMenuItem>, <DropdownMenuItem onClick={addGeneOntology}>
-                            Gene<br />
-                            ontology
-                        </DropdownMenuItem>, <DropdownMenuItem onClick={addMollecullarInteraction}>
-                            Mollecullar<br />
-                            interactions
-                        </DropdownMenuItem>,
-                    ]}
+                    trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer2}`}>{buttonLabel}</button>}
+                    menu={propertyList}
                 />
             </div>
         </span>

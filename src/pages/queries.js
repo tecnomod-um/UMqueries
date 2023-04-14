@@ -14,18 +14,12 @@ const omims = nodes.omim;
 const gos = nodes.ontology;
 const mis = nodes.interaction;
 
-const geneProperties = edges.gene;
-const proteinProperties = edges.protein;
-const crmProperties = edges.crm;
-const tadProperties = edges.tad;
-const omimProperties = edges.omim;
-const goProperties = edges.go;
-const miProperties = edges.mi;
-
 // Main view
 function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [selectedNode, setSelectedNode] = useState();
+    const [propertyList, setProperties] = useState();
 
     function addNode(id, data, type) {
         var newId = 0;
@@ -57,9 +51,11 @@ function Queries() {
             default:
                 break;
         }
-
-        setNodes([...nodes, { id: newId, label: id, title: data, color: nodeColor, type: type}]);
+        setNodes([...nodes, { id: newId, label: id, title: data, color: nodeColor, type: type }]);
         //setEdges([...edges, { from: nodes.slice(-1)[0].id, to: newId }]);
+        setSelectedNode({ id: newId, label: id, title: data, color: nodeColor, type: type });
+        console.log(edges.gene);
+        setProperties(edges[type]);
     }
 
     return (
@@ -73,7 +69,7 @@ function Queries() {
                         <Graph nodes={nodes} edges={edges}></Graph>
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray geneProperties={geneProperties} proteinProperties={proteinProperties} crmProperties={crmProperties} tadProperties={tadProperties} omimProperties={omimProperties} goProperties={goProperties} miProperties={miProperties} addNode={addNode}></ResultTray>
+                        <ResultTray addNode={addNode} selectedNode={selectedNode} propertyList={propertyList}></ResultTray>
                     </div>
                 </div>
             </div>
