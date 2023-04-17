@@ -3,6 +3,7 @@ import ConstraintList from '../ConstraintList/constraintList';
 import SearchStyles from "./search.module.css";
 
 function Search({ genes, proteins, crms, tads, omims, gos, mis, addNode }) {
+    
     const [searchField, setSearchField] = useState("");
 
     const handleChange = e => {

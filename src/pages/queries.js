@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import QueriesStyles from "./queries.module.css";
 import nodeData from '../data/nodes.json';
-import edgeData from '../data/edges.json';
+import edgeData from '../data/inter_properties.json';
 import Search from '../components/Search/search';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
@@ -16,6 +16,7 @@ const mis = nodeData.mi;
 
 // Main view
 function Queries() {
+
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
@@ -55,6 +56,10 @@ function Queries() {
         setSelectedNode({ id: newId, label: id, title: data, color: nodeColor, type: type });
     }
 
+    function addEdge(id1, id2, label, data, isOptional) {
+        setEdges([...edges, { from: id1, to: id2, label: label, data: data , isOptional: isOptional}]);
+    }
+
     return (
         <span>
             <h1>UMU - QUERIES</h1>
@@ -63,10 +68,10 @@ function Queries() {
                     <Search genes={genes} proteins={proteins} crms={crms} tads={tads} omims={omims} gos={gos} mis={mis} addNode={addNode} />
                 </div><div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
-                        <Graph nodes={nodes} edges={edges} setSelectedNode={setSelectedNode} ></Graph>
+                        <Graph nodes={nodes} edges={edges} selectedNode={selectedNode} setSelectedNode={setSelectedNode} ></Graph>
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray selectedNode={selectedNode} edgeData={edgeData} addNode={addNode} ></ResultTray>
+                        <ResultTray nodes={nodes} selectedNode={selectedNode} edgeData={edgeData} addNode={addNode} addEdge={addEdge}></ResultTray>
                     </div>
                 </div>
             </div>

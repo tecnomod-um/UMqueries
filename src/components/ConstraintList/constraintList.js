@@ -7,7 +7,7 @@ function ConstraintList({ filteredGenes, filteredProteins, filteredCRMs, filtere
         return element.uri.substring(element.uri.lastIndexOf('/') + 1);
     }
     const geneConstraintList = filteredGenes.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"gene"} addNode={addNode} />);
-    const proteinConstraintList = filteredProteins.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"protein"} addNode={addNode} />);
+    const proteinConstraintList = filteredProteins.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"prot"} addNode={addNode} />);
     const crmConstraintList = filteredCRMs.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"crm"} addNode={addNode} />);
     const tadConstraintList = filteredTADs.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"tad"} addNode={addNode} />);
     const omimConstraintList = filteredOmims.map(element => <Constraint key={getCodeFromURI(element)} id={getCodeFromURI(element)} data={element.uri} type={"omim"} addNode={addNode} />);

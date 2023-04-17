@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import NestedMenuItem from './nestedMenuItem';
 
 export const Dropdown = React.forwardRef(
     (
@@ -91,6 +92,15 @@ export const Dropdown = React.forwardRef(
 );
 
 export const DropdownMenuItem = styled(MenuItem)`
+  display: flex;
+  justify-content: space-between !important;
+
+  & > svg {
+    margin-left: 32px;
+  }
+`;
+
+export const DropdownNestedMenuItem = styled(NestedMenuItem)`
   display: flex;
   justify-content: space-between !important;
 

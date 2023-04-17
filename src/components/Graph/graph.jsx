@@ -24,18 +24,22 @@ function Graph(props) {
       console.log(nodes);
       console.log("Selected edges:");
       console.log(edges);
-      alert("Selected node: " + nodes);
-      props.setSelectedNode(nodes);
+      props.setSelectedNode(props.nodes[nodes]);
     },
     doubleClick: ({ pointer: { canvas } }) => {
       console.log("Clicked position [" + canvas.x + "][" + canvas.y + "] on canvas.");
     }
   }
+
   return (
     <VisGraph
       graph={graph}
       options={options}
       events={events}
+      ref={(network: Network) => {
+        //  if you want access to vis.js network api you can set the state in a parent component using this property
+        console.log(network);
+      }}
     />
   );
 }
