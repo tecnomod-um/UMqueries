@@ -1,25 +1,24 @@
 import React, { useState } from "react";
 import QueriesStyles from "./queries.module.css";
-import nodes from '../data/nodes.json';
-import edges from '../data/edges.json';
+import nodeData from '../data/nodes.json';
+import edgeData from '../data/edges.json';
 import Search from '../components/Search/search';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 
-const genes = nodes.gene;
-const proteins = nodes.protein;
-const crms = nodes.crm;
-const tads = nodes.tad;
-const omims = nodes.omim;
-const gos = nodes.ontology;
-const mis = nodes.interaction;
+const genes = nodeData.gene;
+const proteins = nodeData.protein;
+const crms = nodeData.crm;
+const tads = nodeData.tad;
+const omims = nodeData.omim;
+const gos = nodeData.go;
+const mis = nodeData.mi;
 
 // Main view
 function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
-    const [propertyList, setProperties] = useState();
 
     function addNode(id, data, type) {
         var newId = 0;
@@ -54,8 +53,6 @@ function Queries() {
         setNodes([...nodes, { id: newId, label: id, title: data, color: nodeColor, type: type }]);
         //setEdges([...edges, { from: nodes.slice(-1)[0].id, to: newId }]);
         setSelectedNode({ id: newId, label: id, title: data, color: nodeColor, type: type });
-        console.log(edges.gene);
-        setProperties(edges[type]);
     }
 
     return (
@@ -66,10 +63,10 @@ function Queries() {
                     <Search genes={genes} proteins={proteins} crms={crms} tads={tads} omims={omims} gos={gos} mis={mis} addNode={addNode} />
                 </div><div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
-                        <Graph nodes={nodes} edges={edges}></Graph>
+                        <Graph nodes={nodes} edges={edges} setSelectedNode={setSelectedNode} ></Graph>
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray addNode={addNode} selectedNode={selectedNode} propertyList={propertyList}></ResultTray>
+                        <ResultTray selectedNode={selectedNode} edgeData={edgeData} addNode={addNode} ></ResultTray>
                     </div>
                 </div>
             </div>

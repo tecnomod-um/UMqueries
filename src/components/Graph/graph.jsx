@@ -1,18 +1,14 @@
 import React from 'react';
 import GraphStyles from "./graph.module.css";
-import VisGraph, {
-  GraphData,
-  GraphEvents,
-  Options,
-} from 'react-vis-graph-wrapper';
+import VisGraph from 'react-vis-graph-wrapper';
 
 function Graph(props) {
-  var graph: GraphData = {
+  var graph = {
     nodes: props.nodes,
     edges: props.edges,
   };
 
-  const options: Options = {
+  const options = {
     layout: {
       hierarchical: false,
     },
@@ -22,12 +18,19 @@ function Graph(props) {
     height: '500px',
   };
 
-  const events: GraphEvents = {
-    select: (event: any) => {
-      const { nodes, edges } = event;
-      console.log(nodes, edges);
+  const events = {
+    select: ({ nodes, edges }) => {
+      console.log("Selected nodes:");
+      console.log(nodes);
+      console.log("Selected edges:");
+      console.log(edges);
+      alert("Selected node: " + nodes);
+      props.setSelectedNode(nodes);
     },
-  };
+    doubleClick: ({ pointer: { canvas } }) => {
+      console.log("Clicked position [" + canvas.x + "][" + canvas.y + "] on canvas.");
+    }
+  }
   return (
     <VisGraph
       graph={graph}

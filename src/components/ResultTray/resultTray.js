@@ -1,7 +1,7 @@
 import { Dropdown, DropdownMenuItem } from '../Dropdown/dropdown';
 import ResultTrayStyles from "./resultTray.module.css";
 
-function ResultTray({ addNode, selectedNode, propertyList }) {
+function ResultTray({ addNode, selectedNode, edgeData }) {
     const addGene = (e) => {
         e.preventDefault();
         addNode("Any Gene", "This node acts as a Gene wildcard.", "gene");
@@ -32,9 +32,18 @@ function ResultTray({ addNode, selectedNode, propertyList }) {
     }
 
     var buttonLabel;
+    var shownProperties;
     if (selectedNode != null) {
         buttonLabel = "Add property to " + selectedNode.type + "...";
-    } else buttonLabel = "Select a node";
+        shownProperties = edgeData[selectedNode.type].map(element => (
+            <DropdownMenuItem onClick={addGeneOntology}>
+                {element["property label"]}
+            </DropdownMenuItem>
+        ));
+    } else {
+        buttonLabel = "Select a node";
+        shownProperties = (<span />);
+    }
 
     return (
         <span>
@@ -71,7 +80,7 @@ function ResultTray({ addNode, selectedNode, propertyList }) {
                 <Dropdown
                     keepOpen
                     trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer2}`}>{buttonLabel}</button>}
-                    menu={propertyList}
+                    menu={shownProperties}
                 />
             </div>
         </span>

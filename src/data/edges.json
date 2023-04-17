@@ -635,7 +635,7 @@
             "entity to be represented in the object node": "OMIM entry that has the inheritance pattern"
         }
     ],
-    "ontology": [
+    "go": [
         {
             "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
             "property label": "is instance of",
@@ -799,7 +799,7 @@
             "entity to be represented in the object node": "acronym or abbreviation"
         }
     ],
-    "interaction": [
+    "mi": [
         {
             "property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
             "property label": "is instance of",
