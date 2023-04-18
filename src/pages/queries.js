@@ -3,10 +3,12 @@ import QueriesStyles from "./queries.module.css";
 import Search from '../components/Search/search';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
+import Modal from "../components/Modal/modal";
 
 import varData from '../data/vars.json';
 import nodeData from '../data/nodes.json';
 import edgeData from '../data/inter_properties.json';
+import insideData from '../data/intra_properties.json'
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -14,6 +16,7 @@ function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
+    const [isOpen, setIsOpen] = useState(false);
 
     function addNode(id, data, type) {
         var newId = 0;
@@ -60,15 +63,17 @@ function Queries() {
             <div className={QueriesStyles.container}>
                 <div className={QueriesStyles.constraint_container}>
                     <Search varData={varData} nodeData={nodeData} addNode={addNode} />
-                </div><div className={QueriesStyles.graph_container}>
+                </div>
+                <div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
-                        <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} ></Graph>
+                        <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addNode={addNode} addEdge={addEdge}></ResultTray>
+                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addNode={addNode} addEdge={addEdge} setIsOpen={setIsOpen} />
                     </div>
                 </div>
             </div>
+            {isOpen && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} />}
         </span >
     );
 }

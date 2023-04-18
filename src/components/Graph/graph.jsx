@@ -3,7 +3,7 @@ import GraphStyles from "./graph.module.css";
 import VisGraph from 'react-vis-graph-wrapper';
 
 // Graph component.
-function Graph({ nodesInGraph, edgesInGraph, setSelectedNode }) {
+function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setIsOpen }) {
   var graph = {
     nodes: nodesInGraph,
     edges: edgesInGraph,
@@ -27,8 +27,13 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode }) {
       console.log(edges);
       setSelectedNode(nodesInGraph[nodes]);
     },
-    doubleClick: ({ pointer: { canvas } }) => {
-      console.log("Clicked position [" + canvas.x + "][" + canvas.y + "] on canvas.");
+    doubleClick: ({ nodes, edges }) => {
+      console.log("Double node:");
+      console.log(nodes);
+      console.log("Double edge:");
+      console.log(edges);
+      if (nodes.length > 0)
+        setIsOpen(true);
     }
   }
 
