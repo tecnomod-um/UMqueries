@@ -2,11 +2,12 @@ import React from 'react';
 import GraphStyles from "./graph.module.css";
 import VisGraph from 'react-vis-graph-wrapper';
 
-function Graph(props) {
+// Graph component.
+function Graph({ nodesInGraph, edgesInGraph, setSelectedNode }) {
   var graph = {
-    nodes: props.nodes,
-    edges: props.edges,
-  };
+    nodes: nodesInGraph,
+    edges: edgesInGraph,
+  }
 
   const options = {
     layout: {
@@ -16,7 +17,7 @@ function Graph(props) {
       color: '#000000',
     },
     height: '500px',
-  };
+  }
 
   const events = {
     select: ({ nodes, edges }) => {
@@ -24,7 +25,7 @@ function Graph(props) {
       console.log(nodes);
       console.log("Selected edges:");
       console.log(edges);
-      props.setSelectedNode(props.nodes[nodes]);
+      setSelectedNode(nodesInGraph[nodes]);
     },
     doubleClick: ({ pointer: { canvas } }) => {
       console.log("Clicked position [" + canvas.x + "][" + canvas.y + "] on canvas.");
@@ -32,14 +33,10 @@ function Graph(props) {
   }
 
   return (
-    <VisGraph
+    <VisGraph className={GraphStyles.graph}
       graph={graph}
       options={options}
       events={events}
-      ref={(network: Network) => {
-        //  if you want access to vis.js network api you can set the state in a parent component using this property
-        console.log(network);
-      }}
     />
   );
 }

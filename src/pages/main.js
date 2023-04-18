@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import MainStyles from "./main.module.css";
 
-// Main view
+// Landing page. Brief instructions on how to use the tool will be shown here.
 function Main() {
   return (
     <span>

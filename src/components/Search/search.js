@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import ConstraintList from '../ConstraintList/constraintList';
 import SearchStyles from "./search.module.css";
 
-function Search({ genes, proteins, crms, tads, omims, gos, mis, addNode }) {
-    
+// Search functionality of the list component
+function Search({ varData, nodeData, addNode }) {
     const [searchField, setSearchField] = useState("");
 
     const handleChange = e => {
@@ -27,10 +27,20 @@ function Search({ genes, proteins, crms, tads, omims, gos, mis, addNode }) {
         ))
     }
 
+    var filteredConstraintLists = {};
+    var placeholderText = "Search by ";
+
+    Object.keys(varData).forEach(key => {
+        filteredConstraintLists["VAR_"+key] = varData[key];
+        filteredConstraintLists[key] = getFilteredList(nodeData[key]);
+        placeholderText = placeholderText + key + ", ";
+    });
+    placeholderText = placeholderText.slice(0, -2);
+
     function constraintList() {
         return (
             <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '70vh' }}>
-                <ConstraintList filteredGenes={getFilteredList(genes)} filteredProteins={getFilteredList(proteins)} filteredCRMs={getFilteredList(crms)} filteredTADs={getFilteredList(tads)} filteredOmims={getFilteredList(omims)} filteredGOs={getFilteredList(gos)} filteredMIs={getFilteredList(mis)} addNode={addNode} />
+                <ConstraintList keyList={Object.keys(varData)} filteredLists={filteredConstraintLists} addNode={addNode} />
             </div>
         );
     }
@@ -40,7 +50,7 @@ function Search({ genes, proteins, crms, tads, omims, gos, mis, addNode }) {
             <input
                 className={SearchStyles.input}
                 type="search"
-                placeholder="Search proteins, genes, diseases..."
+                placeholder={placeholderText}
                 onChange={handleChange}
             />
             {constraintList()}

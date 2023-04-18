@@ -1,0 +1,9 @@
+{
+	"gene":  "http://rdf.biogateway.eu/gene/9606/GENEVARS00000005972",
+	"prot": "http://rdf.biogateway.eu/protein/9606/PROTVARHS00000005972",
+	"crm": "http://rdf.biogateway.eu/crm/9606/CRMVARHS00000005972",
+	"tad": "http://rdf.biogateway.eu/tad/9606/TADVARHS00000005972",
+	"omim": "http://rdf.biogateway.eu/omim/9606/OMIMVARHS00000005972",
+	"go": "http://rdf.biogateway.eu/go/9606/GOHVARS00000005972",
+	"mi": "http://rdf.biogateway.eu/mi/9606/MIVARHS00000005972"
+}

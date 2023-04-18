@@ -1,20 +1,14 @@
 import React, { useState } from "react";
 import QueriesStyles from "./queries.module.css";
-import nodeData from '../data/nodes.json';
-import edgeData from '../data/inter_properties.json';
 import Search from '../components/Search/search';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 
-const genes = nodeData.gene;
-const proteins = nodeData.protein;
-const crms = nodeData.crm;
-const tads = nodeData.tad;
-const omims = nodeData.omim;
-const gos = nodeData.go;
-const mis = nodeData.mi;
+import varData from '../data/vars.json';
+import nodeData from '../data/nodes.json';
+import edgeData from '../data/inter_properties.json';
 
-// Main view
+// Main view. All functional elements will be shown here.
 function Queries() {
 
     const [nodes, setNodes] = useState([]);
@@ -57,7 +51,7 @@ function Queries() {
     }
 
     function addEdge(id1, id2, label, data, isOptional) {
-        setEdges([...edges, { from: id1, to: id2, label: label, data: data , isOptional: isOptional}]);
+        setEdges([...edges, { from: id1, to: id2, label: label, data: data, isOptional: isOptional }]);
     }
 
     return (
@@ -65,13 +59,13 @@ function Queries() {
             <h1>UMU - QUERIES</h1>
             <div className={QueriesStyles.container}>
                 <div className={QueriesStyles.constraint_container}>
-                    <Search genes={genes} proteins={proteins} crms={crms} tads={tads} omims={omims} gos={gos} mis={mis} addNode={addNode} />
+                    <Search varData={varData} nodeData={nodeData} addNode={addNode} />
                 </div><div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
-                        <Graph nodes={nodes} edges={edges} selectedNode={selectedNode} setSelectedNode={setSelectedNode} ></Graph>
+                        <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} ></Graph>
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray nodes={nodes} selectedNode={selectedNode} edgeData={edgeData} addNode={addNode} addEdge={addEdge}></ResultTray>
+                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addNode={addNode} addEdge={addEdge}></ResultTray>
                     </div>
                 </div>
             </div>

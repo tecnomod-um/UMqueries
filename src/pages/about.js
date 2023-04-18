@@ -1,7 +1,7 @@
 import React from "react";
 import AboutStyles from "./about.module.css";
 
-// Main view
+// Contact page citing the creators of the tool.
 function About() {
     return (
         <span>

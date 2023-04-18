@@ -1,6 +1,7 @@
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from '../Dropdown/dropdown';
 import ResultTrayStyles from "./resultTray.module.css";
 
+// Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ nodes, addEdge, selectedNode, edgeData }) {
 
     var buttonPropertyLabel;
@@ -38,36 +39,6 @@ function ResultTray({ nodes, addEdge, selectedNode, edgeData }) {
 
     return (
         <span>
-            {/*
-            <div className={ResultTrayStyles.container_row}>
-                <Dropdown
-                    trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer1}`}>Add variable...</button>}
-                    menu={[
-                        <DropdownMenuItem onClick={addGene}>
-                            Gene
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addProtein}>
-                            Protein
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addCRM}>
-                            CRM
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addTAD}>
-                            TAD
-                        </DropdownMenuItem>,
-                        <DropdownMenuItem onClick={addOmim}>
-                            Omim
-                        </DropdownMenuItem>, <DropdownMenuItem onClick={addGeneOntology}>
-                            Gene<br />
-                            ontology
-                        </DropdownMenuItem>, <DropdownMenuItem onClick={addMollecullarInteraction}>
-                            Mollecullar<br />
-                            interactions
-                        </DropdownMenuItem>,
-                    ]}
-                />
-            </div>
-                */}
             <div className={ResultTrayStyles.container_row}>
                 <Dropdown
                     trigger={<button className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.layer1}`}>{buttonPropertyLabel}</button>}

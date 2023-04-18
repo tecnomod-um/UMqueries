@@ -4,6 +4,7 @@ import { Link, useMatch, useResolvedPath } from "react-router-dom"
 import NavbarStyles from "./navbar.module.css";
 import logo from "../../resources/images/umu_coat.png";
 
+// Defines the navbar styles and behavior.
 export default function Navbar() {
     return (
         <nav className={NavbarStyles.navbar}>

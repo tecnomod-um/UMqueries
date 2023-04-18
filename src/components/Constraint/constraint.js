@@ -1,6 +1,7 @@
 import React from 'react';
 import ConstraintStyles from "./constraint.module.css";
 
+// Defines each element in the list
 function Constraint({ id, data, type, addNode }) {
 
     const addElementNode = (e) => {
