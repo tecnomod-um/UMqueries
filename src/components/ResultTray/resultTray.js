@@ -2,8 +2,7 @@ import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from '../Dropdown/
 import ResultTrayStyles from "./resultTray.module.css";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ nodes, addEdge, selectedNode, edgeData }) {
-
+function ResultTray({ edgeData, nodes, selectedNode, addEdge, setIsOpen }) {
     var buttonPropertyLabel;
     var buttonOptionalLabel;
     var shownProperties;

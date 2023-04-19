@@ -3,7 +3,7 @@ import ConstraintList from '../ConstraintList/constraintList';
 import SearchStyles from "./search.module.css";
 
 // Search functionality of the list component
-function Search({ varData, nodeData, addNode }) {
+function Search({ varData, nodeData, colorList, addNode }) {
     const [searchField, setSearchField] = useState("");
 
     const handleChange = e => {
@@ -15,11 +15,11 @@ function Search({ varData, nodeData, addNode }) {
             element => {
                 return (
                     element
-                        .id
+                        .uri
                         .toLowerCase()
                         .includes(searchField.toLowerCase()) ||
                     element
-                        .uri
+                        .label
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
                 )
@@ -31,7 +31,7 @@ function Search({ varData, nodeData, addNode }) {
     var placeholderText = "Search by ";
 
     Object.keys(varData).forEach(key => {
-        filteredConstraintLists["VAR_"+key] = varData[key];
+        filteredConstraintLists["VAR_" + key] = varData[key];
         filteredConstraintLists[key] = getFilteredList(nodeData[key]);
         placeholderText = placeholderText + key + ", ";
     });
@@ -40,7 +40,7 @@ function Search({ varData, nodeData, addNode }) {
     function constraintList() {
         return (
             <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '70vh' }}>
-                <ConstraintList keyList={Object.keys(varData)} filteredLists={filteredConstraintLists} addNode={addNode} />
+                <ConstraintList keyList={Object.keys(varData)} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />
             </div>
         );
     }

@@ -1,156 +1,244 @@
 {
 	"gene": [
 		{
-			"id": "GNHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/gene/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972"
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972",
+			"label": "GNHS00000005972"
 		},
 		{
-			"id": "GNHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/gene/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972#dbsuper",
+			"label": "GNHS00000005972#dbsuper"
 		},
 		{
-			"id": "GNHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984"
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984",
+			"label": "GNHS00000005984"
 		},
 		{
-			"id": "GNHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/gene/9606/",
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984#dbsuper",
+			"label": "GNHS00000005984#dbsuper"
 		}
 	],
 	"prot": [
 		{
-			"id": "PROTHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/protein/9606/",
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972"
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972",
+			"label": "PROTHS00000005972"
 		},
 		{
-			"id": "PROTHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/protein/9606/",
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972#dbsuper",
+			"label": "PROTHS00000005972#dbsuper"
 		},
 		{
-			"id": "PROTHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/protein/9606/",
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984"
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984",
+			"label": "PROTHS00000005984"
 		},
 		{
-			"id": "PROTHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/protein/9606/",
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984#dbsuper",
+			"label": "PROTHS00000005984#dbsuper"
 		}
 	],
 	"crm": [
 		{
-			"id": "CRMHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972",
+			"label": "CRMHS00000005972"
 		},
 		{
-			"id": "CRMHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972#dbsuper",
+			"label": "CRMHS00000005972#dbsuper"
 		},
 		{
-			"id": "CRMHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984",
+			"label": "CRMHS00000005984"
 		},
 		{
-			"id": "CRMHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/crm/9606/",
-			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984#dbsuper",
+			"label": "CRMHS00000005984#dbsuper"
 		}
 	],
 	"tad": [
 		{
-			"id": "TADHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972",
+			"label": "TADHS00000005972"
 		},
 		{
-			"id": "TADHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972#dbsuper",
+			"label": "TADHS00000005972#dbsuper"
 		},
 		{
-			"id": "TADHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984",
+			"label": "TADHS00000005984"
 		},
 		{
-			"id": "TADHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/tad/9606/",
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984#dbsuper",
+			"label": "TADHS00000005984#dbsuper"
 		}
 	],
 	"omim": [
 		{
-			"id": "OMIMHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/omim/9606/",
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972"
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972",
+			"label": "OMIMHS00000005972"
 		},
 		{
-			"id": "OMIMHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/omim/9606/",
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972#dbsuper",
+			"label": "OMIMHS00000005972#dbsuper"
 		},
 		{
-			"id": "OMIMHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/omim/9606/",
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984"
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984",
+			"label": "OMIMHS00000005984"
 		},
 		{
-			"id": "OMIMHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/omim/9606/",
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984#dbsuper",
+			"label": "OMIMHS00000005984#dbsuper"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/OMIM/MTHU026069",
+			"label": "'Swiss-cheese\"\" appearance of cartilage"
 		}
 	],
 	"go": [
 		{
-			"id": "GOHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/go/9606/",
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972"
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972",
+			"label": "GOHS00000005972"
 		},
 		{
-			"id": "GOHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/go/9606/",
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972#dbsuper",
+			"label": "GOHS00000005972#dbsuper"
 		},
 		{
-			"id": "GOHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/go/9606/",
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984"
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984",
+			"label": "GOHS00000005984"
 		},
 		{
-			"id": "GOHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/go/9606/",
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984#dbsuper",
+			"label": "GOHS00000005984#dbsuper"
 		}
 	],
 	"mi": [
 		{
-			"id": "MIHS00000005972",
-			"prefix": "http://rdf.biogateway.eu/mi/9606/",
-			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972"
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972",
+			"label": "MIHS00000005972"
 		},
 		{
-			"id": "MIHS00000005972#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/mi/9606/",
-			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005972#dbsuper",
+			"label": "MIHS00000005972#dbsuper"
 		},
 		{
-			"id": "MIHS00000005984",
-			"prefix": "http://rdf.biogateway.eu/mi/9606/",
-			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984"
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984",
+			"label": "MIHS00000005984"
 		},
 		{
-			"id": "MIHS00000005984#dbsuper",
-			"prefix": "http://rdf.biogateway.eu/mi/9606/",
-			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/mi/9606/MIHS00000005984#dbsuper",
+			"label": "MIHS00000005984#dbsuper"
+		}
+	],
+	"gene2phen": [
+		{
+			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AAAS--omim!231550",
+			"label": "AAAS--231550"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AARS1--omim!613287",
+			"label": "AARS1--613287"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AARS1--omim!616339",
+			"label": "AARS1--616339"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AARS2--omim!614096",
+			"label": "AARS2--614096"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene-phen/hgncsymb!AARS2--omim!615889",
+			"label": "AARS2--615889"
+		}
+	],
+	"prot2bp": [
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024RBG1--obo!GO_1901907",
+			"label": "A0A024RBG1--GO:1901907"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024RBG1--obo!GO_1901909",
+			"label": "A0A024RBG1--GO:1901909"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024RBG1--obo!GO_1901911",
+			"label": "A0A024RBG1--GO:1901911"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A075B6G3--obo!GO_1901385",
+			"label": "A0A075B6G3--GO:1901385"
+		}
+	],
+	"prot2cc": [
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024RA28--obo!GO_1990904",
+			"label": "A0A024RA28--GO:1990904"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024RB15--obo!GO_1990904",
+			"label": "A0A024RB15--GO:1990904"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A075B6E2--obo!GO_1990904",
+			"label": "A0A075B6E2--GO:1990904"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A075B716--obo!GO_1990904",
+			"label": "A0A075B716--GO:1990904"
+		}
+	],
+	"prot2mf": [
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A024R7W5--obo!GO_1990247",
+			"label": "A0A024R7W5--GO:1990247"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A087WTH5--obo!GO_1902282",
+			"label": "A0A087WTH5--GO:1902282"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A087WTN6--obo!GO_1902936",
+			"label": "A0A087WTN6--GO:1902936"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-onto/uniprot!A0A087WY31--obo!GO_1990247",
+			"label": "A0A087WY31--GO:1990247"
+		}
+	],
+	"prot2prot": [
+		{
+			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!A0A024R0Y4--uniprot!Q8WWY3",
+			"label": "A0A024R0Y4--Q8WWY3"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!A0A087WSW0--uniprot!A5D8V6",
+			"label": "A0A087WSW0--A5D8V6"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!A0A087WSW0--uniprot!O95817",
+			"label": "A0A087WSW0--O95817"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot-prot/uniprot!A0A087WSW0--uniprot!P61968",
+			"label": "A0A087WSW0--P61968"
+		}
+	],
+	"tfac2gene": [
+		{
+			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0AVK6--gene!9606/CCND1",
+			"label": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0AVK6--gene!9606/CCND1"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0AVK6--gene!9606/VEGFA",
+			"label": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0AVK6--gene!9606/VEGFA"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0PJY2--gene!9606/FEZF1",
+			"label": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0PJY2--gene!9606/FEZF1"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0PJY2--gene!9606/KRAS",
+			"label": "http://rdf.biogateway.eu/reg2utarg/prot!9606/A0PJY2--gene!9606/KRAS"
 		}
 	]
 }
