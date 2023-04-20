@@ -31,6 +31,7 @@ function Queries() {
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
     const [isOpen, setIsOpen] = useState(false);
+    const [queryResult, setQueryResult] = useState(null);
 
     function addNode(id, data, type, isVar) {
         var newId = 0;
@@ -49,18 +50,30 @@ function Queries() {
             <h1>UMU - QUERIES</h1>
             <div className={QueriesStyles.container}>
                 <div className={QueriesStyles.constraint_container}>
-                    <Search varData={varData} nodeData={nodeData} colorList={colorList} addNode={addNode} />
+                    <Search varData={varData} nodeData={nodeData} colorList={colorList} height="75vh" addNode={addNode} />
                 </div>
                 <div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>
                         <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addEdge={addEdge} setIsOpen={setIsOpen} />
+                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
                     </div>
                 </div>
             </div>
-            {isOpen && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} addNode={addNode}/>}
+            {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} addNode={addNode} />}
+
+            {queryResult && (
+                <div>
+                    <p>Results:</p>
+                    <ul>
+                        {queryResult.map(result => (
+                            <li key={result}>{result}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
         </span >
     );
 }

@@ -3,7 +3,6 @@
     margin: auto;
     background-color: #ecebeb;
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
 }
 
@@ -22,7 +21,7 @@
 }
 
 .graph {
-    flex: 2;
+    flex: 1;
     border: solid;
 }
 

@@ -27,11 +27,11 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
                 case 'numeric' || 'int' || 'integer':
                     input = (<input type="number" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
                     break;
-                    /*
-                case isArray(property.object):
-                    input = <select name={property.label} disabled={selectedNode.isVar === true ? false : true}>{property.object.map(X => { return MakeItem(X) }}</select>;
-                    break;
-                    */
+                /*
+            case isArray(property.object):
+                input = <select name={property.label} disabled={selectedNode.isVar === true ? false : true}>{property.object.map(X => { return MakeItem(X) }}</select>;
+                break;
+                */
                 default:
                     input = (<input type="text" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
                     break;
@@ -66,7 +66,7 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
                         <div className={ModalStyles.actionsContainer}>
                             <button style={{
                                 background: selectedNode.color
-                            }} className={ModalStyles.deleteBtn} onClick={() => setIsOpen(false)}>
+                            }} className={ModalStyles.deleteBtn} onClick={() => { addNode(selectedNode); setIsOpen(false); }}>
                                 Set properties
                             </button>
                             <button

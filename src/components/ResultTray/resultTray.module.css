@@ -1,15 +1,31 @@
 .container {
-    display: grid,
+    display: flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
-.container_row {
-    display: grid;
+.controlColumn {
+    display: inline-block;
+    width: 20%;
+    border: solid;
 }
 
-.layer1,
-.layer2 {
-    grid-column: 1;
-    grid-row: 1;
+.resultsColumn {
+    display: inline-block;
+    width: 55%;
+    border: solid;
+}
+
+.queryColumn {
+    display: inline-block;
+    width: 25%;
+    border: solid;
+}
+
+.buttonRow {
+    display: block;
+    white-space: nowrap;
 }
 
 .big_button {
@@ -46,3 +62,36 @@
     outline: none;
 }
 
+.var_button {
+    margin: 10%;
+    text-align: center;
+    width: 180px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    margin: 0.5em 0em 0.5em 1em;
+    height: 55px;
+    text-align: center;
+    border: none;
+    background-size: 300% 100%;
+    border-radius: 15px;
+    moz-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+    background-image: linear-gradient(to right, #c22535, #eb3941, #e14e53, #e2373f);
+    box-shadow: 0 5px 15px rgba(242, 97, 103, .4);
+}
+
+.var_button:hover {
+    background-position: 100% 0;
+    moz-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+}
+
+.var_button:focus {
+    outline: none;
+}
