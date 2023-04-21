@@ -9,6 +9,7 @@ import About from "./pages/about";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // Route definition
+
 root.render(
   <BrowserRouter>
     <Navbar />

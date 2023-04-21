@@ -11,7 +11,6 @@ import nodeData from '../data/nodes.json';
 import edgeData from '../data/inter_properties.json';
 import insideData from '../data/intra_properties.json'
 
-
 const colorList = {};
 const palette = distinctColors({
     count: Object.keys(varData).length,
@@ -57,23 +56,12 @@ function Queries() {
                         <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
+                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} queryResult={queryResult} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
                     </div>
                 </div>
             </div>
             {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} addNode={addNode} />}
-
-            {queryResult && (
-                <div>
-                    <p>Results:</p>
-                    <ul>
-                        {queryResult.map(result => (
-                            <li key={result}>{result}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
+            {queryResult}
         </span >
     );
 }
