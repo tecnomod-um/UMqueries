@@ -56,7 +56,7 @@ function Queries() {
                         <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} queryResult={queryResult} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
+                        <ResultTray nodeData={nodeData} edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} queryResult={queryResult} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
                     </div>
                 </div>
             </div>

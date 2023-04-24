@@ -5,11 +5,10 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from '../Search/search';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, nodes, selectedNode, queryResult, addEdge, setIsOpen, setQueryResult }) {
+function ResultTray({ nodeData, edgeData, nodes, selectedNode, addEdge, setIsOpen, setQueryResult }) {
 
     // temp testing data
-    var sparqlQuery = "SELECT * WHERE {<http://rdf.biogateway.eu/crm/9606/CRMHS00000003515> <http://purl.obolibrary.org/obo/RO_0002428> ?gene}";
-    var url = "http://ssb4.nt.ntnu.no:10022/sparql/";
+    var endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
     var buttonPropertyLabel;
     var buttonOptionalLabel;
@@ -83,7 +82,7 @@ function ResultTray({ edgeData, nodes, selectedNode, queryResult, addEdge, setIs
                         trigger={<button className={ResultTrayStyles.var_button}>{buttonVarToShowLabel}</button>}
                         menu={shownVars}
                     />
-                    <SparqlQuery url={url} sparqlQuery={sparqlQuery} queryResult={queryResult} setQueryResult={setQueryResult}></SparqlQuery>
+                    <SparqlQuery endpoint={endpoint} nodeData={nodeData} edgeData={edgeData} setQueryResult={setQueryResult}></SparqlQuery>
                 </div>
             </div>
         </span >
