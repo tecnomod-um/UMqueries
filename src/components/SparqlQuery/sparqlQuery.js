@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from "axios";
-import { parse } from "./queryParser.js";
+import { parseQuery, parseResponse } from "./queryParser.js";
 import SparqlQueryStyles from "./sparqlQuery.module.css";
 
-const SparqlQuery = ({ endpoint, nodeData, edgeData, setQueryResult }) => {
+const SparqlQuery = ({ endpoint, nodeData, edgeData, startingVar, setResultData }) => {
     const proxyURL = ' http://localhost:8080/sparql';
     const [isLoading, setIsLoading] = useState(false);
 
@@ -11,9 +11,8 @@ const SparqlQuery = ({ endpoint, nodeData, edgeData, setQueryResult }) => {
         setIsLoading(true);
         var data = {
             endpoint: endpoint,
-            query: parse(nodeData, edgeData)
+            query: parseQuery(nodeData, edgeData, startingVar)
         }
-        console.log(data);
         axios({
             method: 'post',
             url: proxyURL,
@@ -21,18 +20,17 @@ const SparqlQuery = ({ endpoint, nodeData, edgeData, setQueryResult }) => {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
             .then(function (response) {
-                console.log(response.data);
-                setQueryResult(response.data);
-                setIsLoading(false);
+                setResultData(parseResponse(response));
+
             })
             .catch(function (response) {
-                //handle error
+                // TODO handle error
                 console.log(response);
+                setResultData(null);
+                setIsLoading(false);
             });
     }
 
-    //
-    //if (!queryResult) return null;
     return (
         <button className={SparqlQueryStyles.big_button} onClick={handleQuery} disabled={isLoading}>
             {isLoading ? <div className={SparqlQueryStyles.loader}></div> : 'Query'}

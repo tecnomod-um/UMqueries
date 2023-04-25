@@ -5,16 +5,21 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from '../Search/search';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ nodeData, edgeData, nodes, selectedNode, addEdge, setIsOpen, setQueryResult }) {
-
+function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNode, addEdge, setIsOpen }) {
     // temp testing data
-    var endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
+    const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
+    var shownProperties;
+    var shownOptionals;
     var buttonPropertyLabel;
     var buttonOptionalLabel;
     var buttonInsideLabel;
-    var shownProperties;
-    var shownOptionals;
+    var resultFields = {}
+    Object.keys(varData).forEach((key) => {
+        resultFields[key] = [];
+    });
+    const [resultData, setResultData] = useState(resultFields);
+
     function getPropertyTargets(isOptional, object, label, property) {
         var textAddition = "";
         if (isOptional) textAddition = " (Optional)";
@@ -75,14 +80,16 @@ function ResultTray({ nodeData, edgeData, nodes, selectedNode, addEdge, setIsOpe
                 />
                 <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>{buttonInsideLabel}</button>
             </div>
-            <div className={ResultTrayStyles.resultsColumn}>{<Search varData={""} nodeData={""} colorList={""} height="20vh" addNode={""} />}</div>
+            <div className={ResultTrayStyles.resultsColumn}>{
+                <Search varData={varData} nodeData={resultData} colorList={colorList} height="20vh" addNode={""} />}
+            </div>
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown
                         trigger={<button className={ResultTrayStyles.var_button}>{buttonVarToShowLabel}</button>}
                         menu={shownVars}
                     />
-                    <SparqlQuery endpoint={endpoint} nodeData={nodeData} edgeData={edgeData} setQueryResult={setQueryResult}></SparqlQuery>
+                    <SparqlQuery endpoint={endpoint} nodeData={nodeData} edgeData={edgeData} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
                 </div>
             </div>
         </span >

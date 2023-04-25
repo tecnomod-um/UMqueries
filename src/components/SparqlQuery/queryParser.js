@@ -1,10 +1,64 @@
 import React from 'react';
 
+export const parseQuery = (nodeData, edgeData, startingVar) => {
+    // starts building the query
+    var result = '?default-graph-uri=&query=SELECT+';
+    // only the selected var will be shown in the results
+    if (startingVar = ! null)
+        // set SELECT
+        result = result + '';
+    else
+        result = result + '';
 
+    nodeData.forEach((node) => {
+        // Check internal properties
+        result = result + '';
 
-export function parse(nodeData, edgeData) {
-    var result = '';
-    // logica crear query
-    return ('?default-graph-uri=&query=SELECT+%3Fs+%3Fp+%3Fo%0D%0AFROM+%3Chttp%3A%2F%2Frdf.biogateway.eu%2Fgraph%2Fgene%3E%0D%0AWHERE+%7B%0D%0A++%3Fs+%3Fp+%3Fo+.%0D%0A%7D+limit+50&format=application%2Fsparql-results%2Bjson&timeout=0&signal_void=on');
+        // Check external properties
+        edgeData.forEach((edge) => {
+            result = result + '';
+        });
+    });
 
+    result = result + '%3Fvar+%3FvarLabel+%3FvarType+%3FvarTypeLabel%0D%0AWHERE+%7B%0D%0A%23Actual+query%0D%0A+++%3Fvar+<http%3A%2F%2Fsemanticscience.org%2Fresource%2FSIO_010078>+<http%3A%2F%2Frdf.biogateway.eu%2Fprot%2F9606%2FA0A024R0Y4>+.%0D%0A%23Get+var+types%0D%0A+++%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23subClassOf>+%3FvarType+.%0D%0A%23Get+var+label%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarPrefLabel%7D+.%0D%0A+++OPTIONAL%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarAltLabel%7D+.%0D%0A+++BIND%28COALESCE%28%0D%0A++++%3FvarRdfsLabel%2C%0D%0A++++%3FvarPrefLabel%2C%0D%0A++++%3FvarAltLabel%0D%0A+++%29+AS+%3FvarLabel%29%0D%0A%23Get+varType+label%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarTypeRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarTypePrefLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarTypeAltLabel%7D+.%0D%0A++BIND%28COALESCE%28%0D%0A++++%3FvarTypeRdfsLabel%2C%0D%0A++++%3FvarTypePrefLabel%2C%0D%0A++++%3FvarTypeAltLabel%0D%0A+++%29+AS+%3FvarTypeLabel%29%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&signal_void=on';
+    return (result);
 }
+
+export const parseResponse = (response) => {
+    console.log(response.data.results.bindings);
+    response.data.results.bindings.forEach(element => {
+        console.log("LABEL: [" + element.varLabel.value + "] URI: [" + element.var.value + "] TYPE: [" + element.varTypeLabel.value + "] TYPE URI: [" + element.varType.value + "].")
+    });
+
+    // set List content properly
+    return null;
+}
+
+/*
+SELECT ?var ?varLabel ?varType ?varTypeLabel
+WHERE {
+#Actual query
+   ?var <http://semanticscience.org/resource/SIO_010078> <http://rdf.biogateway.eu/prot/9606/A0A024R0Y4> .
+#Get var types
+   ?var <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?varType .
+#Get var label
+   OPTIONAL {?var <http://www.w3.org/2000/01/rdf-schema#label> ?varRdfsLabel} .
+   OPTIONAL {?var <http://www.w3.org/2004/02/skos/core#prefLabel> ?varPrefLabel} .
+   OPTIONAL{?var <http://www.w3.org/2004/02/skos/core#altLabel>  ?varAltLabel} .
+   BIND(COALESCE(
+    ?varRdfsLabel,
+    ?varPrefLabel,
+    ?varAltLabel
+   ) AS ?varLabel)
+#Get varType label
+   OPTIONAL {?varType <http://www.w3.org/2000/01/rdf-schema#label> ?varTypeRdfsLabel} .
+   OPTIONAL {?varType <http://www.w3.org/2004/02/skos/core#prefLabel> ?varTypePrefLabel} .
+   OPTIONAL {?varType <http://www.w3.org/2004/02/skos/core#altLabel>  ?varTypeAltLabel} .
+  BIND(COALESCE(
+    ?varTypeRdfsLabel,
+    ?varTypePrefLabel,
+    ?varTypeAltLabel
+   ) AS ?varTypeLabel)
+}
+
+*/

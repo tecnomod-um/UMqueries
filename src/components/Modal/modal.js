@@ -12,7 +12,7 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
 
         function MakeItem(X) {
             return <option>{X}</option>;
-        };
+        }
         var result = [];
         var input = {};
 

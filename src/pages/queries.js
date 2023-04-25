@@ -30,7 +30,6 @@ function Queries() {
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
     const [isOpen, setIsOpen] = useState(false);
-    const [queryResult, setQueryResult] = useState(null);
 
     function addNode(id, data, type, isVar) {
         var newId = 0;
@@ -56,12 +55,11 @@ function Queries() {
                         <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     </div>
                     <div className={QueriesStyles.tray}>
-                        <ResultTray nodeData={nodeData} edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} queryResult={queryResult} addEdge={addEdge} setIsOpen={setIsOpen} setQueryResult={setQueryResult} />
+                        <ResultTray varData={varData} nodeData={nodeData} colorList={colorList} edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addEdge={addEdge} setIsOpen={setIsOpen} />
                     </div>
                 </div>
             </div>
             {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} addNode={addNode} />}
-            {queryResult}
         </span >
     );
 }
