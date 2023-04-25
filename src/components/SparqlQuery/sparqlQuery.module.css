@@ -17,16 +17,16 @@
 
 
 .big_button {
-    margin: 10%;
+    font-size: 1vw;
+    width: calc(30% - 0.3em);
+    height: 100%;
+    margin: 0 0 0 0.3em ;
+    border-radius: 4em;
+    text-decoration: none;
+    font-weight: bold;
+    color: #ffffff;
     text-align: center;
-    width: 55px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
     cursor: pointer;
-    margin: 0.5em 1em 0.5em 1em;
-    height: 55px;
-    text-align: center;
     border: none;
     background-size: 300% 100%;
     border-radius: 15px;

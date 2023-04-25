@@ -60,5 +60,4 @@ WHERE {
     ?varTypeAltLabel
    ) AS ?varTypeLabel)
 }
-
 */

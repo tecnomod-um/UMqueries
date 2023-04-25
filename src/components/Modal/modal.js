@@ -50,7 +50,7 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
 
     return (
         <span>
-            <div className={ModalStyles.darkBG} onClick={() => setIsOpen(false)} />
+            <div className={ModalStyles.darkBG} overflowY="auto" onClick={() => setIsOpen(false)} />
             <div className={ModalStyles.centered}>
                 <div className={ModalStyles.modal}>
                     <div className={ModalStyles.modalHeader}>

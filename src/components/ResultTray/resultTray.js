@@ -86,11 +86,15 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown
-                        trigger={<button className={ResultTrayStyles.var_button}>{buttonVarToShowLabel}</button>}
-                        menu={shownVars}
+                        trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                     />
                     <SparqlQuery endpoint={endpoint} nodeData={nodeData} edgeData={edgeData} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
                 </div>
+                <Dropdown
+                    trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
+                    menu={shownVars}
+                />
+                <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>Show SPARQL syntax</button>
             </div>
         </span >
     )

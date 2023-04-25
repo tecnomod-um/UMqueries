@@ -24,17 +24,9 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setIsOpen }) {
 
   const events = {
     select: ({ nodes, edges }) => {
-      console.log("Selected nodes:");
-      console.log(nodes);
-      console.log("Selected edges:");
-      console.log(edges);
       setSelectedNode(nodesInGraph[nodes]);
     },
     doubleClick: ({ nodes, edges }) => {
-      console.log("Double node:");
-      console.log(nodes);
-      console.log("Double edge:");
-      console.log(edges);
       if (nodes.length > 0)
         setIsOpen(true);
     }
