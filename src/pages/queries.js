@@ -31,12 +31,12 @@ function Queries() {
     const [selectedNode, setSelectedNode] = useState();
     const [isOpen, setIsOpen] = useState(false);
 
-    function addNode(id, data, type, isVar) {
+    function addNode(id, data, type, isVar, graph) {
         var newId = 0;
         if (nodes.length > 0)
             newId = nodes.slice(-1)[0].id + 1;
-        setNodes([...nodes, { id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar }]);
-        setSelectedNode({ id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar });
+        setNodes([...nodes, { id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar, graph: graph  }]);
+        setSelectedNode({ id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar, graph: graph });
     }
 
     function addEdge(id1, id2, label, data, isOptional) {
@@ -48,7 +48,7 @@ function Queries() {
             <h1>UMU - QUERIES</h1>
             <div className={QueriesStyles.container}>
                 <div className={QueriesStyles.constraint_container}>
-                    <Search varData={varData} nodeData={nodeData} colorList={colorList} height="75vh" addNode={addNode} />
+                    <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
                 </div>
                 <div className={QueriesStyles.graph_container}>
                     <div className={QueriesStyles.graph}>

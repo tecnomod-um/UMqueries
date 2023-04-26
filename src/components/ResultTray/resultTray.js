@@ -18,6 +18,7 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
     Object.keys(varData).forEach((key) => {
         resultFields[key] = [];
     });
+    const [startingVar, setStartingVar] = useState(varData);
     const [resultData, setResultData] = useState(resultFields);
 
     function getPropertyTargets(isOptional, object, label, property) {
@@ -51,20 +52,25 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
         shownOptionals = (<span />);
     }
 
-    const [startingVar, setStartingVar] = useState();
-    var buttonVarToShowLabel;
     function getVarTargets() {
-        var result = nodes.filter(generalNode => generalNode.isVar === true).map(targetedNode => (<DropdownMenuItem onClick={() => { setStartingVar(targetedNode) }}>
-            {targetedNode.label}
-        </DropdownMenuItem>))
-        result.push(<DropdownMenuItem onClick={() => { setStartingVar(null) }}>
+        var result = nodes.filter(generalNode => generalNode.isVar === true).map((targetedNode) => {
+            return (<DropdownMenuItem onClick={() => {
+                setStartingVar({
+                    [targetedNode.type]: {
+                        "label": [targetedNode.label],
+                        "uri_graph": [targetedNode.data]
+                    }
+                })
+            }}>{targetedNode.label}</DropdownMenuItem>)
+        });
+        result.push(<DropdownMenuItem onClick={() => { setStartingVar(varData) }}>
             All variables
         </DropdownMenuItem>);
         return result;
     }
-    var shownVars = getVarTargets();
-    if (startingVar != null)
-        buttonVarToShowLabel = "'" + startingVar.label + "s' shown";
+    var buttonVarToShowLabel;
+    if (startingVar != varData)
+        buttonVarToShowLabel = "'" + Object.keys(startingVar)[0] + "s' shown";
     else buttonVarToShowLabel = 'Show all variables';
 
     return (
@@ -81,7 +87,7 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
                 <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>{buttonInsideLabel}</button>
             </div>
             <div className={ResultTrayStyles.resultsColumn}>{
-                <Search varData={varData} nodeData={resultData} colorList={colorList} height="20vh" addNode={""} />}
+                <Search varData={startingVar} nodeData={resultData} colorList={colorList} isResults={true} addNode={""} />}
             </div>
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
@@ -92,7 +98,7 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
-                    menu={shownVars}
+                    menu={getVarTargets()}
                 />
                 <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>Show SPARQL syntax</button>
             </div>

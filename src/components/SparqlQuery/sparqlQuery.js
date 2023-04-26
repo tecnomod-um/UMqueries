@@ -20,13 +20,13 @@ const SparqlQuery = ({ endpoint, nodeData, edgeData, startingVar, setResultData 
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
             .then(function (response) {
+                parseResponse(response);
                 setResultData(parseResponse(response));
-
             })
             .catch(function (response) {
                 // TODO handle error
                 console.log(response);
-                setResultData(null);
+                //setResultData(null);
                 setIsLoading(false);
             });
     }

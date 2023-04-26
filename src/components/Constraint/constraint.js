@@ -15,7 +15,7 @@ const darken = (color, amount) => {
 }
 
 // Defines each element in the list
-function Constraint({ id, data, type, color, addNode, isVar }) {
+function Constraint({ id, data, type, color, addNode, isVar, graph }) {
 
     const [isHover, setIsHover] = useState(false);
 
@@ -32,7 +32,7 @@ function Constraint({ id, data, type, color, addNode, isVar }) {
 
     const addElementNode = (e) => {
         e.preventDefault();
-        addNode(id, data, type, isVar);
+        addNode(id, data, type, isVar, graph);
     }
 
     return (
