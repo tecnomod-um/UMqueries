@@ -1,4 +1,11 @@
-.container {
+.queryHeader {
+    padding: 20px;
+    color: black;
+    font-size: 35px;
+    text-align: center;
+  }
+
+.queryContainer {
     padding: 10px;
     margin: auto;
     background-color: #ecebeb;
@@ -10,6 +17,7 @@
     flex: 1;
     padding: 1em;
     border: solid;
+    max-width: 25%;
 }
 
 .graph_container {
@@ -18,6 +26,7 @@
     border: solid;
     display: flex;
     flex-direction: column;
+    max-width: 75%;
 }
 
 .graph {
@@ -28,3 +37,4 @@
 .tray {
     border: solid;
 }
+

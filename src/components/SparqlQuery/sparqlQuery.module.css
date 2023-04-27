@@ -5,7 +5,6 @@
     border: 2px solid #000;
     border-radius: 50%;
     border-top-color: rgb(255, 255, 255);
-    /* Set neon blue color for top border */
     animation: loader 0.5s linear infinite;
 }
 
@@ -15,12 +14,11 @@
     }
 }
 
-
 .big_button {
     font-size: 1vw;
     width: calc(30% - 0.3em);
     height: 100%;
-    margin: 0 0 0 0.3em ;
+    margin: 0 0 0 0.3em;
     border-radius: 4em;
     text-decoration: none;
     font-weight: bold;

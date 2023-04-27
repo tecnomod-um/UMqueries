@@ -35,6 +35,8 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
                 default:
                     input = (<input type="text" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
                     break;
+
+                    // edit selectedNode properties
             }
             result.push(
                 <div className={ModalStyles.insideData} >

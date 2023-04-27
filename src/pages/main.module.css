@@ -3,7 +3,7 @@
   padding: 0;
 }
 
-.container {
+.mainContainer {
   padding: 10px;
   margin: auto;
   background-color: #ecebeb;
@@ -12,7 +12,7 @@
   display: grid;
 }
 
-h1 {
+.mainHeader {
   padding: 20px;
   color: black;
   font-size: 35px;

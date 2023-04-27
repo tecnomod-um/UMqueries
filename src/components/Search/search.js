@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import ConstraintList from '../ConstraintList/constraintList';
-import ResultTable from '../ResultList/resultTable';
-import ResultTableContent from '../ResultList/resultTableContent';
+import ResultTable from '../ResultTable/resultTable';
 
 import SearchStyles from "./search.module.css";
 
 // Search functionality of the list component
-// The same functionallity is shared between both tables
+// The same functionallity is shared between both lists in the UI
 function Search({ varData, nodeData, colorList, isResults, addNode }) {
     const [searchField, setSearchField] = useState("");
 
@@ -49,6 +48,8 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
 
     if (varData) {
         Object.keys(varData).forEach(key => {
+
+
             // Vars wont be added on the result table
             if (isVarIncludedInFilter(key) && !isResults)
                 filteredConstraintLists["VAR_" + key] = varData[key].label;
@@ -64,12 +65,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
         if (isResults)
             return (
                 <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', overflowX: 'hidden', height: "20vh" }}>
-                    <ResultTable minCellWidth={120} tableContent={<ResultTableContent />} />
-
-                    {/*
-                    <ConstraintList varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />
-
-            */}
+                    <ResultTable varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} minCellWidth={120} />
                 </div>
             );
         // Return node list component

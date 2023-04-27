@@ -6,8 +6,8 @@ import MainStyles from "./main.module.css";
 function Main() {
   return (
     <span>
-      <h1>UMU - BIOQUERIES</h1>
-      <div className={MainStyles.container}>
+      <h1 className={MainStyles.mainHeader}>UMU - BIOQUERIES</h1>
+      <div className={MainStyles.mainContainer}>
         <div className={MainStyles.text}>(This is where the landing page will go)</div>
         <Link to={'/queries'}>
           <button className={MainStyles.big_button}>Get started</button>

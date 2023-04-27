@@ -25,6 +25,8 @@ for (let i = 0; i < Object.keys(varData).length; i++) {
 }
 
 // Main view. All functional elements will be shown here.
+
+// TODO add transitive properties (recursive opropertioes made by adding an * in sparql)
 function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -45,8 +47,8 @@ function Queries() {
 
     return (
         <span>
-            <h1>UMU - QUERIES</h1>
-            <div className={QueriesStyles.container}>
+            <h1 className={QueriesStyles.queryHeader}>UMU - QUERIES</h1>
+            <div className={QueriesStyles.queryContainer}>
                 <div className={QueriesStyles.constraint_container}>
                     <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
                 </div>

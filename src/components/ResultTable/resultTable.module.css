@@ -1,68 +1,61 @@
-* {
-  box-sizing: border-box;
-}
-
-.table-wrapper {
-  margin-bottom: 25px;
+.tableWrapper {
   border-radius: 6px;
-  background: #fff;
   overflow: hidden;
-  /* Clip any scrollbars that appear */
 }
 
-table {
+.resTable {
   width: 100%;
   display: grid;
-  overflow: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
   grid-template-columns:
     minmax(150px, 3fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr);
 }
 
-table thead,
-table tbody,
-table tr {
+
+.resThead,
+.resTbody,
+.resTr {
   display: contents;
 }
 
-table th {
+.resTh {
   position: relative;
   font-size: 18px;
 }
 
-table th,
-table td {
+.resTable .resTh,
+.resTable .resTd {
   text-align: left;
-  padding: 16px 20px;
   min-width: 100px;
 }
 
-table th span,
-table td span {
+.resSpan {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: block;
 }
 
-table tr td {
+.resTable .resTr .resTd {
   border-top: 1px solid #ccc;
 }
 
-.resize-handle {
+.resizeHandle {
   display: block;
   position: absolute;
   cursor: col-resize;
   width: 7px;
   right: 0;
   top: 0;
-  z-index: 1;
+  z-index: 10;
   border-right: 2px solid transparent;
 }
 
-.resize-handle:hover {
-  border-color: #ccc;
+.resizeHandle:hover {
+  border-color: #cccccc;
 }
 
-.resize-handle.active {
-  border-color: #517ea5;
+.resizeHandle.active {
+  border-color: #c22535;
 }
