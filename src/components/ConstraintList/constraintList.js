@@ -2,8 +2,9 @@ import React from 'react';
 import ConstraintListStyles from "./constraintList.module.css";
 import Constraint from '../Constraint/constraint';
 
-// List that stores both all the elements and their type variables
+// Displays both all the elements and their variables
 function ConstraintList({ varData, filteredLists, colorList, addNode }) {
+    // TODO ele ments without URI need a valid ID
     function getCodeFromURI(uri) {
         return uri.substring(uri.lastIndexOf('/') + 1);
     }

@@ -26,7 +26,7 @@ for (let i = 0; i < Object.keys(varData).length; i++) {
 
 // Main view. All functional elements will be shown here.
 
-// TODO add transitive properties (recursive opropertioes made by adding an * in sparql)
+// TODO add transitive properties (recursive properties made by adding an * in SPARQL)
 function Queries() {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -37,7 +37,7 @@ function Queries() {
         var newId = 0;
         if (nodes.length > 0)
             newId = nodes.slice(-1)[0].id + 1;
-        setNodes([...nodes, { id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar, graph: graph  }]);
+        setNodes([...nodes, { id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar, graph: graph }]);
         setSelectedNode({ id: newId, label: id, title: data, color: colorList[type], type: type, isVar: isVar, graph: graph });
     }
 
@@ -53,9 +53,7 @@ function Queries() {
                     <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
                 </div>
                 <div className={QueriesStyles.graph_container}>
-                    <div className={QueriesStyles.graph}>
-                        <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
-                    </div>
+                    <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setIsOpen={setIsOpen} />
                     <div className={QueriesStyles.tray}>
                         <ResultTray varData={varData} nodeData={nodeData} colorList={colorList} edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} addEdge={addEdge} setIsOpen={setIsOpen} />
                     </div>

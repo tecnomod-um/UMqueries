@@ -19,26 +19,6 @@
   text-align: center;
 }
 
-@media only screen and (max-width: 700px) {
-  h1 {
-    font-size: 33px;
-  }
-
-  h2 {
-    font-size: 15px;
-  }
-}
-
-@media only screen and (max-width: 440px) {
-  h1 {
-    font-size: 20px;
-  }
-
-  h2 {
-    font-size: 10px;
-  }
-}
-
 .big_button {
   margin: 10%;
   text-align: center;

@@ -2,51 +2,52 @@ import React, { useState } from "react";
 import ModalStyles from "./modal.module.css";
 import CloseIcon from '@mui/icons-material/Close';
 
+// Displays the selected node's intrinsic properties
 function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
 
-    function isArray(what) {
-        return Object.prototype.toString.call(what) === '[object Array]';
-    }
-
     function getInsideDataFields() {
-
         function MakeItem(X) {
             return <option>{X}</option>;
         }
-        var result = [];
-        var input = {};
+        const result = [];
+        var input;
 
-        insideData[selectedNode.type].forEach(property => {
-            switch (property.object) {
-                case 'uri':
-                    input = (<input type="url" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
-                    break;
-                case 'string' || 'text':
-                    input = (<input type="text" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
-                    break;
-                case 'numeric' || 'int' || 'integer':
-                    input = (<input type="number" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
-                    break;
-                /*
-            case isArray(property.object):
-                input = <select name={property.label} disabled={selectedNode.isVar === true ? false : true}>{property.object.map(X => { return MakeItem(X) }}</select>;
-                break;
-                */
-                default:
-                    input = (<input type="text" name={property.label} disabled={selectedNode.isVar === true ? false : true} />);
-                    break;
+        insideData[selectedNode.type].forEach((property) => {
+            const isVar = selectedNode.isVar === true;
+            const { object, label } = property;
 
-                    // edit selectedNode properties
+            if (object.includes('uri') || object.includes('link') || object.includes('url')) {
+                input = <input type="url" name={label} disabled={!isVar} />;
+            } else if (object.includes('numeric') || object.includes('int') || object.includes('integer')) {
+                input = <input type="number" name={label} disabled={!isVar} />;
+            } else if (Array.isArray(object) || (typeof object === 'string' && object.includes('array'))) {
+                input = (
+                    <select name={label} disabled={!isVar}>
+                        {object.map((X) => MakeItem(X))}
+                    </select>
+                );
+            } else if (typeof object === 'string' && (object.includes('string') || object.includes('text') || object.includes('label'))) {
+                input = <input type="text" name={label} disabled={!isVar} />;
+            } else if (typeof object === 'string' && object.includes('boolean')) {
+                input = (
+                    <div>
+                        <input type="radio" name={label} value="true" disabled={!isVar} /> True
+                        <input type="radio" name={label} value="false" disabled={!isVar} /> False
+                    </div>
+                );
+            } else {
+                input = <input type="text" name={label} disabled={!isVar} />;
             }
+
             result.push(
-                <div className={ModalStyles.insideData} >
+                <div className={ModalStyles.insideData}>
                     <label>
-                        Field: '{property.label}'
+                        Field: '{label}'
                         {input}
                     </label>
-
-                </div>)
-        })
+                </div>
+            );
+        });
         return result;
     }
 

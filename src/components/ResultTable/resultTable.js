@@ -2,6 +2,29 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import ResultTableStyles from "./resultTable.module.css";
 
 
+// Headers will be dictated by modified intrinsic properties
+function getHeaders(headers) {
+  if (headers.length > 0)
+    return headers.map((item) => ({
+      text: item,
+      ref: useRef()
+    }));
+  else return null;
+};
+
+function getTableContent(filteredList) {
+  const tableRows = filteredList.map(element => {
+    {
+
+    }
+  });
+  return (
+    <tbody className={ResultTableStyles.resTbody}>
+      {tableRows}
+    </tbody>);
+}
+
+
 const tableContent = (
   <tbody className={ResultTableStyles.resTbody}>
     < tr className={ResultTableStyles.resTr}>
@@ -74,10 +97,180 @@ const tableContent = (
         <span className={ResultTableStyles.resSpan}>Alexander</span>
       </td>
     </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
+    <tr className={ResultTableStyles.resTr}>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Family Sized Lobster Dinner</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>3456781234</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>$320.00</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>In Progress</span>
+      </td>
+      <td className={ResultTableStyles.resTd}>
+        <span className={ResultTableStyles.resSpan}>Alexander</span>
+      </td>
+    </tr>
   </tbody>
 );
 
-// Headers will be dictated by modified instrinsic properties
+// Headers will be dictated by modified intrinsic properties
 const createHeaders = (headers) => {
   if (headers.length > 0)
     return headers.map((item) => ({
@@ -88,6 +281,7 @@ const createHeaders = (headers) => {
 };
 
 const createContents = (content) => {
+  // content.map(element =>{})
   const tableRows = content.map(element => {
     return (<tr className={ResultTableStyles.resTr}>
       <td className={ResultTableStyles.resTd}>
@@ -112,7 +306,9 @@ const createContents = (content) => {
   return result;
 }
 
-const ResultTable = ({ varData, filteredList, colorList, minCellWidth }) => {
+const ResultTable = ({ varData, filteredList, minCellWidth }) => {
+  //console.log("VARDATA: [" + varData + "]");
+  console.log("LIST: [" + JSON.stringify(filteredList) + "]");
   const [tableHeight, setTableHeight] = useState("auto");
   const [activeIndex, setActiveIndex] = useState(null);
   const [headers, setHeaders] = useState([
@@ -175,10 +371,6 @@ const ResultTable = ({ varData, filteredList, colorList, minCellWidth }) => {
     };
   }, [activeIndex, mouseMove, mouseUp, removeListeners]);
 
-  // Demo only
-  const resetTableCells = () => {
-    tableElement.current.style.gridTemplateColumns = "";
-  };
 
   return (
     <span>

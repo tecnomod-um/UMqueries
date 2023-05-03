@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ConstraintList from '../ConstraintList/constraintList';
 import ResultTable from '../ResultTable/resultTable';
-
 import SearchStyles from "./search.module.css";
 
 // Search functionality of the list component
-// The same functionallity is shared between both lists in the UI
+// The same functionality is shared between both the result table and the constraint in the UI
 function Search({ varData, nodeData, colorList, isResults, addNode }) {
+
     const [searchField, setSearchField] = useState("");
+    const searchRef = useRef(null);
 
     const handleChange = e => {
         setSearchField(e.target.value);
@@ -29,7 +30,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
             }
         ))
     }
-
+    // Takes generated vars into account if necessary
     function isVarIncludedInFilter(key) {
         var keyLabel = key + " variable";
         return (
@@ -46,46 +47,36 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     var filteredConstraintLists = {};
     var placeholderText = "Search by ";
 
-    if (varData) {
+    if (varData && nodeData) {
         Object.keys(varData).forEach(key => {
-
-
-            // Vars wont be added on the result table
             if (isVarIncludedInFilter(key) && !isResults)
                 filteredConstraintLists["VAR_" + key] = varData[key].label;
-
             filteredConstraintLists[key] = getFilteredList(nodeData[key]);
             placeholderText = placeholderText + key + ", ";
         });
         placeholderText = placeholderText.slice(0, -2);
     } else placeholderText = "No elements to display";
 
-    function constraintList() {
-        // Return results component
+    function dataElementToDisplay() {
+        // Results will be displayed
         if (isResults)
-            return (
-                <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', overflowX: 'hidden', height: "20vh" }}>
-                    <ResultTable varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} minCellWidth={120} />
-                </div>
-            );
-        // Return node list component
-        return (
-            <div className={SearchStyles.scroll} style={{ overflowY: 'scroll', overflowX: 'hidden', height: "75vh" }}>
-                <ConstraintList varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />
-            </div>
-        );
+            return (<ResultTable varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} minCellWidth={120} />);
+        // Constraint list will be displayed
+        return (<ConstraintList varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />);
     }
 
     return (
-        <section className={SearchStyles.search}>
-            <input
+        <span className={SearchStyles.search}>
+            <input ref={searchRef}
                 className={SearchStyles.input}
                 type="search"
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
-            {constraintList()}
-        </section>
+            <div className={SearchStyles.dataContainer} style={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(100% - 38px)' }}>
+                {dataElementToDisplay()}
+            </div>
+        </span>
     );
 }
 

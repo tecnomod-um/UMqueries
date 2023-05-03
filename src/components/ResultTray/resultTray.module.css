@@ -1,5 +1,6 @@
 .container {
     display: flex;
+    height: 25vh;
     margin: 0;
     padding: 0;
     border: 0;
@@ -17,12 +18,9 @@
 }
 
 .resultsColumn {
-    justify-content: space-around;
-    display: inline-block;
     width: 55%;
-    max-width: 55%;
     border: solid;
-    box-sizing: border-box;
+    padding: 0.2em;
 }
 
 .queryColumn {

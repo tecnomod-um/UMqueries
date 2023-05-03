@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ConstraintStyles from "./constraint.module.css";
 
-
+// Darkens the generated colors for each node so they are more legible
 const subtractLight = function (color, amount) {
     let cc = parseInt(color, 16) - amount;
     let c = (cc < 0) ? 0 : (cc);
@@ -14,7 +14,7 @@ const darken = (color, amount) => {
     return color = `#${subtractLight(color.substring(0, 2), amount)}${subtractLight(color.substring(2, 4), amount)}${subtractLight(color.substring(4, 6), amount)}`;
 }
 
-// Defines each element in the list
+// Defines each element and its functionality in the constraint list
 function Constraint({ id, data, type, color, addNode, isVar, graph }) {
 
     const [isHover, setIsHover] = useState(false);

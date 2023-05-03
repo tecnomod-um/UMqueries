@@ -26,12 +26,28 @@ export const parseQuery = (nodeData, edgeData, startingVar) => {
 }
 
 export const parseResponse = (response) => {
+    const result = {};
+    // Iterate through each element in the response
     response.data.results.bindings.forEach(element => {
-        console.log("LABEL: [" + element.varLabel.value + "] URI: [" + element.var.value + "] TYPE: [" + element.varTypeLabel.value + "] TYPE URI: [" + element.varType.value + "].")
-    });
+        // The type value will dictate the order in the results
+        const typeValue = element.varTypeLabel.value.toLowerCase();
 
-    // set List content properly
-    return null;
+        if (!result[typeValue])
+            result[typeValue] = {}
+
+        // Iterate through each field in the object
+        Object.keys(element).forEach(field => {
+            if (field === 'varTypeLabel') return;
+            const fieldName = field;
+            const fieldValue = element[field].value;
+
+            // Add the field to the corresponding type value object in the result
+            result[typeValue][fieldName] = fieldValue
+        })
+    })
+
+    // Now the `result` object should have the desired structure
+    console.log(result)
 }
 
 /*

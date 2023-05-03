@@ -69,7 +69,7 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
         return result;
     }
     var buttonVarToShowLabel;
-    if (startingVar != varData)
+    if (startingVar !== varData)
         buttonVarToShowLabel = "'" + Object.keys(startingVar)[0] + "s' shown";
     else buttonVarToShowLabel = 'Show all variables';
 
@@ -87,7 +87,7 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
                 <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>{buttonInsideLabel}</button>
             </div>
             <div className={ResultTrayStyles.resultsColumn}>{
-                <Search varData={startingVar} nodeData={resultData} colorList={colorList} isResults={true} addNode={""} />}
+                <Search varData={startingVar} nodeData={resultData} isResults={true} addNode={""} />}
             </div>
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
