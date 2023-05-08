@@ -4,12 +4,12 @@ import Constraint from '../Constraint/constraint';
 
 // Displays both all the elements and their variables
 function ConstraintList({ varData, filteredLists, colorList, addNode }) {
-    // TODO ele ments without URI need a valid ID
+    // TODO elements without URI need a valid ID
     function getCodeFromURI(uri) {
         return uri.substring(uri.lastIndexOf('/') + 1);
     }
     function listContent() {
-        var result = [];
+        let result = [];
         Object.keys(varData).forEach(key => {
             if ("VAR_" + key in filteredLists)
                 result.push(<Constraint key={getCodeFromURI(filteredLists["VAR_" + key])} id={key.toUpperCase() + " variable"} data={filteredLists["VAR_" + key]} type={key} color={colorList[key]} addNode={addNode} isVar={true} graph={varData[key].uri_graph} />);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import ConstraintList from '../ConstraintList/constraintList';
 import ResultTable from '../ResultTable/resultTable';
 import SearchStyles from "./search.module.css";
@@ -6,7 +6,6 @@ import SearchStyles from "./search.module.css";
 // Search functionality of the list component
 // The same functionality is shared between both the result table and the constraint in the UI
 function Search({ varData, nodeData, colorList, isResults, addNode }) {
-
     const [searchField, setSearchField] = useState("");
     const searchRef = useRef(null);
 
@@ -15,24 +14,23 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     }
 
     function getFilteredList(elementList) {
-        return (elementList.filter(
-            element => {
-                return (
-                    element
-                        .uri
-                        .toLowerCase()
-                        .includes(searchField.toLowerCase()) ||
-                    element
-                        .label
-                        .toLowerCase()
-                        .includes(searchField.toLowerCase())
-                )
+        if (!elementList) return null;
+        return elementList.filter((element) => {
+            const searchFieldLower = searchField.toLowerCase();
+            for (const field in element) {
+                if (element.hasOwnProperty(field) &&
+                    typeof element[field] === 'string' &&
+                    element[field].toLowerCase().includes(searchFieldLower))
+                    return true;
             }
-        ))
+            return false;
+        });
     }
+
+
     // Takes generated vars into account if necessary
     function isVarIncludedInFilter(key) {
-        var keyLabel = key + " variable";
+        let keyLabel = key + " variable";
         return (
             keyLabel
                 .toLowerCase()
@@ -44,11 +42,11 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
         )
     }
 
-    var filteredConstraintLists = {};
-    var placeholderText = "Search by ";
+    let filteredConstraintLists = {};
+    let placeholderText = "Search by ";
 
     if (varData && nodeData) {
-        Object.keys(varData).forEach(key => {
+        Object.keys(nodeData).forEach(key => {
             if (isVarIncludedInFilter(key) && !isResults)
                 filteredConstraintLists["VAR_" + key] = varData[key].label;
             filteredConstraintLists[key] = getFilteredList(nodeData[key]);

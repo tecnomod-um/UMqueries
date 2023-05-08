@@ -5,15 +5,14 @@ import MenuItem from '@mui/material/MenuItem';
 import NestedMenuItem from './nestedMenuItem';
 
 // Dropdown component used in the properties
-export const Dropdown = React.forwardRef((
-    {
-        trigger,
-        menu,
-        keepOpen: keepOpenGlobal,
-        isOpen: controlledIsOpen,
-        onOpen: onControlledOpen,
-        minWidth,
-    }, ref) => {
+export const Dropdown = React.forwardRef(({
+    trigger,
+    menu,
+    keepopen: keepOpenGlobal,
+    isOpen: controlledIsOpen,
+    onOpen: onControlledOpen,
+    minWidth,
+}, ref) => {
     const [isInternalOpen, setInternalOpen] = React.useState(null);
     const isOpen = controlledIsOpen || isInternalOpen;
     let anchorRef = React.useRef(null);
@@ -45,7 +44,7 @@ export const Dropdown = React.forwardRef((
             : setInternalOpen(null);
     };
     const renderMenu = (menuItem, index) => {
-        const { keepOpen: keepOpenLocal, ...props } = menuItem.props;
+        const { keepopen: keepOpenLocal, ...props } = menuItem.props;
         let extraProps = {};
         if (props.menu) {
             extraProps = {

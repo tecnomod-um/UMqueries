@@ -5,26 +5,22 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from '../Search/search';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNode, addEdge, setIsOpen }) {
+function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, addEdge, setIsOpen }) {
     // temp testing data
     const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
-    var shownProperties;
-    var shownOptionals;
-    var buttonPropertyLabel;
-    var buttonOptionalLabel;
-    var buttonInsideLabel;
-    var resultFields = {}
-    Object.keys(varData).forEach((key) => {
-        resultFields[key] = [];
-    });
+    let shownProperties;
+    let shownOptionals;
+    let buttonPropertyLabel;
+    let buttonOptionalLabel;
+    let buttonInsideLabel;
     const [startingVar, setStartingVar] = useState(varData);
-    const [resultData, setResultData] = useState(resultFields);
+    const [resultData, setResultData] = useState();
 
     function getPropertyTargets(isOptional, object, label, property) {
-        var textAddition = "";
+        let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
-        var result = nodes.filter(generalNode => generalNode.type === object).map(targetedNode => (<DropdownMenuItem onClick={() => { addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional) }}>
+        let result = nodes.filter(generalNode => generalNode.type === object).map(targetedNode => (<DropdownMenuItem onClick={() => { addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional) }}>
             {targetedNode.label}
         </DropdownMenuItem>))
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
@@ -53,7 +49,8 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
     }
 
     function getVarTargets() {
-        var result = nodes.filter(generalNode => generalNode.isVar === true).map((targetedNode) => {
+        // Show specific var in results
+        let result = nodes.filter(generalNode => generalNode.isVar === true).map((targetedNode) => {
             return (<DropdownMenuItem onClick={() => {
                 setStartingVar({
                     [targetedNode.type]: {
@@ -63,12 +60,15 @@ function ResultTray({ varData, nodeData, colorList, edgeData, nodes, selectedNod
                 })
             }}>{targetedNode.label}</DropdownMenuItem>)
         });
+        // Show all vars in results
         result.push(<DropdownMenuItem onClick={() => { setStartingVar(varData) }}>
             All variables
         </DropdownMenuItem>);
+        // Show parameter / node counts in results
+        
         return result;
     }
-    var buttonVarToShowLabel;
+    let buttonVarToShowLabel;
     if (startingVar !== varData)
         buttonVarToShowLabel = "'" + Object.keys(startingVar)[0] + "s' shown";
     else buttonVarToShowLabel = 'Show all variables';

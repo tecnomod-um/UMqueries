@@ -9,7 +9,6 @@
     transform: translate(-50%, -50%);
     position: fixed;
     justify-content: center;
-    overflow-y: auto;
 }
 
 .centered {
@@ -20,11 +19,10 @@
 }
 
 .modal {
-    position: "absolute";
     background: white;
     z-index: 1000;
     border-radius: 16px;
-    width: "35%";
+    text-align: center;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
 }
 
@@ -47,19 +45,26 @@
 }
 
 .modalContent {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    max-height: calc(100vh - 225px);
+    overflow-y: auto;
 }
 
 .modalActions {
-    position: absolute;
-    bottom: 2px;
-    margin-bottom: 10px;
-    width: 100%;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
 
 .actionsContainer {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .closeBtn {
@@ -84,41 +89,77 @@
     transform: rotate(90deg);
 }
 
-.deleteBtn {
-    margin-top: 10px;
+.setBtn {
     cursor: pointer;
     font-weight: 750;
-    padding: 11px 28px;
+    padding: 10px 20px;
     border-radius: 12px;
     font-size: 0.8rem;
     border: none;
     transition: all 0.25s ease;
 }
 
-.deleteBtn:hover {
+.setBtn:hover {
     transform: translateY(-5px);
 }
 
 .cancelBtn {
-    margin-top: 10px;
-    cursor: pointer;
-    padding: 11px 28px;
+    font-weight: 750;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
     border: none;
-    color: #2c3e50;
-    background: #fcfcfc;
-    transition: all 0.25s ease;
+    background-color: #fac2a6;
 }
 
 .cancelBtn:hover {
-    box-shadow: none;
-    transform: none;
-    background: rgb(197, 194, 194);
+    background-color: #e14e53;
 }
 
-.insideData {
-    width: 100%;
-    margin: 8px 0;
+.fieldContainer {
+    padding: 10px 10px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: auto auto auto auto auto auto;
+}
+
+.labelProperty {
     display: inline-block;
-    box-sizing: border-box;
+    *display: inline;
+    /* for IE7*/
+    zoom: 1;
+    /* for IE7*/
+    float: left;
+    padding-top: 5px;
+    text-align: right;
+    width: 140px;
+}
+
+.labelCheckbox {
+    display: inline-block;
+    *display: inline;
+    /* for IE7*/
+    zoom: 1;
+    /* for IE7*/
+    float: left;
+    text-align: right;
+    width: 140px;
+}
+
+.input {
+    border: none;
+    background: none;
+    outline: none;
+    border-bottom: 2px solid #aaa;
+    transition: border-bottom-color 0.3s ease-in-out;
+}
+
+.checkbox {
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #aaa;
+    border-radius: 2px;
 }

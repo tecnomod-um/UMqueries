@@ -3,7 +3,7 @@ import React from 'react';
 export const parseQuery = (nodeData, edgeData, startingVar) => {
     //col set by var
     // starts building the query
-    var result = '?default-graph-uri=&query=SELECT+';
+    let result = '?default-graph-uri=&query=SELECT+';
     // only the selected var will be shown in the results
     if (startingVar = ! null)
         // set SELECT
@@ -21,7 +21,7 @@ export const parseQuery = (nodeData, edgeData, startingVar) => {
             });
         });
     */
-    result = result + '%3Fvar+%3FvarLabel+%3FvarType+%3FvarTypeLabel%0D%0AWHERE+%7B%0D%0A%23Actual+query%0D%0A+++%3Fvar+<http%3A%2F%2Fsemanticscience.org%2Fresource%2FSIO_010078>+<http%3A%2F%2Frdf.biogateway.eu%2Fprot%2F9606%2FA0A024R0Y4>+.%0D%0A%23Get+var+types%0D%0A+++%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23subClassOf>+%3FvarType+.%0D%0A%23Get+var+label%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarPrefLabel%7D+.%0D%0A+++OPTIONAL%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarAltLabel%7D+.%0D%0A+++BIND%28COALESCE%28%0D%0A++++%3FvarRdfsLabel%2C%0D%0A++++%3FvarPrefLabel%2C%0D%0A++++%3FvarAltLabel%0D%0A+++%29+AS+%3FvarLabel%29%0D%0A%23Get+varType+label%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarTypeRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarTypePrefLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarTypeAltLabel%7D+.%0D%0A++BIND%28COALESCE%28%0D%0A++++%3FvarTypeRdfsLabel%2C%0D%0A++++%3FvarTypePrefLabel%2C%0D%0A++++%3FvarTypeAltLabel%0D%0A+++%29+AS+%3FvarTypeLabel%29%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&signal_void=on';
+    result = result + '%3Fvar+%3FLabel+%3FvarType+%3FvarTypeLabel%0D%0AWHERE+%7B%0D%0A%23Actual+query%0D%0A+++%3Fvar+<http%3A%2F%2Fsemanticscience.org%2Fresource%2FSIO_010078>+<http%3A%2F%2Frdf.biogateway.eu%2Fprot%2F9606%2FA0A024R0Y4>+.%0D%0A%23Get+var+types%0D%0A+++%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23subClassOf>+%3FvarType+.%0D%0A%23Get+var+label%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarPrefLabel%7D+.%0D%0A+++OPTIONAL%7B%3Fvar+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarAltLabel%7D+.%0D%0A+++BIND%28COALESCE%28%0D%0A++++%3FvarRdfsLabel%2C%0D%0A++++%3FvarPrefLabel%2C%0D%0A++++%3FvarAltLabel%0D%0A+++%29+AS+%3FLabel%29%0D%0A%23Get+varType+label%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label>+%3FvarTypeRdfsLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23prefLabel>+%3FvarTypePrefLabel%7D+.%0D%0A+++OPTIONAL+%7B%3FvarType+<http%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23altLabel>++%3FvarTypeAltLabel%7D+.%0D%0A++BIND%28COALESCE%28%0D%0A++++%3FvarTypeRdfsLabel%2C%0D%0A++++%3FvarTypePrefLabel%2C%0D%0A++++%3FvarTypeAltLabel%0D%0A+++%29+AS+%3FvarTypeLabel%29%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&signal_void=on';
     return (result);
 }
 
@@ -33,21 +33,22 @@ export const parseResponse = (response) => {
         const typeValue = element.varTypeLabel.value.toLowerCase();
 
         if (!result[typeValue])
-            result[typeValue] = {}
+            result[typeValue] = []
 
         // Iterate through each field in the object
+        let elementFields = {};
         Object.keys(element).forEach(field => {
             if (field === 'varTypeLabel') return;
-            const fieldName = field;
             const fieldValue = element[field].value;
 
-            // Add the field to the corresponding type value object in the result
-            result[typeValue][fieldName] = fieldValue
-        })
-    })
+            elementFields[field] = fieldValue;
 
-    // Now the `result` object should have the desired structure
-    console.log(result)
+            // Add the field to the corresponding type value object in the result
+            //result[typeValue].push({ [field]: fieldValue });
+        })
+        result[typeValue].push(elementFields);
+    })
+    return (result);
 }
 
 /*

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import VisGraph from 'react-vis-graph-wrapper';
 
 // Vis js Graph component.
-function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setIsOpen }) {
+function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setIsOpen, toggleIsTransitive }) {
 
   function getMapHeight() {
     return (window.innerHeight / 1.85);
@@ -36,6 +36,9 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setIsOpen }) {
     doubleClick: ({ nodes, edges }) => {
       if (nodes.length > 0)
         setIsOpen(true);
+      if ((edges.length > 0) && (nodes.length === 0)) {
+        toggleIsTransitive(edgesInGraph[edges]);
+      }
     }
   }
 

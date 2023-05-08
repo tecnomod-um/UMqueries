@@ -19,7 +19,7 @@ function Constraint({ id, data, type, color, addNode, isVar, graph }) {
 
     const [isHover, setIsHover] = useState(false);
 
-    var boxStyle = {
+    let boxStyle = {
         color: isHover ? darken(color, 65) : 'black',
     };
 

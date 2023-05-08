@@ -9,7 +9,7 @@ const SparqlQuery = ({ endpoint, nodeData, edgeData, startingVar, setResultData 
 
     const handleQuery = () => {
         setIsLoading(true);
-        var data = {
+        let data = {
             endpoint: endpoint,
             query: parseQuery(nodeData, edgeData, startingVar)
         }
@@ -20,7 +20,6 @@ const SparqlQuery = ({ endpoint, nodeData, edgeData, startingVar, setResultData 
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
             .then(function (response) {
-                parseResponse(response);
                 setResultData(parseResponse(response));
                 setIsLoading(false);
             })
