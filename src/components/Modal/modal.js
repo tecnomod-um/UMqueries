@@ -42,9 +42,9 @@ function Modal({ insideData, selectedNode, setIsOpen, addNode }) {
                     <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
                     {input}
                     <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} disabled={!isVar} className={ModalStyles.checkbox} style={{ display: 'inline-block' }} />
-                    <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesRecursive"}>Make recursive:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesRecursive"} disabled={!isVar} className={ModalStyles.checkbox} style={{ display: 'inline-block' }} />
+                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} disabled={!isVar} style={{ display: 'inline-block' }} />
+                    <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesRecursive"}>Make transitive:</label>
+                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesRecursive"} disabled={!isVar} style={{ display: 'inline-block' }} />
                 </div>
             );
         });

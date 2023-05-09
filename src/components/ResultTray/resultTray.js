@@ -5,8 +5,7 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from '../Search/search';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, addEdge, setIsOpen }) {
-    // temp testing data
+function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
     const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
     let shownProperties;
@@ -29,7 +28,7 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, addEdge,
     if (selectedNode != null) {
         buttonPropertyLabel = "Set '" + selectedNode.type + "' properties...";
         buttonOptionalLabel = "Set '" + selectedNode.type + "' optional properties...";
-        buttonInsideLabel = "Set '" + selectedNode.type + "' inside properties...";
+        buttonInsideLabel = "Set '" + selectedNode.type + "' intrinsic properties...";
         shownProperties = (edgeData[selectedNode.type].map(edge => (
             <DropdownNestedMenuItem
                 label={edge.label}
@@ -46,6 +45,11 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, addEdge,
         buttonInsideLabel = "No node selected";
         shownProperties = (<span />);
         shownOptionals = (<span />);
+    }
+
+    // Gets all countable things
+    function getCountTargets(isTotal, isMax) {
+        // TODO
     }
 
     function getVarTargets() {
@@ -65,21 +69,47 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, addEdge,
             All variables
         </DropdownMenuItem>);
         // Show parameter / node counts in results
-        
+        let countMenu = (
+            <span>
+                <DropdownNestedMenuItem
+                    label="Get min"
+                    menu={getCountTargets(false, false)} />
+                <DropdownNestedMenuItem
+                    label="Get max"
+                    menu={getCountTargets(false, true)} />
+                <DropdownNestedMenuItem
+                    label="Get count"
+                    menu={getCountTargets(true)} />
+            </span>
+        );
+        result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);
         return result;
     }
     let buttonVarToShowLabel;
     if (startingVar !== varData)
-        buttonVarToShowLabel = "'" + Object.keys(startingVar)[0] + "s' shown";
+        if (startingVar.isCount)
+            buttonVarToShowLabel = "Showing '" + startingVar[Object.keys(startingVar)[0]].type + ' of ' + Object.keys(startingVar)[0];
+        else
+            buttonVarToShowLabel = "'" + Object.keys(startingVar)[0] + "s' shown";
     else buttonVarToShowLabel = 'Show all variables';
 
+    const deleteSelected = () => {
+        if (selectedNode != null)
+            removeNode(selectedNode.id)
+        else if (selectedEdge != null)
+            removeEdge(selectedEdge.id)
+    }
+    
     return (
         <span className={ResultTrayStyles.container}>
             <div className={ResultTrayStyles.controlColumn}>
-                <Dropdown
-                    trigger={<button className={ResultTrayStyles.big_button}>{buttonPropertyLabel}</button>}
-                    menu={shownProperties}
-                />
+                <div className={ResultTrayStyles.buttonRow}>
+                    <button className={ResultTrayStyles.del_button} onClick={deleteSelected}>Delete</button>
+                    <Dropdown
+                        trigger={<button className={ResultTrayStyles.var_button}>{buttonPropertyLabel}</button>}
+                        menu={shownProperties}
+                    />
+                </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
                     menu={shownOptionals}
