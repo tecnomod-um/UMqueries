@@ -37,7 +37,6 @@ function Queries() {
             let newId = 0;
             if (nodes.length > 0)
                 newId = nodes.slice(-1)[0].id + 1;
-            console.log("Adding node [" + newId + "]");
             return [...nodes, { id: newId, label: id, color: colorList[type], type: type, isVar: isVar, graph: graph }];
         });
     }
@@ -47,30 +46,36 @@ function Queries() {
             let newId = 0;
             if (edges.length > 0)
                 newId = edges.slice(-1)[0].id + 1;
-            console.log("Adding edge [" + newId + "]");
             return [...edges, { id: newId, from: id1, to: id2, label: label, data: data, isOptional: isOptional, isTransitive: false }];
         });
     }
 
-    function removeNode(id) {
-        console.log("Removing node [" + id + "] and all its edges");
-        setEdges(edges.filter(edge => (edge.from !== id) && (edge.to !== id)));
-        setNodes(nodes.filter(node => node.id !== id));
+    function setNode(updatedNode) {
+        setNodes(nodes => {
+            let newNodes = nodes.filter(node => node.id !== updatedNode.id);
+            newNodes.push(updatedNode);
+            return newNodes;
+        });
+        setSelectedNode(updatedNode);
+        console.log(updatedNode);
+    }
+
+    function removeNode() {
+        setEdges(edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id)));
+        setNodes(nodes.filter(node => node.id !== selectedNode.id));
         setSelectedNode(null);
         setSelectedEdge(null);
     }
 
-    function removeEdge(id) {
-        console.log("Removing edge [" + id + "]");
-        setEdges(edges.filter(edge => edge.id !== id));
+    function removeEdge() {
+        setEdges(edges.filter(edge => (edge.id !== selectedEdge.id)));
         setSelectedNode(null);
         setSelectedEdge(null);
     }
 
     function toggleIsTransitive(edge) {
         let label = edge.label;
-        if (!edge.isTransitive)
-            label = label + "*";
+        if (!edge.isTransitive) label = label + "*";
         else label = label.slice(0, -1);
 
         let newEdges = [...edges];
@@ -92,7 +97,7 @@ function Queries() {
                     </div>
                 </div>
             </div>
-            {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} addNode={addNode} />}
+            {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} setNode={setNode} />}
         </span >
     );
 }

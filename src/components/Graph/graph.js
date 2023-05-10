@@ -32,17 +32,20 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
 
   const events = {
     select: ({ nodes, edges }) => {
-      nodesInGraph[nodes] ? (console.log("Selected node ? [" + nodesInGraph[nodes].id + "]")) : (console.log("No node selected"));
-      edgesInGraph[edges] ? (console.log("Selected edge ? [" + edgesInGraph[edges].id + "]")) : (console.log("No edge selected"));
-      setSelectedNode(nodesInGraph[nodes]);
-      setSelectedEdge(edgesInGraph[edges]);
-      console.log("Nodes and edges [" + nodesInGraph.length + "] [" + edgesInGraph.length + "]");
+      if (nodes?.length > 0)
+        setSelectedNode(nodesInGraph.find(node => node.id === Number(nodes)));
+      else if (edges?.length > 0)
+        setSelectedEdge(edgesInGraph.find(edge => edge.id === Number(edges)));
+      else {
+        setSelectedNode(null);
+        setSelectedEdge(null);
+      }
     },
     doubleClick: ({ nodes, edges }) => {
       if (nodes.length > 0)
         setIsOpen(true);
       else if (edges.length > 0)
-        toggleIsTransitive(edgesInGraph[edges]);
+        toggleIsTransitive(edgesInGraph.find(edge => edge.id === Number(edges)));
     }
   }
 

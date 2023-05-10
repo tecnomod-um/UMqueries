@@ -19,7 +19,7 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
     function getPropertyTargets(isOptional, object, label, property) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
-        let result = nodes.filter(generalNode => generalNode.type === object).map(targetedNode => (<DropdownMenuItem onClick={() => { addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional) }}>
+        let result = nodes.filter(generalNode => generalNode && generalNode.type === object).map(targetedNode => (<DropdownMenuItem onClick={() => { addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional) }}>
             {targetedNode.label}
         </DropdownMenuItem>))
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
@@ -50,11 +50,14 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
     // Gets all countable things
     function getCountTargets(isTotal, isMax) {
         // TODO
+
+
+        
     }
 
     function getVarTargets() {
         // Show specific var in results
-        let result = nodes.filter(generalNode => generalNode.isVar === true).map((targetedNode) => {
+        let result = nodes.filter(generalNode => generalNode && generalNode.isVar === true).map((targetedNode) => {
             return (<DropdownMenuItem onClick={() => {
                 setStartingVar({
                     [targetedNode.type]: {
@@ -95,11 +98,11 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
 
     const deleteSelected = () => {
         if (selectedNode != null)
-            removeNode(selectedNode.id)
+            removeNode()
         else if (selectedEdge != null)
-            removeEdge(selectedEdge.id)
+            removeEdge()
     }
-    
+
     return (
         <span className={ResultTrayStyles.container}>
             <div className={ResultTrayStyles.controlColumn}>
