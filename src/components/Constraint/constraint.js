@@ -2,46 +2,43 @@ import React, { useState } from "react";
 import ConstraintStyles from "./constraint.module.css";
 
 // Darkens the generated colors for each node so they are more legible
-const subtractLight = function (color, amount) {
-    let cc = parseInt(color, 16) - amount;
-    let c = (cc < 0) ? 0 : (cc);
-    c = (c.toString(16).length > 1) ? c.toString(16) : `0${c.toString(16)}`;
-    return c;
+function darken(color, amount) {
+    const hex = color.replace("#", "");
+    const rgb = [0, 2, 4].map(idx => parseInt(hex.slice(idx, idx + 2), 16));
+    const newRgb = rgb.map(c => Math.max(c - Math.round(amount * c / 100), 0));
+    return `#${newRgb.map(c => c.toString(16).padStart(2, "0")).join("")}`;
 }
-const darken = (color, amount) => {
-    color = (color.indexOf("#") >= 0) ? color.substring(1, color.length) : color;
-    amount = parseInt((255 * amount) / 100);
-    return color = `#${subtractLight(color.substring(0, 2), amount)}${subtractLight(color.substring(2, 4), amount)}${subtractLight(color.substring(4, 6), amount)}`;
-}
-
 // Defines each element and its functionality in the constraint list
 function Constraint({ id, data, type, color, addNode, isVar, graph }) {
 
-    const [isHover, setIsHover] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
-    let boxStyle = {
-        color: isHover ? darken(color, 65) : 'black',
+    const listItemStyle = {
+        color: isHovered ? darken(color, 60) : "black",
     };
-
     const handleMouseEnter = () => {
-        setIsHover(true);
+        setIsHovered(true);
     };
     const handleMouseLeave = () => {
-        setIsHover(false);
+        setIsHovered(false);
+    };
+    const handleClick = (event) => {
+        event.preventDefault();
+        addNode(id, data, type, isVar, graph);
     };
 
-    const addElementNode = (e) => {
-        e.preventDefault();
-        addNode(id, data, type, isVar, graph);
-    }
-
     return (
-        <li style={boxStyle} onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave} className={ConstraintStyles.element} onClick={addElementNode}>
+        <li
+            style={listItemStyle}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={ConstraintStyles.element}
+            onClick={handleClick}
+        >
             <h2>{id}</h2>
             <p>{data}</p>
         </li>
-    )
+    );
 }
 
 export default Constraint;

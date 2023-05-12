@@ -57,7 +57,6 @@ function Queries() {
             return newNodes;
         });
         setSelectedNode(updatedNode);
-        console.log(updatedNode);
     }
 
     function removeNode() {

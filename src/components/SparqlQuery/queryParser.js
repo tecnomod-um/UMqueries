@@ -1,11 +1,9 @@
-import React from 'react';
-
 export const parseQuery = (nodeData, edgeData, startingVar) => {
     //col set by var
     // starts building the query
     let result = '?default-graph-uri=&query=SELECT+';
     // only the selected var will be shown in the results
-    if (startingVar = ! null)
+    if (startingVar)
         // set SELECT
         result = result + '';
     else

@@ -1,28 +1,25 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import ResultTableStyles from "./resultTable.module.css";
 
-
-// Headers will be dictated by modified intrinsic properties
 function getTableHeaders(filteredLists) {
-  if (filteredLists == null)
+  if (!filteredLists) {
     return [];
-  let headers = [];
-  Object.keys(filteredLists).forEach(key =>
-    filteredLists[key].forEach(item => {
-      Object.keys(item).forEach(innerKey => {
-        if (!headers.includes(innerKey)) {
-          headers.push(innerKey);
-        }
+  }
+  const headers = new Set();
+  Object.values(filteredLists).forEach((items) => {
+    items.forEach((item) => {
+      Object.keys(item).forEach((key) => {
+        headers.add(key);
       });
-    })
-  );
-  return headers;
+    });
+  });
+  return Array.from(headers);
 }
 
-// Table will be filled with the filtered results
 function getTableContent(filteredLists) {
-  if (filteredLists == null || Object.keys(filteredLists).lengths === 0)
+  if (!filteredLists || Object.keys(filteredLists).length === 0) {
     return null;
+  }
 
   return (
     <tbody className={ResultTableStyles.resTbody}>
@@ -41,25 +38,28 @@ function getTableContent(filteredLists) {
   );
 }
 
-// Headers will be dictated by modified intrinsic properties
-const createHeaders = (headers) => {
-  if (headers.length > 0)
-    return headers.map((item) => ({
-      text: item,
-      ref: useRef()
-    }));
-  else return [];
-}
-
 const ResultTable = ({ filteredLists, minCellWidth }) => {
-  const tableHeaders = getTableHeaders(filteredLists);
+  // MAKE HOOK IN COLUMNS WORK
   const [tableHeight, setTableHeight] = useState("auto");
   const [activeIndex, setActiveIndex] = useState(null);
   const tableElement = useRef(null);
+  const [columns, setColumns] = useState(createHeaders(['.']));
 
-  console.log("printing");
-  console.log(tableHeaders);
-  const columns = createHeaders(tableHeaders);
+  function createHeaders(headers) {
+    if (headers.length === 0) {
+      return [];
+    }
+
+    return headers.map((item) => ({
+      text: item,
+      ref: React.createRef()
+    }));
+  }
+
+  useEffect(() => {
+    const tableHeaders = getTableHeaders(filteredLists);
+    setColumns(createHeaders(tableHeaders));
+  }, [filteredLists]);
 
   useEffect(() => {
     setTableHeight(tableElement.current.offsetHeight);

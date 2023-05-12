@@ -58,7 +58,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     function dataElementToDisplay() {
         // Results will be displayed
         if (isResults)
-            return (<ResultTable varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} minCellWidth={120} />);
+            return (<ResultTable filteredLists={filteredConstraintLists}  minCellWidth={120} />);
         // Constraint list will be displayed
         return (<ConstraintList varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />);
     }

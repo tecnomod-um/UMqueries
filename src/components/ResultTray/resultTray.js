@@ -50,9 +50,6 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
     // Gets all countable things
     function getCountTargets(isTotal, isMax) {
         // TODO
-
-
-        
     }
 
     function getVarTargets() {
