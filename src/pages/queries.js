@@ -92,7 +92,7 @@ function Queries() {
                 <div className={QueriesStyles.graph_container}>
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                     <div className={QueriesStyles.tray}>
-                        <ResultTray varData={varData} nodeData={nodeData} colorList={colorList} edgeData={edgeData} nodes={nodes} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                        <ResultTray varData={varData} nodeData={nodeData} edgeData={edgeData} insideData={insideData} nodes={nodes} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
                     </div>
                 </div>
             </div>
