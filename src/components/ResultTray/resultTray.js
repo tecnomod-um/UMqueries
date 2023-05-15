@@ -70,7 +70,7 @@ function ResultTray({ varData, nodeData, edgeData, insideData, nodes, selectedNo
                                 }
                             })
 
-                        }>{targetedNode.label + "'s " + property.label}</DropdownMenuItem>);
+                        }>{targetedNode.label + "'s '" + property.label + "'"}</DropdownMenuItem>);
                     }
                 });
             });
@@ -113,12 +113,12 @@ function ResultTray({ varData, nodeData, edgeData, insideData, nodes, selectedNo
     if (startingVar !== varData)
         if (startingVar[Object.keys(startingVar)[0]].isMetric) {
             let order;
-            startingVar[Object.keys(startingVar)[0]].isMax ? order = "'Max'" : order = "'Min'";
-            buttonVarToShowLabel = "Showing " + order + ' ' + startingVar[Object.keys(startingVar)[0]].property_label;
+            startingVar[Object.keys(startingVar)[0]].isMax ? order = "Max" : order = "Min";
+            buttonVarToShowLabel = order + ' ' + startingVar[Object.keys(startingVar)[0]].property_label + " shown";
         }
         else
             buttonVarToShowLabel = "'" + Object.keys(startingVar)[0].charAt(0).toUpperCase() + Object.keys(startingVar)[0].slice(1) + "s' shown";
-    else buttonVarToShowLabel = 'Show all variables';
+    else buttonVarToShowLabel = 'All variables shown';
 
     const deleteSelected = () => {
         if (selectedNode != null)
