@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import VisGraph from 'react-vis-graph-wrapper';
+import React, { useState } from "react";
+import VisGraph from "react-vis-graph-wrapper";
 
-// Vis js Graph component.
+// Vis.js Graph component.
 function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setIsOpen, toggleIsTransitive }) {
 
   function getMapHeight() {

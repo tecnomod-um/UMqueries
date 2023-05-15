@@ -1,8 +1,9 @@
-import * as React from 'react';
+import * as React from "react";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ArrowRight from '@mui/icons-material/ArrowRight';
 
+// Nested menu to be used alongside Dropdown component
 const NestedMenuItem = React.forwardRef((props, ref) => {
   const {
     parentMenuOpen,

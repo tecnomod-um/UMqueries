@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
-import ConstraintList from '../ConstraintList/constraintList';
-import ResultTable from '../ResultTable/resultTable';
+import React, { useState, useRef } from "react";
+import ConstraintList from "../ConstraintList/constraintList";
+import ResultTable from "../ResultTable/resultTable";
 import SearchStyles from "./search.module.css";
 
 // Search functionality of the list component
@@ -58,7 +58,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     function dataElementToDisplay() {
         // Results will be displayed
         if (isResults)
-            return (<ResultTable filteredLists={filteredConstraintLists}  minCellWidth={120} />);
+            return (<ResultTable filteredLists={filteredConstraintLists} minCellWidth={120} />);
         // Constraint list will be displayed
         return (<ConstraintList varData={varData} filteredLists={filteredConstraintLists} colorList={colorList} addNode={addNode} />);
     }

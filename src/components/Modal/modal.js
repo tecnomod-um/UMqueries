@@ -12,6 +12,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
         }
         const result = [];
         let input;
+        // The type of the property will determine how it will show in the app
         insideData[selectedNode.type].forEach((property) => {
             const isVar = selectedNode.isVar;
             const { object, label } = property;

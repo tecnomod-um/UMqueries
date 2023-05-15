@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from '../Dropdown/dropdown';
-import SparqlQuery from '../SparqlQuery/sparqlQuery';
+import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
+import SparqlQuery from "../SparqlQuery/sparqlQuery";
 import ResultTrayStyles from "./resultTray.module.css";
-import Search from '../Search/search';
+import Search from "../Search/search";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
@@ -19,9 +19,11 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
     function getPropertyTargets(isOptional, object, label, property) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
-        let result = nodes.filter(generalNode => generalNode && generalNode.type === object).map(targetedNode => (<DropdownMenuItem onClick={() => { addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional) }}>
-            {targetedNode.label}
-        </DropdownMenuItem>))
+        let result = nodes.filter(generalNode => generalNode && generalNode.type === object).map(
+            targetedNode => (
+                <DropdownMenuItem onClick={() => {
+                    addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional)
+                }}>{targetedNode.label} </DropdownMenuItem>))
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
@@ -47,9 +49,21 @@ function ResultTray({ varData, nodeData, edgeData, nodes, selectedNode, selected
         shownOptionals = (<span />);
     }
 
-    // Gets all countable things
+    // Gets all countable elements that could be queried
     function getCountTargets(isTotal, isMax) {
-        // TODO
+        let result = [];
+        // TODO get nodes themselves as counts
+        if (isTotal) { }
+        else if (!isTotal && isMax) { }
+        else if (!isTotal && !isMax) { }
+        // Detects properties marked as shown in vars
+        if (!isTotal && isMax) {
+
+        }
+        else if (!isTotal && !isMax) {
+
+        }
+        return result;
     }
 
     function getVarTargets() {

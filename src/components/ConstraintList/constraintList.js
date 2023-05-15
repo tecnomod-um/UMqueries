@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import ConstraintListStyles from "./constraintList.module.css";
 import Constraint from '../Constraint/constraint';
 

@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import styled from '@emotion/styled';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import NestedMenuItem from './nestedMenuItem';
+import NestedMenuItem from "./nestedMenuItem";
 
-// Dropdown component used in the properties
+// Dropdown component used throughout the application
 export const Dropdown = React.forwardRef(({
     trigger,
     menu,

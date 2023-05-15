@@ -8,12 +8,6 @@
   display: grid;
   overflow-y: hidden;
   overflow-x: auto;
-  grid-template-columns:
-    minmax(150px, 3fr)
-    minmax(150px, 1fr)
-    minmax(150px, 1fr)
-    minmax(150px, 1fr)
-    minmax(150px, 1fr);
 }
 
 
@@ -57,7 +51,7 @@
 }
 
 .resizeHandle:hover {
-  border-color: #cccccc;
+  border-color: #f47e7e;
 }
 
 .resizeHandle.active {
