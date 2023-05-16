@@ -1,0 +1,40 @@
+.queryHeader {
+    padding: 20px;
+    color: black;
+    font-size: 1.5vw;
+    text-align: center;
+  }
+
+.queryContainer {
+    padding: 10px;
+    margin: auto;
+    background-color: #ecebeb;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.constraint_container {
+    flex: 1;
+    padding: 1em;
+    border: solid;
+    max-width: 25%;
+    height: 80vh;
+}
+
+.graph_container {
+    flex: 2;
+    border: solid;
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+}
+
+.graph {
+    flex: 1;
+    border: solid;
+}
+
+.tray {
+    border: solid;
+}
+

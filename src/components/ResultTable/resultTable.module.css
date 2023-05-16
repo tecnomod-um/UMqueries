@@ -1,0 +1,59 @@
+.tableWrapper {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.resTable {
+  width: 100%;
+  display: grid;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+
+.resThead,
+.resTbody,
+.resTr {
+  display: contents;
+}
+
+.resTh {
+  position: relative;
+  font-size: 18px;
+}
+
+.resTable .resTh,
+.resTable .resTd {
+  text-align: left;
+  min-width: 100px;
+}
+
+.resSpan {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.resTable .resTr .resTd {
+  border-top: 1px solid #ccc;
+}
+
+.resizeHandle {
+  display: block;
+  position: absolute;
+  cursor: col-resize;
+  width: 7px;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  border-right: 2px solid transparent;
+}
+
+.resizeHandle:hover {
+  border-color: #f47e7e;
+}
+
+.resizeHandle.active {
+  border-color: #c22535;
+}

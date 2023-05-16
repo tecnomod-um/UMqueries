@@ -1,0 +1,8 @@
+.element:hover {
+    margin-left: 10px;
+    margin-right: -10px;
+}
+
+.element {
+    transition: all .2s ease;
+}

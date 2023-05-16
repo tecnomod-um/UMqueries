@@ -1,0 +1,15 @@
+.input {
+    padding: 1.5vh;
+    width: 100%;
+    height: 38px;
+    display: inline-block;
+    border: solid;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.dataContainer {
+    border: solid;
+    overflow-Y: 'auto';
+    overflow-X: 'hidden';
+}
