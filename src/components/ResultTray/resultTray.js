@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import SparqlQuery from "../SparqlQuery/sparqlQuery";
 import ResultTrayStyles from "./resultTray.module.css";
@@ -120,12 +120,25 @@ function ResultTray({ varData, nodeData, edgeData, insideData, nodes, selectedNo
             buttonVarToShowLabel = "'" + Object.keys(startingVar)[0].charAt(0).toUpperCase() + Object.keys(startingVar)[0].slice(1) + "s' shown";
     else buttonVarToShowLabel = 'All variables shown';
 
-    const deleteSelected = () => {
+    const deleteSelected = useCallback(() => {
         if (selectedNode != null)
-            removeNode()
+            removeNode();
         else if (selectedEdge != null)
-            removeEdge()
-    }
+            removeEdge();
+    }, [selectedNode, selectedEdge, removeNode, removeEdge]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === "Delete") {
+                deleteSelected();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyPress);
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [deleteSelected]);
 
     return (
         <span className={ResultTrayStyles.container}>

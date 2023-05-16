@@ -8,6 +8,7 @@ export const parseQuery = (nodeData, edgeData, startingVar) => {
         result = result + '';
     else
         result = result + '';
+
     /*
         nodeData.forEach((node) => {
             // Check internal properties
