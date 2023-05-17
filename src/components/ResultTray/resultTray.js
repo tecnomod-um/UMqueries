@@ -5,7 +5,7 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ varData, nodeData, edgeData, insideData, nodes, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
+function ResultTray({ varData, nodeData, edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
     const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
     let shownProperties;
@@ -164,7 +164,7 @@ function ResultTray({ varData, nodeData, edgeData, insideData, nodes, selectedNo
                     <Dropdown
                         trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                     />
-                    <SparqlQuery endpoint={endpoint} nodeData={nodeData} edgeData={edgeData} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
+                    <SparqlQuery endpoint={endpoint} nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}

@@ -10,18 +10,29 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//
+app.use(bodyParser.json()); // Add JSON body parser middleware
+
 app.post("/sparql", (req, res) => {
     console.log('Got body:', req.body);
 
     const options = {
-        method: "GET",
-        url: req.body.endpoint + req.body.query,
-    }
+        method: "POST",
+        url: req.body.endpoint,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json"
+        },
+        data: {
+            query: req.body.query
+        }
+    };
 
     axios
         .request(options)
         .then((response) => {
             console.log('Request processed successfully');
+            console.log(response.data);
             res.json(response.data);
         })
         .catch((error) => {

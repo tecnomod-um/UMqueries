@@ -3,15 +3,16 @@ import axios from "axios";
 import { parseQuery, parseResponse } from "./queryParser.js";
 import SparqlQueryStyles from "./sparqlQuery.module.css";
 
-const SparqlQuery = ({ endpoint, nodeData, edgeData, startingVar, setResultData }) => {
+const SparqlQuery = ({ endpoint, nodes, edges, startingVar, setResultData }) => {
     const proxyURL = ' http://localhost:8080/sparql';
     const [isLoading, setIsLoading] = useState(false);
 
+    // TODO set data validation / prevent injection !!!
     const handleQuery = () => {
         setIsLoading(true);
         let data = {
             endpoint: endpoint,
-            query: parseQuery(nodeData, edgeData, startingVar)
+            query: parseQuery(nodes, edges, startingVar)
         }
         axios({
             method: 'post',
