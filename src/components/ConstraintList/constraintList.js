@@ -17,7 +17,7 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
                 result.push(
                     <Constraint
                         key={getCodeFromURI(constraint)}
-                        id={`${key.toUpperCase()} variable`}
+                        id={key.toUpperCase()}
                         data={constraint}
                         type={key}
                         color={colorList[key]}

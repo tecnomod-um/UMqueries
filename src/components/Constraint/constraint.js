@@ -13,6 +13,8 @@ function Constraint({ id, data, type, color, addNode, isVar, graph }) {
 
     const [isHovered, setIsHovered] = useState(false);
 
+    const label = isVar ? id + ' variable' : id;
+
     const listItemStyle = {
         color: isHovered ? darken(color, 60) : "black",
     };
@@ -35,7 +37,7 @@ function Constraint({ id, data, type, color, addNode, isVar, graph }) {
             className={ConstraintStyles.element}
             onClick={handleClick}
         >
-            <h2>{id}</h2>
+            <h2>{label}</h2>
             <p>{data}</p>
         </li>
     );

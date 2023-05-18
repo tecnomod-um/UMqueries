@@ -1,15 +1,20 @@
-function buildVars(startingVar) {
-    let select = 'SELECT';
-    let body = 'WHERE {\n';
-    Object.keys(startingVar).map((element, index) => {
+const capitalizeFirst = str => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
-        const varUri = 'var' + index;
-        const varLabel = 'varLabel' + index;
+function buildVars(startingVar) {
+    console.log(startingVar);
+
+    let select = 'SELECT DISTINCT';
+    let body = 'WHERE {\n';
+    Object.keys(startingVar).forEach((element, index) => {
+        const varLabel = capitalizeFirst(element) + '_' + index;
+        const varUri = capitalizeFirst(element) + '_' + index + '_URI';
         const varType = 'var' + element + index;
         const varTypeLabel = 'varTypeLabel' + index
 
         // SELECT statement
-        select += ' ?' + varUri + ' ?' + varLabel + ' ?' + varType + ' ?' + varTypeLabel;
+        select += ' ?' + varLabel + ' ?' + varUri + ' ?' + varType + ' ?' + varTypeLabel;
 
         // Get var types
         body += '?' + varUri + ' <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?' + varType + ' .\n';
@@ -25,14 +30,30 @@ function buildVars(startingVar) {
         body += 'BIND( COALESCE(?' + varType + 'RdfsLabel, ?' + varType + 'PrefLabel, ?' + varType + 'AltLabel) AS ?' + varTypeLabel + ')\n';
 
         // TESTING ONLY
-        body += '?' + varUri +' <http://semanticscience.org/resource/SIO_010078> <http://rdf.biogateway.eu/prot/9606/A0A024R0Y4> .\n}';
+        body += '?' + varUri + ' <http://semanticscience.org/resource/SIO_010078> <http://rdf.biogateway.eu/prot/9606/A0A024R0Y4> .\n}';
     });
-    return select + '\n' + body;
+    return select + '\n' + body + '\n';
 }
 
 function buildProperties(nodes, edges) {
     // Testing query
     let body = '?varTest <http://semanticscience.org/resource/SIO_010078> <http://rdf.biogateway.eu/prot/9606/A0A024R0Y4> .\n';
+
+    /*
+    SELECT DISTINCT ?gene ?protein ?evidenceLevel
+        WHERE {
+            GRAPH <http://rdf.biogateway.eu/graph/crm> {
+                <http://rdf.biogateway.eu/crm/9606/CRMHS00000096925> <http://purl.obolibrary.org/obo/RO_0002428> ?gene
+            }
+            GRAPH <http://rdf.biogateway.eu/graph/gene> {
+                ?gene <http://semanticscience.org/resource/SIO_010078> ?protein
+            }
+            GRAPH <http://rdf.biogateway.eu/graph/prot> {
+                ?protein <http://schema.org/evidenceLevel> ?evidenceLevel
+            }
+        }
+    */
+
 
     /*
        nodes.forEach((node) => {

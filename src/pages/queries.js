@@ -20,9 +20,7 @@ const palette = distinctColors({
     lightMax: 90
 })
 
-for (let i = 0; i < Object.keys(varData).length; i++) {
-    colorList[Object.keys(varData)[i]] = palette[i].hex();
-}
+const initVarIDs = (varData) => Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -30,14 +28,26 @@ function Queries() {
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState();
     const [selectedEdge, setSelectedEdge] = useState();
+    const [varIDs, setVarIDs] = useState(initVarIDs(varData));
     const [isOpen, setIsOpen] = useState(false);
 
+    for (let i = 0; i < Object.keys(varData).length; i++) {
+        colorList[Object.keys(varData)[i]] = palette[i].hex();
+    }
+
     function addNode(id, data, type, isVar, graph) {
+        let varID = -1;
+        let label = id;
+        if (isVar) {
+            varID = varIDs[type];
+            label += " " + varID;
+            setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
+        }
         setNodes(nodes => {
             let newId = 0;
             if (nodes.length > 0)
                 newId = nodes.slice(-1)[0].id + 1;
-            return [...nodes, { id: newId, label: id, color: colorList[type], type: type, isVar: isVar, graph: graph }];
+            return [...nodes, { id: newId, label: label, color: colorList[type], type: type, varID: varID, graph: graph }];
         });
     }
 
@@ -74,9 +84,7 @@ function Queries() {
 
     function toggleIsTransitive(edge) {
         let label = edge.label;
-        if (!edge.isTransitive) label = label + "*";
-        else label = label.slice(0, -1);
-
+        edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
         let newEdges = [...edges];
         newEdges[edge.id] = { id: edge.id, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
         setEdges(newEdges);
@@ -92,7 +100,8 @@ function Queries() {
                 <div className={QueriesStyles.graph_container}>
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                     <div className={QueriesStyles.tray}>
-                        <ResultTray varData={varData} nodeData={nodeData} edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                        <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+
                     </div>
                 </div>
             </div>

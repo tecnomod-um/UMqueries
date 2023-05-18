@@ -14,7 +14,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
         let input;
         // The type of the property will determine how it will show in the app
         insideData[selectedNode.type].forEach((property) => {
-            const isVar = selectedNode.isVar;
+            const isVar = selectedNode.varID >= 0 ? true : false;
             const { object, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
             let value = selectedNode[label] ? selectedNode[label] : "";
