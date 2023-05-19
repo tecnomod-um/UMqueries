@@ -11,6 +11,10 @@ import nodeData from '../data/nodes.json';
 import edgeData from '../data/inter_properties.json';
 import insideData from '../data/intra_properties.json'
 
+const capitalizeFirst = str => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 const colorList = {};
 const palette = distinctColors({
     count: Object.keys(varData).length,
@@ -38,16 +42,18 @@ function Queries() {
     function addNode(id, data, type, isVar, graph) {
         let varID = -1;
         let label = id;
+        let uri = data;
         if (isVar) {
             varID = varIDs[type];
             label += " " + varID;
+            uri = '?' + capitalizeFirst(type) + '_' + varID + '_URI';
             setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
         }
         setNodes(nodes => {
             let newId = 0;
             if (nodes.length > 0)
                 newId = nodes.slice(-1)[0].id + 1;
-            return [...nodes, { id: newId, label: label, color: colorList[type], type: type, varID: varID, graph: graph }];
+            return [...nodes, { id: newId, data: uri, label: label, color: colorList[type], type: type, varID: varID, graph: graph }];
         });
     }
 

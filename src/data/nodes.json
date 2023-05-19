@@ -19,19 +19,19 @@
 	],
 	"prot": [
 		{
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972",
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R0Y4",
 			"label": "PROTHS00000005972"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005972#dbsuper",
+			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005972#dbsuper",
 			"label": "PROTHS00000005972#dbsuper"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984",
+			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005984",
 			"label": "PROTHS00000005984"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/protein/9606/PROTHS00000005984#dbsuper",
+			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005984#dbsuper",
 			"label": "PROTHS00000005984#dbsuper"
 		}
 	],

@@ -4,12 +4,12 @@ import SparqlQuery from "../SparqlQuery/sparqlQuery";
 import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
 
-const capitalizeFirst = str => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
+
+    const [startingVar, setStartingVar] = useState({});
+    const [resultData, setResultData] = useState();
+
     const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
     let shownProperties;
@@ -17,8 +17,11 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     let buttonPropertyLabel;
     let buttonOptionalLabel;
     let buttonInsideLabel;
-    const [startingVar, setStartingVar] = useState({});
-    const [resultData, setResultData] = useState();
+    let buttonVarToShowLabel;
+
+    const capitalizeFirst = str => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 
     // Update button labels dynamically
     if (selectedNode != null) {
@@ -45,7 +48,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         shownOptionals = (<span />);
     }
 
-    let buttonVarToShowLabel;
     const varsInGraph = nodes.filter(generalNode => generalNode && generalNode.varID >= 0).length;
     if (!Object.keys(startingVar).length) buttonVarToShowLabel = 'No nodes shown';
     else if (Object.keys(startingVar).length !== varsInGraph)
@@ -115,7 +117,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
-
     function showAllVars() {
         const result = nodes
             .filter(generalNode => generalNode && generalNode.varID >= 0)
@@ -126,11 +127,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 };
             }, {});
 
-        console.log(result);
         setStartingVar(result);
     }
 
-    // Get all thins that could be shown in the results
+    // Get all things that could be shown in the results
     function getShownTargets() {
         // Show specific var in results
         let result = nodes.filter(generalNode => generalNode && generalNode.varID >= 0)

@@ -18,7 +18,7 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
                     <Constraint
                         key={getCodeFromURI(constraint)}
                         id={key.toUpperCase()}
-                        data={constraint}
+                        data={null}
                         type={key}
                         color={colorList[key]}
                         addNode={addNode}
@@ -40,6 +40,7 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
                             color={colorList[key]}
                             addNode={addNode}
                             isVar={false}
+                            graph={null}
                         />
                     ))
                 );
