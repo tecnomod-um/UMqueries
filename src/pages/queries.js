@@ -8,8 +8,8 @@ import Modal from "../components/Modal/modal";
 
 import varData from '../data/vars.json';
 import nodeData from '../data/nodes.json';
-import edgeData from '../data/inter_properties.json';
-import insideData from '../data/intra_properties.json'
+import edgeData from '../data/object_properties.json';
+import insideData from '../data/data_properties.json'
 
 const capitalizeFirst = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -80,6 +80,7 @@ function Queries() {
         setNodes(nodes.filter(node => node.id !== selectedNode.id));
         setSelectedNode(null);
         setSelectedEdge(null);
+        setIsOpen(false);
     }
 
     function removeEdge() {
@@ -107,7 +108,6 @@ function Queries() {
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                     <div className={QueriesStyles.tray}>
                         <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
-
                     </div>
                 </div>
             </div>

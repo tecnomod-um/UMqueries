@@ -17,7 +17,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             const isVar = selectedNode.varID >= 0 ? true : false;
             const { object, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
-            let value = selectedNode[label] ? selectedNode[label] : "";
+            let value = selectedNode[label] ? selectedNode[label].data : "";
             if (object.includes('uri') || object.includes('link') || object.includes('url')) {
                 input = <input className={ModalStyles.input} type="url" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
             } else if (object.includes('numeric') || object.includes('int') || object.includes('integer')) {
@@ -40,14 +40,19 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             } else {
                 input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
             }
+            let { checkShow, checkTransitive } = false;
+            if (selectedNode[label]) {
+                checkShow = selectedNode[label].show;
+                checkTransitive = selectedNode[label].transitive;
+            }
             result.push(
                 <div className={ModalStyles.fieldContainer}>
                     <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
                     {input}
                     <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesShow"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={selectedNode[label + "_queriesShow"]} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
-                    <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesRecursive"}>Make recursive:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesRecursive"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={selectedNode[label + "_queriesRecursive"]} ref={el => (inputRefs[label + "_queriesRecursive"] = el)} />
+                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesShow"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
+                    <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesTransitive"}>Make transitive:</label>
+                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesTransitive"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkTransitive} ref={el => (inputRefs[label + "_queriesTransitive"] = el)} />
                 </div>
             );
         });
@@ -64,9 +69,10 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             const { label } = property;
             const inputElement = inputRefs[label];
             if (inputElement) {
-                updatedNode[label] = inputElement.value;
-                updatedNode[label + "_queriesShow"] = inputRefs[label + "_queriesShow"].checked;
-                updatedNode[label + "_queriesRecursive"] = inputRefs[label + "_queriesRecursive"].checked;
+                updatedNode[label] = {};
+                updatedNode[label].data = inputElement.value;
+                updatedNode[label].show = inputRefs[label + "_queriesShow"].checked;
+                updatedNode[label].transitive = inputRefs[label + "_queriesTransitive"].checked;
             }
         });
         setNode(updatedNode);
@@ -78,7 +84,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             <div className={ModalStyles.centered}>
                 <div className={ModalStyles.modal}>
                     <div className={ModalStyles.modalHeader}>
-                        <h2>Node '{selectedNode.label}' intrinsic properties</h2>
+                        <h2>Node '{selectedNode.label}' data properties</h2>
                     </div>
                     <button className={ModalStyles.closeBtn} onClick={() => setIsOpen(false)}>
                         <CloseIcon style={{ marginBottom: "-7px" }} />

@@ -30,21 +30,38 @@ function buildVars(startingVar) {
     return select + '\n' + body + '\n';
 }
 
-function buildProperties(nodes, edges) {
+function buildProperties(nodes, edges, insideData) {
     let body = '';
-    Object.keys(nodes).filter(generalNode => nodes[generalNode].varID >= 0).forEach(nodeID => {
-        const varUri = capitalizeFirst(nodes[nodeID].type) + '_' + nodes[nodeID].varID + '_URI';
+    let graph = '';
+    Object.keys(nodes).filter(generalNode => nodes[generalNode].varID >= 0).forEach(nodeInList => {
+        const varUri = capitalizeFirst(nodes[nodeInList].type) + '_' + nodes[nodeInList].varID + '_URI';
 
-        console.log("Building var " + nodeID + " properties");
-        edges.forEach(edge => {
-            if (edge.from === +nodeID) {
+        // Build object properties
+        graph = '';
+        edges.forEach(edge => { // !!! +
+            if (edge.from === nodes[nodeInList].id) {
+                if (!graph) {
+                    graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
+                    body += graph;
+                }
                 let optional = edge.isOptional ? `OPTIONAL {` : ``;
                 let transitive = edge.isTransitive ? `*` : ``;
-                let subject = nodes[edge.to].varID >= 0 ? nodes[edge.to].data : `<${nodes[edge.to].data}>`;
+                let targetNode = nodes.find(node => node.id === edge.to);
+                let subject = targetNode.varID >= 0 ? targetNode.data : `<${targetNode.data}>`;
                 body += `${optional}?${varUri} <${edge.data}>${transitive} ${subject}${optional ? '}' : ''}.\n`;
             }
         });
+        if (graph) body += `}\n`;
+
+        // Build data properties
+        graph = '';
+        let setProperties = Object.keys(nodes[nodeInList]);
+        console.log(nodes);
+        console.log(setProperties)
+
     });
+
+
     return body + '}';
 }
 

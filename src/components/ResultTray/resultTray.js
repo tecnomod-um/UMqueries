@@ -27,7 +27,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     if (selectedNode != null) {
         buttonPropertyLabel = "Set '" + selectedNode.type + "' properties...";
         buttonOptionalLabel = "Set '" + selectedNode.type + "' optional properties...";
-        buttonInsideLabel = "Set '" + selectedNode.type + "' intrinsic properties...";
+        buttonInsideLabel = "Set '" + selectedNode.type + "' data properties...";
         shownProperties = (edgeData[selectedNode.type]
             .map(edge => (
                 <DropdownNestedMenuItem

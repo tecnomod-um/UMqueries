@@ -43,9 +43,10 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     }
 
     let filteredConstraintLists = {};
-    let placeholderText = "Search by ";
+    let placeholderText = "";
 
     if (varData && nodeData) {
+        placeholderText = "Search by ";
         Object.keys(nodeData).forEach(key => {
             if (isVarIncludedInFilter(key) && !isResults)
                 filteredConstraintLists["VAR_" + key] = varData[key].label;
@@ -53,7 +54,11 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
             placeholderText = placeholderText + key + ", ";
         });
         placeholderText = placeholderText.slice(0, -2);
-    } else placeholderText = "No elements to display";
+    }
+
+    if (Object.keys(filteredConstraintLists).length === 0) {
+        placeholderText = "No elements to display";
+    }
 
     function dataElementToDisplay() {
         // Results will be displayed

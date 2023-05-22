@@ -30,24 +30,27 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
     edges: edgesInGraph,
   }
 
+  const handleNodeSelection = (selectedNodes, selectedEdges) => {
+    if (selectedNodes?.length > 0)
+      setSelectedNode(nodesInGraph.find(node => node.id === Number(selectedNodes)));
+    else if (selectedEdges?.length > 0)
+      setSelectedEdge(edgesInGraph.find(edge => edge.id === Number(selectedEdges)));
+  };
+
   const events = {
-    select: ({ nodes, edges }) => {
-      if (nodes?.length > 0)
-        setSelectedNode(nodesInGraph.find(node => node.id === Number(nodes)));
-      else if (edges?.length > 0)
-        setSelectedEdge(edgesInGraph.find(edge => edge.id === Number(edges)));
-      else {
-        setSelectedNode(null);
-        setSelectedEdge(null);
-      }
-    },
+    dragStart: ({ nodes, edges }) => handleNodeSelection(nodes, edges),
+    click: ({ nodes, edges }) => handleNodeSelection(nodes, edges),
     doubleClick: ({ nodes, edges }) => {
       if (nodes.length > 0)
         setIsOpen(true);
       else if (edges.length > 0)
         toggleIsTransitive(edgesInGraph.find(edge => edge.id === Number(edges)));
+    },
+    deselectNode: () => {
+      setSelectedNode(null);
+      setSelectedEdge(null);
     }
-  }
+  };
 
   return (
     <div id="map" alt="Graph showing the query to be made.">
