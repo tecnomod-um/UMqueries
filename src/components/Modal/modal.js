@@ -7,9 +7,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
     const inputRefs = {};
 
     function getInsideDataFields() {
-        function MakeItem(X) {
-            return <option key={X}>{X}</option>;
-        }
+        const MakeItem = (X) => <option key={X}>{X}</option>;
         const result = [];
         let input;
         // The type of the property will determine how it will show in the app
@@ -17,7 +15,13 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             const isVar = selectedNode.varID >= 0 ? true : false;
             const { object, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
-            let value = selectedNode[label] ? selectedNode[label].data : "";
+            let value = '';
+            let { checkShow, checkTransitive } = false;
+            if (selectedNode.properties && selectedNode.properties[label]) {
+                value = selectedNode.properties[label].data;
+                checkShow = selectedNode.properties[label].show;
+                checkTransitive = selectedNode.properties[label].transitive;
+            }
             if (object.includes('uri') || object.includes('link') || object.includes('url')) {
                 input = <input className={ModalStyles.input} type="url" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
             } else if (object.includes('numeric') || object.includes('int') || object.includes('integer')) {
@@ -40,11 +44,7 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             } else {
                 input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
             }
-            let { checkShow, checkTransitive } = false;
-            if (selectedNode[label]) {
-                checkShow = selectedNode[label].show;
-                checkTransitive = selectedNode[label].transitive;
-            }
+
             result.push(
                 <div className={ModalStyles.fieldContainer}>
                     <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
@@ -65,16 +65,22 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
     // Checks each field and updates the value in the current selected node
     function handleSubmit() {
         const updatedNode = { ...selectedNode };
+        updatedNode.properties = {};
+
         insideData[selectedNode.type].forEach((property) => {
             const { label } = property;
             const inputElement = inputRefs[label];
             if (inputElement) {
-                updatedNode[label] = {};
-                updatedNode[label].data = inputElement.value;
-                updatedNode[label].show = inputRefs[label + "_queriesShow"].checked;
-                updatedNode[label].transitive = inputRefs[label + "_queriesTransitive"].checked;
+                updatedNode.properties[label] = {
+                    uri: property.property,
+                    data: inputElement.value,
+                    show: inputRefs[label + '_queriesShow'].checked,
+                    transitive: inputRefs[label + '_queriesTransitive'].checked,
+                };
             }
         });
+
+        console.log(updatedNode);
         setNode(updatedNode);
     }
 
