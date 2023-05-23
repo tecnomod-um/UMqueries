@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import VisGraph from "react-vis-graph-wrapper";
+import GraphStyles from "./graph.module.css";
 
 // Vis.js Graph component.
 function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setIsOpen, toggleIsTransitive }) {
@@ -53,7 +54,7 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
   };
 
   return (
-    <div id="map" alt="Graph showing the query to be made.">
+    <div id="map" className={GraphStyles.map} alt="Graph showing the query to be made.">
       <VisGraph
         graph={graph}
         options={options}

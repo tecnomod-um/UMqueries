@@ -1,114 +1,450 @@
 {
 	"gene": [
 		{
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972",
-			"label": "GNHS00000005972"
+			"uri": "http://rdf.biogateway.eu/gene/9606/A1BG",
+			"label": "A1BG"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005972#dbsuper",
-			"label": "GNHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/gene/9606/A1CF",
+			"label": "A1CF"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984",
-			"label": "GNHS00000005984"
+			"uri": "http://rdf.biogateway.eu/gene/9606/A2M",
+			"label": "A2M"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/gene/9606/GNHS00000005984#dbsuper",
-			"label": "GNHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/gene/9606/A2ML1",
+			"label": "A2ML1"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/A3GALT2",
+			"label": "A3GALT2"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/A4GALT",
+			"label": "A4GALT"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/A4GNT",
+			"label": "A4GNT"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AAAS",
+			"label": "AAAS"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AACS",
+			"label": "AACS"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AADAC",
+			"label": "AADAC"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AADACL2",
+			"label": "AADACL2"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AADACL3",
+			"label": "AADACL3"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AADACL4",
+			"label": "AADACL4"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AADAT",
+			"label": "AADAT"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/gene/9606/AAGAB",
+			"label": "AAGAB"
 		}
 	],
 	"prot": [
 		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024QZ33",
+			"label": "A0A024QZ33_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024QZ42",
+			"label": "A0A024QZ42_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024QZP7",
+			"label": "A0A024QZP7_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024QZW4",
+			"label": "A0A024QZW4_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024QZX5",
+			"label": "A0A024QZX5_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R0K5",
+			"label": "A0A024R0K5_HUMAN"
+		},
+		{
 			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R0Y4",
-			"label": "PROTHS00000005972"
+			"label": "A0A024R0Y4_HUMAN"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005972#dbsuper",
-			"label": "PROTHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R161",
+			"label": "A0A024R161_HUMAN"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005984",
-			"label": "PROTHS00000005984"
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R1R8",
+			"label": "A0A024R1R8_HUMAN"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/prot/9606/PROTHS00000005984#dbsuper",
-			"label": "PROTHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R214",
+			"label": "A0A024R214_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R3B8",
+			"label": "A0A024R3B8_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R3B9",
+			"label": "A0A024R3B9_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R3M2",
+			"label": "A0A024R3M2_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R4E5",
+			"label": "A0A024R4E5_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R4K9",
+			"label": "A0A024R4K9_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R571",
+			"label": "A0A024R571_HUMAN"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/prot/9606/A0A024R5G9",
+			"label": "A0A024R5G9_HUMAN"
 		}
 	],
 	"crm": [
 		{
 			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972",
-			"label": "CRMHS00000005972"
+			"label": "crm/CRMHS00000005972"
 		},
 		{
 			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005972#dbsuper",
-			"label": "CRMHS00000005972#dbsuper"
+			"label": "crm#CRMHS00000005972#dbsuper"
 		},
 		{
 			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984",
-			"label": "CRMHS00000005984"
+			"label": "crm/CRMHS00000005984"
 		},
 		{
 			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005984#dbsuper",
-			"label": "CRMHS00000005984#dbsuper"
+			"label": "crm#CRMHS00000005984#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005992",
+			"label": "crm/CRMHS00000005992"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000005992#dbsuper",
+			"label": "crm#CRMHS00000005992#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006042",
+			"label": "crm/CRMHS00000006042"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006042#dbsuper",
+			"label": "crm#CRMHS00000006042#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006108",
+			"label": "crm/CRMHS00000006108"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006108#dbsuper",
+			"label": "crm#CRMHS00000006108#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006142",
+			"label": "crm/CRMHS00000006142"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006142#dbsuper",
+			"label": "crm#CRMHS00000006142#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006143",
+			"label": "crm/CRMHS00000006143"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006143#dbsuper",
+			"label": "crm#CRMHS00000006143#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006144",
+			"label": "crm/CRMHS00000006144"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006144#dbsuper",
+			"label": "crm#CRMHS00000006144#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006145",
+			"label": "crm/CRMHS00000006145"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006145#dbsuper",
+			"label": "crm#CRMHS00000006145#dbsuper"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006146",
+			"label": "crm/CRMHS00000006146"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/crm/9606/CRMHS00000006146#dbsuper",
+			"label": "crm#CRMHS00000006146#dbsuper"
 		}
 	],
 	"tad": [
 		{
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972",
-			"label": "TADHS00000005972"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000001",
+			"label": "tad/TADHS00000000001"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005972#dbsuper",
-			"label": "TADHS00000005972#dbsuper"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000001#3dgb",
+			"label": "tad#TADHS00000000001#3dgb"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984",
-			"label": "TADHS00000005984"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000002",
+			"label": "tad/TADHS00000000002"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000005984#dbsuper",
-			"label": "TADHS00000005984#dbsuper"
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000002#3dgb",
+			"label": "tad#TADHS00000000002#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000003",
+			"label": "tad/TADHS00000000003"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000003#3dgb",
+			"label": "tad#TADHS00000000003#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000004",
+			"label": "tad/TADHS00000000004"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000004#3dgb",
+			"label": "tad#TADHS00000000004#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000005",
+			"label": "tad/TADHS00000000005"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000005#3dgb",
+			"label": "tad#TADHS00000000005#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000006",
+			"label": "tad/TADHS00000000006"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000006#3dgb",
+			"label": "tad#TADHS00000000006#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000007",
+			"label": "tad/TADHS00000000007"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000007#3dgb",
+			"label": "tad#TADHS00000000007#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000008",
+			"label": "tad/TADHS00000000008"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000008#3dgb",
+			"label": "tad#TADHS00000000008#3dgb"
+		},
+		{
+			"uri": "http://rdf.biogateway.eu/tad/9606/TADHS00000000009",
+			"label": "tad/TADHS00000000009"
 		}
 	],
 	"omim": [
 		{
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972",
-			"label": "OMIMHS00000005972"
+			"uri": "http://purl.bioontology.org/ontology/STY/T001",
+			"label": "Organism"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005972#dbsuper",
-			"label": "OMIMHS00000005972#dbsuper"
+			"uri": "http://purl.bioontology.org/ontology/STY/T002",
+			"label": "Plant"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984",
-			"label": "OMIMHS00000005984"
+			"uri": "http://purl.bioontology.org/ontology/STY/T004",
+			"label": "Fungus"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/omim/9606/OMIMHS00000005984#dbsuper",
-			"label": "OMIMHS00000005984#dbsuper"
+			"uri": "http://purl.bioontology.org/ontology/STY/T005",
+			"label": "Virus"
 		},
 		{
-			"uri": "http://purl.bioontology.org/ontology/OMIM/MTHU026069",
-			"label": "'Swiss-cheese\"\" appearance of cartilage"
+			"uri": "http://purl.bioontology.org/ontology/STY/T007",
+			"label": "Bacterium"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T008",
+			"label": "Animal"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T010",
+			"label": "Vertebrate"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T011",
+			"label": "Amphibian"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T012",
+			"label": "Bird"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T013",
+			"label": "Fish"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T014",
+			"label": "Reptile"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T015",
+			"label": "Mammal"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T016",
+			"label": "Human"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T017",
+			"label": "Anatomical Structure"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T018",
+			"label": "Embryonic Structure"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T019",
+			"label": "Congenital Abnormality"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T020",
+			"label": "Acquired Abnormality"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T021",
+			"label": "Fully Formed Anatomical Structure"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T022",
+			"label": "Body System"
+		},
+		{
+			"uri": "http://purl.bioontology.org/ontology/STY/T023",
+			"label": "Body Part, Organ, or Organ Component"
 		}
 	],
 	"go": [
 		{
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972",
-			"label": "GOHS00000005972"
+			"uri": "http://purl.obolibrary.org/obo/GO_0000001",
+			"label": "mitochondrion inheritance"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005972#dbsuper",
-			"label": "GOHS00000005972#dbsuper"
+			"uri": "http://purl.obolibrary.org/obo/GO_0000002",
+			"label": "mitochondrial genome maintenance"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984",
-			"label": "GOHS00000005984"
+			"uri": "http://purl.obolibrary.org/obo/GO_0000003",
+			"label": "reproduction"
 		},
 		{
-			"uri": "http://rdf.biogateway.eu/go/9606/GOHS00000005984#dbsuper",
-			"label": "GOHS00000005984#dbsuper"
+			"uri": "http://purl.obolibrary.org/obo/GO_0000004",
+			"label": "http://purl.obolibrary.org/obo/GO_0000004"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000005",
+			"label": "obsolete ribosomal chaperone activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000006",
+			"label": "high-affinity zinc transmembrane transporter activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000007",
+			"label": "low-affinity zinc ion transmembrane transporter activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000008",
+			"label": "obsolete thioredoxin"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000009",
+			"label": "alpha-1,6-mannosyltransferase activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000010",
+			"label": "trans-hexaprenyltranstransferase activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000011",
+			"label": "vacuole inheritance"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000012",
+			"label": "single strand break repair"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000013",
+			"label": "http://purl.obolibrary.org/obo/GO_0000013"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000014",
+			"label": "single-stranded DNA endodeoxyribonuclease activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000015",
+			"label": "phosphopyruvate hydratase complex"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000016",
+			"label": "lactase activity"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000017",
+			"label": "alpha-glucoside transport"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000018",
+			"label": "regulation of DNA recombination"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000019",
+			"label": "regulation of mitotic recombination"
+		},
+		{
+			"uri": "http://purl.obolibrary.org/obo/GO_0000020",
+			"label": "obsolete negative regulation of recombination within rDNA repeats"
 		}
 	],
 	"mi": [

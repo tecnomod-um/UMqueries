@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //
-app.use(bodyParser.json()); // Add JSON body parser middleware
+app.use(bodyParser.json());
 
 app.post("/sparql", (req, res) => {
     console.log('Got body:', req.body);

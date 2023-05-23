@@ -16,14 +16,12 @@
 .constraint_container {
     flex: 1;
     padding: 1em;
-    border: solid;
     max-width: 25%;
     height: 80vh;
 }
 
 .graph_container {
     flex: 2;
-    border: solid;
     display: flex;
     flex-direction: column;
     max-width: 75%;
@@ -31,10 +29,10 @@
 
 .graph {
     flex: 1;
+    background-color: aliceblue;
     border: solid;
 }
 
 .tray {
-    border: solid;
 }
 

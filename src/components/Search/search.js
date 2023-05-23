@@ -48,7 +48,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
     if (varData && nodeData) {
         placeholderText = "Search by ";
         Object.keys(nodeData).forEach(key => {
-            if (isVarIncludedInFilter(key) && !isResults)
+            if (!isResults && isVarIncludedInFilter(key))
                 filteredConstraintLists["VAR_" + key] = varData[key].label;
             filteredConstraintLists[key] = getFilteredList(nodeData[key]);
             placeholderText = placeholderText + key + ", ";

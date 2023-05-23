@@ -6,13 +6,18 @@ import Navbar from "./components/Navbar/navbar";
 import Main from "./pages/main";
 import Queries from "./pages/queries";
 import About from "./pages/about";
+import favicon from "./resources/icons/favicon.png";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // Route definition
 
+document.title = 'UM queries';
+
+
 root.render(
   <BrowserRouter>
     <Navbar />
+    <link rel="icon" href={favicon} />
     <Routes>
       <Route
         path="/"
