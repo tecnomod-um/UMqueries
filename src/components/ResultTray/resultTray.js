@@ -156,15 +156,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         return result;
     }
 
-    function getExportTargets() {
-        return [
-            <Exporter data={resultData} fileType="csv" />,
-            <Exporter data={resultData} fileType="tsv" />,
-            <Exporter data={resultData} fileType="odt" />,
-            <Exporter data={resultData} fileType="txt" />
-        ];
-    }
-
     // Remove nodes
     const deleteSelected = useCallback(() => {
         if (selectedNode != null) {
@@ -210,7 +201,12 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
-                        menu={getExportTargets()}
+                        menu={[
+                            <Exporter data={resultData} fileType="csv" />,
+                            <Exporter data={resultData} fileType="tsv" />,
+                            <Exporter data={resultData} fileType="txt" />,
+                            <Exporter data={resultData} fileType="ods" />
+                        ]}
                     />
                     <SparqlQuery endpoint={endpoint} nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
                 </div>
