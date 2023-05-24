@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import SparqlQuery from "../SparqlQuery/sparqlQuery";
+import Exporter from "../Exporter/exporter";
 import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
 
@@ -155,6 +156,15 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         return result;
     }
 
+    function getExportTargets() {
+        return [
+            <Exporter data={resultData} fileType="csv" />,
+            <Exporter data={resultData} fileType="tsv" />,
+            <Exporter data={resultData} fileType="odt" />,
+            <Exporter data={resultData} fileType="txt" />
+        ];
+    }
+
     // Remove nodes
     const deleteSelected = useCallback(() => {
         if (selectedNode != null) {
@@ -199,8 +209,8 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             </div>
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
-                    <Dropdown
-                        trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
+                    <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
+                        menu={getExportTargets()}
                     />
                     <SparqlQuery endpoint={endpoint} nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
                 </div>

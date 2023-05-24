@@ -40,7 +40,7 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
                             color={colorList[key]}
                             addNode={addNode}
                             isVar={false}
-                            graph={null}
+                            graph={varData[key].uri_graph}
                         />
                     ))
                 );

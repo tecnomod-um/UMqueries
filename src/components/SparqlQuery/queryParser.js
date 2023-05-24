@@ -36,41 +36,41 @@ export const parseQuery = (nodes, edges, startingVar) => {
 
     // Create query body
     let graph = '';
-    Object.keys(nodes).filter(generalNode => nodes[generalNode].varID >= 0).forEach(varNodeInList => {
-        const varNode = capitalizeFirst(nodes[varNodeInList].type) + '_' + nodes[varNodeInList].varID + '_URI';
-
+    Object.keys(nodes).forEach(nodeInList => {
+        const varNode = nodes[nodeInList].varID >= 0 ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
         // Build object properties
         graph = '';
         edges.forEach(edge => {
-            if (edge.from === nodes[varNodeInList].id) {
+            if (edge.from === nodes[nodeInList].id) {
                 if (!graph) {
-                    graph = `GRAPH <${nodes[varNodeInList].graph}> {\n`;
+                    graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
                     body += graph;
                 }
                 let optional = edge.isOptional ? `OPTIONAL {` : ``;
                 let transitive = edge.isTransitive ? `*` : ``;
                 let targetNode = nodes.find(node => node.id === edge.to);
                 let subject = targetNode.varID >= 0 ? targetNode.data : `<${targetNode.data}>`;
-                body += `${optional}?${varNode} <${edge.data}>${transitive} ${subject}${optional ? '}' : ''}.\n`;
+                body += `${optional}${varNode} <${edge.data}>${transitive} ${subject}${optional ? '}' : ''}.\n`;
             }
         });
         if (graph) body += `}\n`;
 
         // Build data properties
         graph = '';
-        if (nodes[varNodeInList].properties) {
+        if (nodes[nodeInList].properties) {
             if (!graph) {
-                graph = `GRAPH <${nodes[varNodeInList].graph}> {\n`;
+                graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
                 body += graph;
             }
-            Object.keys(nodes[varNodeInList].properties).forEach(property => {
-                let data = nodes[varNodeInList].properties[property].data;
-                let show = nodes[varNodeInList].properties[property].show;
-                if (show || data) {
-                    let varNodeData = cleanString(capitalizeFirst(property) + '_' + nodes[varNodeInList].varID);
 
-                    let uri = nodes[varNodeInList].properties[property].uri;
-                    let transitive = nodes[varNodeInList].properties[property].transitive ? `*` : ``;
+            Object.keys(nodes[nodeInList].properties).forEach(property => {
+                let data = nodes[nodeInList].properties[property].data;
+                let show = nodes[nodeInList].properties[property].show;
+                if (show || data) {
+                    let varNodeData = cleanString(capitalizeFirst(property) + '_' + nodes[nodeInList].varID);
+
+                    let uri = nodes[nodeInList].properties[property].uri;
+                    let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                     if (show)
                         select += ' ?' + varNodeData;
                     body += `?${varNode} <${uri}>${transitive} ?${varNodeData} .\n`;
@@ -81,7 +81,6 @@ export const parseQuery = (nodes, edges, startingVar) => {
             });
         }
         if (graph) body += `}\n`;
-
     });
     body += '}';
     return select + '\n' + body + '\n';
@@ -107,6 +106,7 @@ export const parseResponse = (response) => {
 
         result[typeValue].push(elementFields);
     });
+    console.log(result);
     return result;
 };
 /*
