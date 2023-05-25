@@ -1,12 +1,4 @@
-const capitalizeFirst = str => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function cleanString(str) {
-    const invalidCharsRegex = /[^a-zA-Z0-9_]/g;
-    const cleanedString = str.replace(invalidCharsRegex, '');
-    return cleanedString;
-}
+import { capitalizeFirst, cleanString } from "./stringFormatter.js";
 
 export const parseQuery = (nodes, edges, startingVar) => {
     let select = 'SELECT DISTINCT';
@@ -73,7 +65,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
                     let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                     if (show)
                         select += ' ?' + varNodeData;
-                    body += `?${varNode} <${uri}>${transitive} ?${varNodeData} .\n`;
+                    body += `${varNode} <${uri}>${transitive} ?${varNodeData} .\n`;
                     if (data) {
                         body += `FILTER (?${varNodeData} = "${data}") .\n`;
                     }
@@ -108,18 +100,4 @@ export const parseResponse = (response) => {
     });
     console.log(result);
     return result;
-};
-/*
-SELECT DISTINCT ?gene ?protein ?evidenceLevel
-    WHERE {
-        GRAPH <http://rdf.biogateway.eu/graph/crm> {
-            <http://rdf.biogateway.eu/crm/9606/CRMHS00000096925> <http://purl.obolibrary.org/obo/RO_0002428> ?gene
-        }
-        GRAPH <http://rdf.biogateway.eu/graph/gene> {
-            ?gene <http://semanticscience.org/resource/SIO_010078> ?protein
-        }
-        GRAPH <http://rdf.biogateway.eu/graph/prot> {
-            ?protein <http://schema.org/evidenceLevel> ?evidenceLevel
-        }
-    }
-*/
+}

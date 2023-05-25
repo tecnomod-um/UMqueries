@@ -5,7 +5,7 @@ import AboutStyles from "./about.module.css";
 function About() {
     return (
         <span>
-            <h1>UMU - ABOUT</h1>
+            <h1>UM - ABOUT</h1>
             <div className={AboutStyles.container}>
                 Contact info
             </div>

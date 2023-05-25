@@ -5,15 +5,12 @@ import Search from '../components/Search/search';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import Modal from "../components/Modal/modal";
+import { capitalizeFirst } from "../utils/stringFormatter.js";
 
 import varData from '../data/vars.json';
 import nodeData from '../data/nodes.json';
 import edgeData from '../data/object_properties.json';
 import insideData from '../data/data_properties.json'
-
-const capitalizeFirst = str => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 const colorList = {};
 const palette = distinctColors({

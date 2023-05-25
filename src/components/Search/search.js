@@ -27,7 +27,6 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
         });
     }
 
-
     // Takes generated vars into account if necessary
     function isVarIncludedInFilter(key) {
         let keyLabel = key + " variable";

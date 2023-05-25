@@ -1,6 +1,7 @@
 import React from "react";
 import ModalStyles from "./modal.module.css";
 import CloseIcon from '@mui/icons-material/Close';
+import { getCategory } from "../../utils/typeChecker.js";
 
 // Displays the selected node's intrinsic properties
 function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
@@ -22,29 +23,33 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
                 checkShow = selectedNode.properties[label].show;
                 checkTransitive = selectedNode.properties[label].transitive;
             }
-            if (object.includes('uri') || object.includes('link') || object.includes('url')) {
-                input = <input className={ModalStyles.input} type="url" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
-            } else if (object.includes('numeric') || object.includes('int') || object.includes('integer')) {
-                input = <input className={ModalStyles.input} type="number" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
-            } else if (Array.isArray(object) || (typeof object === 'string' && object.includes('array'))) {
-                input = (
-                    <select className={ModalStyles.input} key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)}>
-                        {object.map((X) => MakeItem(X))}
-                    </select>
-                );
-            } else if (typeof object === 'string' && (object.includes('string') || object.includes('text') || object.includes('label'))) {
-                input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
-            } else if (typeof object === 'string' && object.includes('boolean')) {
-                input = (
-                    <div>
-                        <input className={ModalStyles.input} type="radio" key={label} name={label} value="true" disabled={!isVar} defaultChecked={value} ref={el => (inputRefs[label] = el)} /> True
-                        <input className={ModalStyles.input} type="radio" key={label} name={label} value="false" disabled={!isVar} defaultChecked={!value} ref={el => (inputRefs[label] = el)} /> False
-                    </div>
-                );
-            } else {
-                input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+            switch (getCategory(object)) {
+                case 'link':
+                    input = <input className={ModalStyles.input} type="url" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    break;
+                case 'number':
+                    input = <input className={ModalStyles.input} type="number" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    break;
+                case 'select':
+                    input = (
+                        <select className={ModalStyles.input} key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)}>
+                            {object.map((X) => MakeItem(X))}
+                        </select>
+                    );
+                    break;
+                case 'boolean':
+                    input = (
+                        <div>
+                            <input className={ModalStyles.input} type="radio" key={label} name={label} value="true" disabled={!isVar} defaultChecked={value} ref={el => (inputRefs[label] = el)} /> True
+                            <input className={ModalStyles.input} type="radio" key={label} name={label} value="false" disabled={!isVar} defaultChecked={!value} ref={el => (inputRefs[label] = el)} /> False
+                        </div>
+                    );
+                    break;
+                case 'text':
+                default:
+                    input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    break;
             }
-
             result.push(
                 <div className={ModalStyles.fieldContainer}>
                     <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
@@ -79,8 +84,6 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
                 };
             }
         });
-
-        console.log(updatedNode);
         setNode(updatedNode);
     }
 

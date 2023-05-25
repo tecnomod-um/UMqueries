@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
+import { capitalizeFirst } from "../../utils/stringFormatter.js";
+import { getCategory } from "../../utils/typeChecker.js";
 import SparqlQuery from "../SparqlQuery/sparqlQuery";
 import Exporter from "../Exporter/exporter";
 import ResultTrayStyles from "./resultTray.module.css";
@@ -20,15 +22,11 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     let buttonInsideLabel;
     let buttonVarToShowLabel;
 
-    const capitalizeFirst = str => {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
     // Update button labels dynamically
     if (selectedNode != null) {
-        buttonPropertyLabel = "Set '" + selectedNode.type + "' properties...";
-        buttonOptionalLabel = "Set '" + selectedNode.type + "' optional properties...";
-        buttonInsideLabel = "Set '" + selectedNode.type + "' data properties...";
+        buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
+        buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
+        buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
         shownProperties = (edgeData[selectedNode.type]
             .map(edge => (
                 <DropdownNestedMenuItem
@@ -51,16 +49,14 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
 
     const varsInGraph = nodes.filter(generalNode => generalNode && generalNode.varID >= 0).length;
     if (!Object.keys(startingVar).length) buttonVarToShowLabel = 'No nodes shown';
-    else if (Object.keys(startingVar).length !== varsInGraph)
-        if (startingVar[Object.keys(startingVar)[0]].isMetric) {
-            let order;
-            startingVar[Object.keys(startingVar)[0]].isMax ? order = "Max" : order = "Min";
-            buttonVarToShowLabel = order + ' ' + startingVar[Object.keys(startingVar)[0]].property_label + " shown";
-        }
-        else {
-            let varName = startingVar[Object.keys(startingVar)[0]].type
-            buttonVarToShowLabel = capitalizeFirst("" + varName) + " " + startingVar[Object.keys(startingVar)[0]].varID + " shown";
-        }
+    else if (startingVar[Object.keys(startingVar)[0]].isMetric) {
+        const operator = startingVar[Object.keys(startingVar)[0]].isMax ? 'Max ' : 'Min ';
+        buttonVarToShowLabel = operator + ' ' + startingVar[Object.keys(startingVar)[0]].property_label + ' from ' + startingVar[Object.keys(startingVar)[0]].type + ' ' + startingVar[Object.keys(startingVar)[0]].varID + ' shown';
+    }
+    else if (Object.keys(startingVar).length !== varsInGraph) {
+        let varName = startingVar[Object.keys(startingVar)[0]].type
+        buttonVarToShowLabel = capitalizeFirst("" + varName) + " " + startingVar[Object.keys(startingVar)[0]].varID + " shown";
+    }
     else buttonVarToShowLabel = 'All nodes shown';
 
     // Gets all nodes that could receive a property
@@ -85,34 +81,37 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         };
     };
 
-    const metricContents = (node, isTotal, isMax) => {
+    const metricContents = (node, property, isTotal, isMax) => {
         return {
             "isMetric": true,
             "isTotal": isTotal,
             "isMax": isMax,
-            "property_label": node.label,
+            "property_label": property,
             "type": node.type,
-            "label": node.label,
+            "varID": node.varID,
             "uri_graph": node.graph
         };
     };
 
     // Gets all countable elements that could be queried
-    function getCountTargets(isTotal, isMax) {
+    function getMetricTargets(isTotal, isMax) {
         let result = [];
         // TODO get nodes themselves as counts
         if (isTotal) { }
         // Detects properties marked as shown in vars
         if (!isTotal) {
             nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
-                .forEach((targetedNode) => {
-                    insideData[targetedNode.type].forEach((property) => {
-                        if (targetedNode[property.label + "_queriesShow"] && !isNaN(targetedNode[property.label])) {
-                            result.push(<DropdownMenuItem onClick={() =>
-                                setStartingVar({ [targetedNode.id]: metricContents(targetedNode, isTotal, isMax) })
-                            }>{targetedNode.label + "'s '" + property.label + "'"}</DropdownMenuItem>);
-                        }
-                    });
+                .forEach(targetedNode => {
+                    if (targetedNode.properties)
+                        Object.keys(targetedNode.properties).forEach(property => {
+                            let show = targetedNode.properties[property].show;
+                            if (show && getCategory(insideData[targetedNode.type].filter(item => item.label === property)[0].object) === 'number') {
+                                result.push(<DropdownMenuItem onClick={() =>
+                                    setStartingVar({ [targetedNode.id]: metricContents(targetedNode, property, isTotal, isMax) })
+                                }>{targetedNode.label + "'s '" + property + "'"}</DropdownMenuItem>);
+                                console.log(startingVar);
+                            }
+                        });
                 });
         }
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
@@ -144,13 +143,13 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         let countMenu = [
             (<DropdownNestedMenuItem
                 label="Get min"
-                menu={getCountTargets(false, false)} />),
+                menu={getMetricTargets(false, false)} />),
             (<DropdownNestedMenuItem
                 label="Get max"
-                menu={getCountTargets(false, true)} />),
+                menu={getMetricTargets(false, true)} />),
             (<DropdownNestedMenuItem
                 label="Get count"
-                menu={getCountTargets(true)} />)
+                menu={getMetricTargets(true)} />)
         ];
         result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);
         return result;

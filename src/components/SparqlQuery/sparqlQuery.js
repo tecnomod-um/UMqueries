@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { parseQuery, parseResponse } from "./queryParser.js";
+import { parseQuery, parseResponse } from "../../utils/queryParser.js";
 import SparqlQueryStyles from "./sparqlQuery.module.css";
 
 const SparqlQuery = ({ endpoint, nodes, edges, startingVar, setResultData }) => {

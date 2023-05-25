@@ -8,12 +8,10 @@ import Queries from "./pages/queries";
 import About from "./pages/about";
 import favicon from "./resources/icons/favicon.png";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-// Route definition
-
 document.title = 'UM queries';
 
-
+// Route definition
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Navbar />
@@ -25,7 +23,7 @@ root.render(
       ></Route>
       <Route
         path="/queries"
-        element={<Queries/>}
+        element={<Queries />}
       ></Route>
       <Route
         path="/about"

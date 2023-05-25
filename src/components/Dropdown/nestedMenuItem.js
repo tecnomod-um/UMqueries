@@ -1,44 +1,35 @@
-import * as React from "react";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ArrowRight from '@mui/icons-material/ArrowRight';
+import React, { useState, useRef } from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
-// Nested menu to be used alongside Dropdown component
 const NestedMenuItem = React.forwardRef((props, ref) => {
   const {
     parentMenuOpen,
     label,
-    rightIcon = <ArrowRight style={{ fontSize: 16 }} />,
+    rightIcon = <ArrowRightIcon style={{ fontSize: 16 }} />,
     keepopen,
     children,
     customTheme,
     className,
-    tabIndex: tabIndexProp,
-    ContainerProps: ContainerPropsProp = {},
+    tabIndex,
+    containerProps: { ref: containerRefProp, ...ContainerProps } = {},
     rightAnchored,
-    ...MenuItemProps
+    ...menuItemProps
   } = props;
 
-  const { ref: containerRefProp, ...ContainerProps } =
-    ContainerPropsProp;
+  const menuItemRef = useRef(null);
+  const containerRef = useRef(null);
+  const menuContainerRef = useRef(null);
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 
-  const menuItemRef = React.useRef(null);
   React.useImperativeHandle(ref, () => menuItemRef.current);
-
-  const containerRef = React.useRef(null);
-  React.useImperativeHandle(
-    containerRefProp,
-    () => containerRef.current
-  );
-
-  const menuContainerRef = React.useRef(null);
-
-  const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(false);
+  React.useImperativeHandle(containerRefProp, () => containerRef.current);
 
   const handleMouseEnter = (event) => {
     setIsSubMenuOpen(true);
 
-    if (ContainerProps?.onMouseEnter) {
+    if (ContainerProps.onMouseEnter) {
       ContainerProps.onMouseEnter(event);
     }
   };
@@ -46,20 +37,14 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
   const handleMouseLeave = (event) => {
     setIsSubMenuOpen(false);
 
-    if (ContainerProps?.onMouseLeave) {
+    if (ContainerProps.onMouseLeave) {
       ContainerProps.onMouseLeave(event);
     }
   };
 
   const isSubmenuFocused = () => {
     const active = containerRef.current?.ownerDocument?.activeElement;
-
-    for (const child of menuContainerRef.current?.children ?? []) {
-      if (child === active) {
-        return true;
-      }
-    }
-    return false;
+    return Array.from(menuContainerRef.current?.children || []).includes(active);
   };
 
   const handleFocus = (event) => {
@@ -67,13 +52,13 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
       setIsSubMenuOpen(true);
     }
 
-    if (ContainerProps?.onFocus) {
+    if (ContainerProps.onFocus) {
       ContainerProps.onFocus(event);
     }
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       return;
     }
 
@@ -83,12 +68,12 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
 
     const active = containerRef.current?.ownerDocument?.activeElement;
 
-    if (event.key === 'ArrowLeft' && isSubmenuFocused()) {
+    if (event.key === "ArrowLeft" && isSubmenuFocused()) {
       containerRef.current?.focus();
     }
 
     if (
-      event.key === 'ArrowRight' &&
+      event.key === "ArrowRight" &&
       event.target === containerRef.current &&
       event.target === active
     ) {
@@ -99,23 +84,18 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
 
   const open = isSubMenuOpen && parentMenuOpen;
 
-  let tabIndex;
-  if (!props.disabled) {
-    tabIndex = tabIndexProp !== undefined ? tabIndexProp : -1;
-  }
-
   return (
     <div
       {...ContainerProps}
       ref={containerRef}
       onFocus={handleFocus}
-      tabIndex={tabIndex}
+      tabIndex={tabIndex !== undefined ? tabIndex : -1}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
     >
       <MenuItem
-        {...MenuItemProps}
+        {...menuItemProps}
         data-open={!!open || undefined}
         className={className}
         ref={menuItemRef}
@@ -127,15 +107,15 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
       </MenuItem>
       <Menu
         hideBackdrop
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: "none" }}
         anchorEl={menuItemRef.current}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: rightAnchored ? 'left' : 'right',
+          vertical: "top",
+          horizontal: rightAnchored ? "left" : "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: rightAnchored ? 'right' : 'left',
+          vertical: "top",
+          horizontal: rightAnchored ? "right" : "left",
         }}
         css={customTheme}
         open={!!open}
@@ -146,7 +126,7 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
           setIsSubMenuOpen(false);
         }}
       >
-        <div ref={menuContainerRef} style={{ pointerEvents: 'auto' }}>
+        <div ref={menuContainerRef} style={{ pointerEvents: "auto" }}>
           {children}
         </div>
       </Menu>

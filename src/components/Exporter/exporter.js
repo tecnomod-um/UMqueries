@@ -6,7 +6,7 @@ import XLSX from 'xlsx/dist/xlsx.full.min.js';
 const Exporter = ({ data, fileType }) => {
     const handleExport = () => {
         let content = '';
-
+        if (!data) return;
         switch (fileType) {
             case 'csv':
                 const csvContent = convertToCSV(data);
