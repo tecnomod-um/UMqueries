@@ -1,0 +1,9 @@
+.aboutContainer {
+    padding: 10px;
+    margin: auto;
+    background-color: #ecebeb;
+    justify-content: center;
+    flex-wrap: wrap;
+    display: grid;
+    height: 200vh;
+  }
