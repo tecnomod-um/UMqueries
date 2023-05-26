@@ -6,7 +6,7 @@ import GraphStyles from "./graph.module.css";
 function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setIsOpen, toggleIsTransitive }) {
 
   function getMapHeight() {
-    return (window.innerHeight / 1.85);
+    return (window.innerHeight / 1.70);
   }
 
   const [options, setOptions] = useState({

@@ -75,7 +75,7 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
-            <div className={SearchStyles.dataContainer} style={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(100% - 38px)' }}>
+            <div className={SearchStyles.dataContainer} style={{ overflowY: 'auto', overflowX: 'hidden', height: isResults ? 'calc(100% - 40px)' : 'calc(100% + 40px)' }}>
                 {dataElementToDisplay()}
             </div>
         </span>

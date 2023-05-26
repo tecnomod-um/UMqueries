@@ -95,21 +95,18 @@ function Queries() {
     }
 
     return (
-        <span>
-            <h1 className={QueriesStyles.queryHeader}>UMU - QUERIES</h1>
-            <div className={QueriesStyles.queryContainer}>
-                <div className={QueriesStyles.constraint_container}>
-                    <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
-                </div>
-                <div className={QueriesStyles.graph_container}>
-                    <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
-                    <div className={QueriesStyles.tray}>
-                        <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
-                    </div>
+        <div className={QueriesStyles.queryContainer}>
+            <div className={QueriesStyles.constraint_container}>
+                <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
+            </div>
+            <div className={QueriesStyles.graph_container}>
+                <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
+                <div className={QueriesStyles.tray}>
+                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
                 </div>
             </div>
             {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} setNode={setNode} />}
-        </span >
+        </div>
     );
 }
 export default Queries;

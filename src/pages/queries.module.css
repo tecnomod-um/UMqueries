@@ -9,6 +9,7 @@
     padding: 10px;
     margin: auto;
     background-color: #ecebeb;
+    min-height: calc(100vh - 55px);
     display: flex;
     flex-wrap: wrap;
 }
@@ -35,3 +36,4 @@
 
 .tray {
 }
+
