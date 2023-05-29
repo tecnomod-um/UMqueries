@@ -5,7 +5,6 @@ import LandingImage from "../components/LandingImage/landingImage";
 
 import image from "../resources/images/image.jpg";
 
-// Brief introduction to the tool
 function Main() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
@@ -26,9 +25,12 @@ function Main() {
   useEffect(() => {
     const handleScrollIndicator = () => {
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
+      const documentHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
 
-      setShowScrollIndicator(scrollOffset < documentHeight - windowHeight);
+      setShowScrollIndicator(scrollOffset + windowHeight < documentHeight - 1);
     };
 
     window.addEventListener("scroll", handleScrollIndicator);
@@ -38,6 +40,7 @@ function Main() {
       window.removeEventListener("scroll", handleScrollIndicator);
     };
   }, [scrollOffset]);
+
 
   const handleScrollToBottom = () => {
     window.scrollTo({

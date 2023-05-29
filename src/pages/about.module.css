@@ -1,9 +1,65 @@
-.aboutContainer {
-    padding: 10px;
-    margin: auto;
+.pageContainer {
+    min-height: calc(100vh - 55px);
     background-color: #ecebeb;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    flex-wrap: wrap;
-    display: grid;
-    height: 200vh;
-  }
+    align-items: center;
+    padding: 10px;
+}
+
+.mainHeader {
+    padding: 20px;
+    color: black;
+    font-size: 35px;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.sectionHeader {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.sectionText {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.memberList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.memberItem {
+    margin-bottom: 10px;
+}
+
+.memberName {
+    font-weight: bold;
+}
+
+.memberRole {
+    font-size: 14px;
+    color: #888;
+}
+
+.contactInfo {
+    font-size: 16px;
+    margin-top: 10px;
+}
