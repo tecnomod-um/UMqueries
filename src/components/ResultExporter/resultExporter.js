@@ -3,7 +3,7 @@ import { DropdownMenuItem } from "../Dropdown/dropdown";
 import { saveAs } from 'file-saver';
 import XLSX from 'xlsx/dist/xlsx.full.min.js';
 
-const Exporter = ({ data, fileType }) => {
+const ResultExporter = ({ data, fileType }) => {
     const handleExport = () => {
         let content = '';
         if (!data) return;
@@ -90,4 +90,4 @@ const Exporter = ({ data, fileType }) => {
     );
 };
 
-export default Exporter;
+export default ResultExporter;

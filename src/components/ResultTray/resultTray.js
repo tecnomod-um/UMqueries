@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
+import { GraphToFile, FileToGraph } from "../GraphExporter/graphExporter.js";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { getCategory } from "../../utils/typeChecker.js";
 import SparqlQuery from "../SparqlQuery/sparqlQuery";
-import Exporter from "../Exporter/exporter";
+import ResultExporter from "../ResultExporter/resultExporter";
 import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
 
@@ -63,7 +64,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     function getPropertyTargets(isOptional, object, label, property) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
-        let result = nodes.filter(generalNode => generalNode && generalNode.type === object)
+        let result = nodes.filter(generalNode => generalNode && generalNode.type === object && generalNode.id !== selectedNode.id)
             .map(targetedNode => (
                 <DropdownMenuItem onClick={() => {
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional)
@@ -155,14 +156,19 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         return result;
     }
 
+    // Load graph from file
+    const onFileSelect = (queryData) => {
+        console.log(queryData);
+    }
+
     // Remove nodes
     const deleteSelected = useCallback(() => {
-        if (selectedNode != null) {
+        if (selectedNode) {
             removeNode();
             if (Object.keys(startingVar).includes(String(selectedNode.id)))
                 setStartingVar({});
         }
-        else if (selectedEdge != null)
+        else if (selectedEdge)
             removeEdge();
     }, [startingVar, selectedNode, selectedEdge, removeNode, removeEdge]);
 
@@ -201,10 +207,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                         menu={[
-                            <Exporter data={resultData} fileType="csv" />,
-                            <Exporter data={resultData} fileType="tsv" />,
-                            <Exporter data={resultData} fileType="txt" />,
-                            <Exporter data={resultData} fileType="ods" />
+                            <ResultExporter data={resultData} fileType="csv" />,
+                            <ResultExporter data={resultData} fileType="tsv" />,
+                            <ResultExporter data={resultData} fileType="txt" />,
+                            <ResultExporter data={resultData} fileType="ods" />
                         ]}
                     />
                     <SparqlQuery endpoint={endpoint} nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
@@ -213,7 +219,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
                     menu={getShownTargets()}
                 />
-                <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>Show SPARQL syntax</button>
+                <div className={ResultTrayStyles.buttonRow}>
+                    <GraphToFile nodes={nodes} edges={edges} startingVar={startingVar} />
+                    <FileToGraph onFileSelect={onFileSelect} />
+                </div>
             </div>
         </span >
     )

@@ -3,27 +3,37 @@ import { capitalizeFirst, cleanString } from "./stringFormatter.js";
 export const parseQuery = (nodes, edges, startingVar) => {
     let select = 'SELECT DISTINCT';
     let body = 'WHERE {\n';
-    Object.keys(startingVar).forEach(nodeId => {
-        const varLabel = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID;
-        const varUri = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_URI';
-        const varType = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_type_URI';
-        const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
 
-        // SELECT statement
-        select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
-        // Get var types
-        body += `?${varUri} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${varType} .\n`;
-        // Get var labels
-        body += `OPTIONAL { ?${varUri} <http://www.w3.org/2000/01/rdf-schema#label> ?${varUri}RdfsLabel } .\n`;
-        body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varUri}PrefLabel } .\n`;
-        body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varUri}AltLabel } .\n`;
-        body += `BIND(COALESCE(?${varUri}RdfsLabel, ?${varUri}PrefLabel, ?${varUri}AltLabel) AS ?${varLabel})\n`;
-        // Get varType labels
-        body += `OPTIONAL { ?${varType} <http://www.w3.org/2000/01/rdf-schema#label> ?${varType}RdfsLabel } .\n`;
-        body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varType}PrefLabel } .\n`;
-        body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varType}AltLabel } .\n`;
-        body += `BIND(COALESCE(?${varType}RdfsLabel, ?${varType}PrefLabel, ?${varType}AltLabel) AS ?${varTypeLabel})\n`;
-    });
+    if (startingVar[Object.keys(startingVar)[0]].isMetric) {
+        const metricNode = startingVar[Object.keys(startingVar)[0]];
+        const varLabel = capitalizeFirst(metricNode.type) + '_' + metricNode.varID;
+        const aggregateFunction = metricNode.isMax ? 'MAX' : metricNode.isMin ? 'MIN' : 'COUNT';
+
+        select += ` ${aggregateFunction}(?${varLabel}) AS ?result`;
+        body += '?s ?p ?o .';
+    } else {
+        Object.keys(startingVar).forEach(nodeId => {
+            const varLabel = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID;
+            const varUri = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_URI';
+            const varType = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_type_URI';
+            const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
+
+            // SELECT statement
+            select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
+            // Get var types
+            body += `?${varUri} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${varType} .\n`;
+            // Get var labels
+            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2000/01/rdf-schema#label> ?${varUri}RdfsLabel } .\n`;
+            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varUri}PrefLabel } .\n`;
+            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varUri}AltLabel } .\n`;
+            body += `BIND(COALESCE(?${varUri}RdfsLabel, ?${varUri}PrefLabel, ?${varUri}AltLabel) AS ?${varLabel})\n`;
+            // Get varType labels
+            body += `OPTIONAL { ?${varType} <http://www.w3.org/2000/01/rdf-schema#label> ?${varType}RdfsLabel } .\n`;
+            body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varType}PrefLabel } .\n`;
+            body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varType}AltLabel } .\n`;
+            body += `BIND(COALESCE(?${varType}RdfsLabel, ?${varType}PrefLabel, ?${varType}AltLabel) AS ?${varTypeLabel})\n`;
+        });
+    }
     body += '\n';
 
     // Create query body
@@ -74,6 +84,19 @@ export const parseQuery = (nodes, edges, startingVar) => {
         }
         if (graph) body += `}\n`;
     });
+
+    // Add metric aggregations
+    Object.keys(startingVar).forEach(nodeId => {
+        const metricNode = startingVar[nodeId];
+        if (metricNode.isMetric) {
+            const metricVarLabel = capitalizeFirst(metricNode.property_label) + '_Metric_' + metricNode.varID;
+            select += ` (${metricNode.isMax ? 'MAX' : metricNode.isMin ? 'MIN' : 'COUNT'}(?${metricVarLabel}) AS ?${metricVarLabel})`;
+            body += `?${metricVarLabel} <${metricNode.uri_graph}> ?${metricVarLabel}_value .\n`;
+            if (metricNode.isTotal)
+                body += `FILTER (?${metricVarLabel}_value = "${metricNode.property_label}") .\n`;
+        }
+    });
+
     body += '}';
     return select + '\n' + body + '\n';
 }

@@ -87,11 +87,14 @@ function Queries() {
     }
 
     function toggleIsTransitive(edge) {
-        let label = edge.label;
-        edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
-        let newEdges = [...edges];
-        newEdges[edge.id] = { id: edge.id, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
-        setEdges(newEdges);
+        let propCanBeTransitive = edgeData[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
+        if (propCanBeTransitive) {
+            let label = edge.label;
+            edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
+            let newEdges = [...edges];
+            newEdges[edge.id] = { id: edge.id, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
+            setEdges(newEdges);
+        }
     }
 
     return (
