@@ -97,6 +97,11 @@ function Queries() {
         }
     }
 
+    function loadGraph(queryData) {
+        setNodes(queryData.nodes);
+        setEdges(queryData.edges);
+    }
+
     return (
         <div className={QueriesStyles.queryContainer}>
             <div className={QueriesStyles.constraint_container}>
@@ -105,7 +110,7 @@ function Queries() {
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                 <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
                 </div>
             </div>
             {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} setNode={setNode} />}

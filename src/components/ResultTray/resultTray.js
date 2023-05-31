@@ -9,7 +9,7 @@ import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen }) {
+function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -157,9 +157,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     }
 
     // Load graph from file
-    const onFileSelect = (queryData) => {
-        console.log(queryData);
-    }
+    const onFileSelect = useCallback((queryData) => {
+        loadGraph(queryData);
+        setStartingVar(queryData.startingVar)
+    }, [loadGraph]);
 
     // Remove nodes
     const deleteSelected = useCallback(() => {
