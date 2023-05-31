@@ -7,3 +7,7 @@ export const cleanString = str => {
     const cleanedString = str.replace(invalidCharsRegex, '');
     return cleanedString;
 }
+
+export const addSpaceChars = str => {
+    return str.replaceAll("___", " ");
+}

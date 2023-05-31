@@ -1,4 +1,4 @@
-import { capitalizeFirst, cleanString } from "./stringFormatter.js";
+import { capitalizeFirst, cleanString, addSpaceChars } from "./stringFormatter.js";
 
 export const parseQuery = (nodes, edges, startingVar) => {
     let select = 'SELECT DISTINCT';
@@ -13,9 +13,9 @@ export const parseQuery = (nodes, edges, startingVar) => {
         body += '?s ?p ?o .';
     } else {
         Object.keys(startingVar).forEach(nodeId => {
-            const varLabel = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID;
-            const varUri = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_URI';
-            const varType = capitalizeFirst(startingVar[nodeId].type) + '_' + startingVar[nodeId].varID + '_type_URI';
+            const varLabel = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID;
+            const varUri = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI';
+            const varType = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___type';
             const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
 
             // SELECT statement
@@ -70,7 +70,6 @@ export const parseQuery = (nodes, edges, startingVar) => {
                 let show = nodes[nodeInList].properties[property].show;
                 if (show || data) {
                     let varNodeData = cleanString(capitalizeFirst(property) + '_' + nodes[nodeInList].varID);
-
                     let uri = nodes[nodeInList].properties[property].uri;
                     let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                     if (show)
@@ -115,12 +114,11 @@ export const parseResponse = (response) => {
         Object.keys(element).forEach((field, index) => {
             if (index !== 3) {
                 const fieldValue = element[field].value;
-                elementFields[field] = fieldValue;
+                elementFields[addSpaceChars(field)] = fieldValue;
             }
         });
 
         result[typeValue].push(elementFields);
     });
-    console.log(result);
     return result;
 }

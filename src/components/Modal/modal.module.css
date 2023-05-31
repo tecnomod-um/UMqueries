@@ -1,3 +1,25 @@
+.fadeEnter {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+}
+
+.fadeEnterActive {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.fadeExit {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.fadeExitActive {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
 .darkBG {
     background-color: rgba(0, 0, 0, 0.5);
     position: fixed;
@@ -80,16 +102,17 @@
     position: absolute;
     right: 0;
     top: 0;
-    transition: all 0.5s ease;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .closeBtn:hover {
-    transform: rotate(90deg);
+    background-color: #ccc;
 }
 
-.setBtn,
 .cancelBtn {
-    background-color: transparent;
     border: none;
     border-radius: 12px;
     cursor: pointer;
@@ -97,15 +120,39 @@
     font-weight: 750;
     padding: 10px 20px;
     transition: transform 0.25s ease, background-color 0.3s ease;
-}
-
-.setBtn:hover {
-    transform: translateY(-5px);
-}
-
-.cancelBtn {
     background-color: #fac2a6;
     transition: background-color 0.3s ease;
+}
+
+.setBtn {
+    background-color: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 750;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.setBtn:before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 12px;
+    background-color: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.setBtn:hover:before {
+    opacity: 0.5;
 }
 
 .cancelBtn:hover {
@@ -142,4 +189,38 @@
     background-color: #fff;
     border: 2px solid #aaa;
     border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+
+    .labelProperty,
+    .labelCheckbox {
+        width: auto;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .modalHeader {
+        font-size: 20px;
+        padding: 15px;
+    }
+
+    .heading {
+        font-size: 16px;
+    }
+
+    .modalActions {
+        padding: 15px;
+    }
+
+    .cancelBtn,
+    .setBtn {
+        font-size: 0.7rem;
+        padding: 8px 16px;
+    }
+
+    .fieldContainer {
+        padding: 5px;
+    }
 }

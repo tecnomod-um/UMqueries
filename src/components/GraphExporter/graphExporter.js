@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from "react";
 import GraphToFileStyles from './graphExporter.module.css';
 import { saveAs } from 'file-saver';
 
+// Exports current query graph to .json file
 export function GraphToFile({ nodes, edges, startingVar }) {
   const exportQuery = useCallback(() => {
     const queryData = {
@@ -20,6 +21,7 @@ export function GraphToFile({ nodes, edges, startingVar }) {
   );
 }
 
+// Imports a query .json file to the app 
 export function FileToGraph({ onFileSelect }) {
   const fileInputRef = useRef(null);
 
@@ -40,12 +42,11 @@ export function FileToGraph({ onFileSelect }) {
 
   return (
     <div onClick={() => fileInputRef.current.click()} className={GraphToFileStyles.file_button}>
-      <input
-        id="file-input"
+      <input className={GraphToFileStyles.hiddenInput}
         type="file"
+        accept=".json"
         ref={fileInputRef}
         onChange={handleFileSelect}
-        style={{ display: "none" }}
       />
       Load query
     </div>

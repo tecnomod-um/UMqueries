@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { CSSTransition } from "react-transition-group";
 import ModalStyles from "./modal.module.css";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { getCategory } from "../../utils/typeChecker.js";
 
-// Displays the selected node's intrinsic properties
-function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
+function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
+    const modalRef = useRef(null);
+
+    useEffect(() => {
+        const handleKeyUp = (event) => {
+            if (event.keyCode === 27 && isOpen) {
+                setIsOpen(false);
+            }
+        };
+        window.addEventListener("keyup", handleKeyUp);
+        return () => {
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, [isOpen, setIsOpen]);
+
     const inputRefs = {};
 
     function getInsideDataFields() {
@@ -67,8 +81,15 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
         </div>);
     }
 
+    const handleClose = () => {
+        setIsOpen(false);
+    };
+
+    if (!selectedNode || !selectedNode.label) {
+        return null;
+    }
     // Checks each field and updates the value in the current selected node
-    function handleSubmit() {
+    const handleSubmit = () => {
         const updatedNode = { ...selectedNode };
         updatedNode.properties = {};
 
@@ -85,42 +106,54 @@ function Modal({ insideData, selectedNode, setIsOpen, setNode }) {
             }
         });
         setNode(updatedNode);
+        setIsOpen(false);
     }
 
     return (
-        <span>
-            <div className={ModalStyles.darkBG} onClick={() => setIsOpen(false)} />
-            <div className={ModalStyles.centered}>
-                <div className={ModalStyles.modal}>
-                    <div className={ModalStyles.modalHeader}>
-                        <h2>Node '{selectedNode.label}' data properties</h2>
-                    </div>
-                    <button className={ModalStyles.closeBtn} onClick={() => setIsOpen(false)}>
-                        <CloseIcon style={{ marginBottom: "-7px" }} />
-                    </button>
-                    {getInsideDataFields()}
-                    <div className={ModalStyles.modalActions}>
-                        <div className={ModalStyles.actionsContainer}>
-                            <button
-                                style={{
-                                    background: selectedNode.color
-                                }}
-                                className={ModalStyles.setBtn}
-                                onClick={() => {
-                                    handleSubmit();
-                                    setIsOpen(false);
-                                }}
-                            >
-                                Set properties
-                            </button>
-                            <button className={ModalStyles.cancelBtn} onClick={() => setIsOpen(false)}>
-                                Cancel
-                            </button>
+        <CSSTransition
+            in={isOpen}
+            timeout={150}
+            classNames={{
+                enter: ModalStyles.fadeEnter,
+                enterActive: ModalStyles.fadeEnterActive,
+                exit: ModalStyles.fadeExit,
+                exitActive: ModalStyles.fadeExitActive,
+            }}
+            nodeRef={modalRef}
+            unmountOnExit
+        >
+            <div className={ModalStyles.darkBG} onClick={handleClose}>
+                <div
+                    className={ModalStyles.centered}
+                    ref={modalRef}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className={ModalStyles.modal}>
+                        <div className={ModalStyles.modalHeader}>
+                            <h2>Node '{selectedNode.label}' data properties</h2>
+                        </div>
+                        <button className={ModalStyles.closeBtn} onClick={handleClose}>
+                            <CloseIcon style={{ marginBottom: "-7px" }} />
+                        </button>
+                        {getInsideDataFields()}
+                        <div className={ModalStyles.modalActions}>
+                            <div className={ModalStyles.actionsContainer}>
+                                <button
+                                    style={{ background: selectedNode.color, }}
+                                    className={ModalStyles.setBtn}
+                                    onClick={handleSubmit}
+                                >
+                                    Set properties
+                                </button>
+                                <button className={ModalStyles.cancelBtn} onClick={handleClose}>
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </span>
+        </CSSTransition>
     );
 }
 

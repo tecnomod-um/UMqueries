@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
 import Search from '../components/Search/search';
@@ -36,6 +36,10 @@ function Queries() {
         colorList[Object.keys(varData)[i]] = palette[i].hex();
     }
 
+    useEffect(() => {
+        if (!selectedNode) setIsOpen(false);
+    }, [selectedNode]);
+
     function addNode(id, data, type, isVar, graph) {
         let varID = -1;
         let label = id;
@@ -43,7 +47,7 @@ function Queries() {
         if (isVar) {
             varID = varIDs[type];
             label += " " + varID;
-            uri = '?' + capitalizeFirst(type) + '_' + varID + '_URI';
+            uri = '?' + capitalizeFirst(type) + '___' + varID + '___URI';
             setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
         }
         setNodes(nodes => {
@@ -97,11 +101,6 @@ function Queries() {
         }
     }
 
-    function loadGraph(queryData) {
-        setNodes(queryData.nodes);
-        setEdges(queryData.edges);
-    }
-
     return (
         <div className={QueriesStyles.queryContainer}>
             <div className={QueriesStyles.constraint_container}>
@@ -110,10 +109,10 @@ function Queries() {
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                 <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
+                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
                 </div>
             </div>
-            {isOpen && selectedNode && <Modal insideData={insideData} selectedNode={selectedNode} setIsOpen={setIsOpen} setNode={setNode} />}
+            <Modal insideData={insideData} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
         </div>
     );
 }
