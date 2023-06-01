@@ -6,11 +6,6 @@
 			"object": "uri"
 		},
 		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
-			"object": "uri"
-		},
-		{
 			"property": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
 			"label": "is defined by",
 			"object": "uri"
@@ -103,11 +98,6 @@
 			"object": "uri"
 		},
 		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
-			"object": "uri"
-		},
-		{
 			"property": "https://w3id.org/biolink/vocab/category",
 			"label": "category",
 			"object": "uri"
@@ -185,11 +175,6 @@
 			"object": "uri"
 		},
 		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
-			"object": "uri"
-		},
-		{
 			"property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
 			"label": "predicate",
 			"object": "uri"
@@ -219,11 +204,6 @@
 		{
 			"property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
 			"label": "is instance of",
-			"object": "uri"
-		},
-		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
 			"object": "uri"
 		},
 		{
@@ -334,11 +314,6 @@
 			"object": "uri"
 		},
 		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
-			"object": "uri"
-		},
-		{
 			"property": "http://www.w3.org/2000/01/rdf-schema#label",
 			"label": "label",
 			"object": "string"
@@ -428,11 +403,6 @@
 		{
 			"property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
 			"label": "is instance of",
-			"object": "uri"
-		},
-		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
 			"object": "uri"
 		},
 		{
@@ -545,11 +515,6 @@
 		{
 			"property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
 			"label": "is instance of",
-			"object": "uri"
-		},
-		{
-			"property": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
-			"label": "is subclass of",
 			"object": "uri"
 		},
 		{
