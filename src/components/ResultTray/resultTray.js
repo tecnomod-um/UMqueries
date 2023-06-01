@@ -3,7 +3,7 @@ import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/
 import { GraphToFile, FileToGraph } from "../GraphExporter/graphExporter.js";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { getCategory } from "../../utils/typeChecker.js";
-import SparqlQuery from "../SparqlQuery/sparqlQuery";
+import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
 import ResultTrayStyles from "./resultTray.module.css";
 import Search from "../Search/search";
@@ -13,8 +13,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
-
-    const endpoint = "http://ssb4.nt.ntnu.no:10022/sparql/";
 
     let shownProperties;
     let shownOptionals;
@@ -214,7 +212,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                             <ResultExporter data={resultData} fileType="ods" />
                         ]}
                     />
-                    <SparqlQuery endpoint={endpoint} nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></SparqlQuery>
+                    <QueryButton nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}

@@ -6,9 +6,9 @@ import Navbar from "./components/Navbar/navbar";
 import Main from "./pages/main";
 import Queries from "./pages/queries";
 import About from "./pages/about";
-import favicon from "./resources/icons/favicon.png";
 
-document.title = 'UM queries';
+//TODO set in public
+import favicon from "./resources/icons/favicon.png";
 
 // Route definition
 const root = ReactDOM.createRoot(document.getElementById('root'));

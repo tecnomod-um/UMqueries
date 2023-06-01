@@ -1,5 +1,6 @@
 import { capitalizeFirst, cleanString, addSpaceChars } from "./stringFormatter.js";
 
+// All SPARQL logic goes here
 export const parseQuery = (nodes, edges, startingVar) => {
     let select = 'SELECT DISTINCT';
     let body = 'WHERE {\n';
@@ -100,6 +101,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
     return select + '\n' + body + '\n';
 }
 
+// Parses the response body
 export const parseResponse = (response) => {
     const result = {};
 
