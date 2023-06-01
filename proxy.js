@@ -7,11 +7,16 @@ const bodyParser = require('body-parser');
 require("dotenv").config();
 
 const app = express();
+const path = require('path');
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//
 app.use(bodyParser.json());
+
+app.use('/data/data_properties', express.static(path.join(__dirname, 'src/data/data_properties.json')));
+app.use('/data/nodes', express.static(path.join(__dirname, 'src/data/nodes.json')));
+app.use('/data/object_properties', express.static(path.join(__dirname, 'src/data/object_properties.json')));
+app.use('/data/vars', express.static(path.join(__dirname, 'src/data/vars.json')));
 
 app.post("/sparql", (req, res) => {
     console.log('Got body:', req.body);

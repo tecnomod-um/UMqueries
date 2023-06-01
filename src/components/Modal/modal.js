@@ -39,14 +39,14 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
             }
             switch (getCategory(object)) {
                 case 'link':
-                    input = <input className={ModalStyles.input} type="url" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    input = <input className={ModalStyles.input} type="url" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
                     break;
                 case 'number':
-                    input = <input className={ModalStyles.input} type="number" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    input = <input className={ModalStyles.input} type="number" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
                     break;
                 case 'select':
                     input = (
-                        <select className={ModalStyles.input} key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)}>
+                        <select className={ModalStyles.input} key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)}>
                             {object.map((X) => MakeItem(X))}
                         </select>
                     );
@@ -54,24 +54,24 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                 case 'boolean':
                     input = (
                         <div>
-                            <input className={ModalStyles.input} type="radio" key={label} name={label} value="true" disabled={!isVar} defaultChecked={value} ref={el => (inputRefs[label] = el)} /> True
-                            <input className={ModalStyles.input} type="radio" key={label} name={label} value="false" disabled={!isVar} defaultChecked={!value} ref={el => (inputRefs[label] = el)} /> False
+                            <input className={ModalStyles.input} type="radio" key={`${selectedNode.label}-${label}-true`} id={label} name={label} value="true" disabled={!isVar} defaultChecked={value} ref={el => (inputRefs[label] = el)} /> True
+                            <input className={ModalStyles.input} type="radio" key={`${selectedNode.label}-${label}-false`} id={label} name={label} value="false" disabled={!isVar} defaultChecked={!value} ref={el => (inputRefs[label] = el)} /> False
                         </div>
                     );
                     break;
                 case 'text':
                 default:
-                    input = <input className={ModalStyles.input} type="text" key={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
+                    input = <input className={ModalStyles.input} type="text" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
                     break;
             }
             result.push(
-                <div className={ModalStyles.fieldContainer}>
+                <div className={ModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-checkbox`}>
                     <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
                     {input}
                     <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesShow"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
+                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} name={`${label}_queriesShow`} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
                     <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesTransitive"}>Make transitive:</label>
-                    <input className={ModalStyles.checkbox} type="checkbox" name={label + "_queriesTransitive"} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkTransitive} ref={el => (inputRefs[label + "_queriesTransitive"] = el)} />
+                    <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesTransitive"} name={`${label}_queriesTransitive`} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkTransitive} ref={el => (inputRefs[label + "_queriesTransitive"] = el)} />
                 </div>
             );
         });

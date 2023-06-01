@@ -13,7 +13,7 @@ export default function Navbar() {
             </Link>
             <ul className={NavbarStyles.navlinks}>
                 <input type="checkbox" className={NavbarStyles.checkbox_toggle} />
-                <label className={NavbarStyles.hamburger}>&#9776;</label>
+                <span className={NavbarStyles.hamburger}>&#9776;</span>
                 <div className={NavbarStyles.menu}>
                     <li><CustomLink to="/">Home</CustomLink></li>
                     <li><CustomLink to="/queries">Queries</CustomLink></li>

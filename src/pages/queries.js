@@ -6,64 +6,116 @@ import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import Modal from "../components/Modal/modal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
-
-import varData from '../data/vars.json';
-import nodeData from '../data/nodes.json';
-import edgeData from '../data/object_properties.json';
-import insideData from '../data/data_properties.json'
-
-const colorList = {};
-const palette = distinctColors({
-    count: Object.keys(varData).length,
-    chromaMin: 15,
-    chromaMax: 95,
-    lightMin: 65,
-    lightMax: 90
-})
-
-const initVarIDs = (varData) => Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
+import {
+    handleDataPropertiesFetch as fetchDataProperties,
+    handleNodeDataFetch as fetchNodeData,
+    handleObjectPropertiesFetch as fetchObjectProperties,
+    handleVarDataFetch as fetchVarData
+} from "../utils/petitionHandler.js";
 
 // Main view. All functional elements will be shown here.
 function Queries() {
+    // Data generated from endpoint
+    const [dataProperties, setDataProperties] = useState(null);
+    const [nodeData, setNodeData] = useState(null);
+    const [objectProperties, setObjectProperties] = useState(null);
+    const [varData, setVarData] = useState(null);
+    // Data structures used through the app
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [selectedNode, setSelectedNode] = useState();
-    const [selectedEdge, setSelectedEdge] = useState();
-    const [varIDs, setVarIDs] = useState(initVarIDs(varData));
+    const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedEdge, setSelectedEdge] = useState(null);
+    const [varIDs, setVarIDs] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    for (let i = 0; i < Object.keys(varData).length; i++) {
-        colorList[Object.keys(varData)[i]] = palette[i].hex();
-    }
+    // Loads endpoint data when first loaded
+    useEffect(() => {
+        fetchDataProperties()
+            .then(data => setDataProperties(data))
+            .catch(error => {
+                console.log(error);
+            });
+        fetchNodeData()
+            .then(data => setNodeData(data))
+            .catch(error => {
+                console.log(error);
+            });
+        fetchObjectProperties()
+            .then(data => setObjectProperties(data))
+            .catch(error => {
+                console.log(error);
+            });
+        fetchVarData()
+            .then(data => {
+                setVarData(data);
+                setVarIDs(Object.fromEntries(Object.keys(data).map(type => [type, 0])));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    // Updates modal to stop showing if currentNode is deleted
     useEffect(() => {
         if (!selectedNode) setIsOpen(false);
     }, [selectedNode]);
 
+    // Loading screen
+    if (!dataProperties || !nodeData || !objectProperties || !varData) {
+        return <div>Loading...</div>;
+    }
+
+    function generateColorList(varData) {
+        const palette = distinctColors({
+            count: Object.keys(varData).length,
+            chromaMin: 15,
+            chromaMax: 95,
+            lightMin: 65,
+            lightMax: 90
+        });
+
+        const colorList = Object.fromEntries(
+            Object.keys(varData).map((type, index) => [type, palette[index].hex()])
+        );
+        return colorList;
+    }
+
+    const colorList = generateColorList(varData);
+
     function addNode(id, data, type, isVar, graph) {
-        let varID = -1;
-        let label = id;
-        let uri = data;
-        if (isVar) {
-            varID = varIDs[type];
-            label += " " + varID;
-            uri = '?' + capitalizeFirst(type) + '___' + varID + '___URI';
-            setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
-        }
-        setNodes(nodes => {
-            let newId = 0;
-            if (nodes.length > 0)
-                newId = nodes.slice(-1)[0].id + 1;
-            return [...nodes, { id: newId, data: uri, label: label, color: colorList[type], type: type, varID: varID, graph: graph }];
+        setNodes((prevNodes) => {
+            const varID = isVar ? varIDs[type] : -1;
+            const label = isVar ? `${id} ${varID}` : id;
+            const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
+
+            const newNode = {
+                id: prevNodes.length ? prevNodes.slice(-1)[0].id + 1 : 0,
+                data: uri,
+                label: label,
+                color: colorList[type],
+                type: type,
+                varID: varID,
+                graph: graph
+            };
+
+            return [...prevNodes, newNode];
         });
     }
 
     function addEdge(id1, id2, label, data, isOptional) {
-        setEdges(edges => {
-            let newId = 0;
-            if (edges.length > 0)
-                newId = edges.slice(-1)[0].id + 1;
-            return [...edges, { id: newId, from: id1, to: id2, label: label, data: data, isOptional: isOptional, isTransitive: false }];
+        setEdges((prevEdges) => {
+            const newEdge = {
+                id: prevEdges.length > 0 ? prevEdges.slice(-1)[0].id + 1 : 0,
+                from: id1,
+                to: id2,
+                label: label,
+                data: data,
+                isOptional: isOptional,
+                isTransitive: false
+            };
+
+            return [...prevEdges, newEdge];
         });
     }
 
@@ -91,7 +143,7 @@ function Queries() {
     }
 
     function toggleIsTransitive(edge) {
-        let propCanBeTransitive = edgeData[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
+        let propCanBeTransitive = objectProperties[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
         if (propCanBeTransitive) {
             let label = edge.label;
             edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
@@ -109,10 +161,10 @@ function Queries() {
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                 <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={edgeData} insideData={insideData} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
                 </div>
             </div>
-            <Modal insideData={insideData} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
+            <Modal insideData={dataProperties} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
         </div>
     );
 }
