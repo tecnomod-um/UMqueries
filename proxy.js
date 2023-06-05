@@ -26,7 +26,6 @@ const sendFileChunks = (res, file) => {
     });
 
     stream.on("data", (chunk) => {
-        if (file === "src/data/nodes.json") console.log("Sent a piece of node");
         res.write(chunk);
     });
 
