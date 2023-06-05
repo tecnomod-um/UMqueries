@@ -105,8 +105,6 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
   }, [activeIndex, mouseMove, mouseUp]);
 
   return (
-    <span>
-      <div className={ResultTableStyles.tableWrapper}>
         <table className={ResultTableStyles.resTable} style={{ gridTemplateColumns }} ref={tableElement}>
           <thead className={ResultTableStyles.resThead}>
             <tr className={ResultTableStyles.resTr}>
@@ -125,8 +123,6 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
           </thead>
           {getTableContent(filteredLists)}
         </table>
-      </div>
-    </span>
   );
 };
 

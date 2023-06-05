@@ -7,11 +7,12 @@ import ResultTray from "../components/ResultTray/resultTray";
 import Modal from "../components/Modal/modal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import {
-    handleDataPropertiesFetch as fetchDataProperties,
-    handleNodeDataFetch as fetchNodeData,
-    handleObjectPropertiesFetch as fetchObjectProperties,
-    handleVarDataFetch as fetchVarData
+    handleDataPropertiesFetch,
+    handleNodeDataFetch,
+    handleObjectPropertiesFetch,
+    handleVarDataFetch
 } from "../utils/petitionHandler.js";
+
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -28,24 +29,29 @@ function Queries() {
     const [varIDs, setVarIDs] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
+    const fetchNodeDataAsync = async () => {
+        try {
+            const response = await handleNodeDataFetch();
+            setNodeData(response);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     // Loads endpoint data when first loaded
     useEffect(() => {
-        fetchDataProperties()
+        handleDataPropertiesFetch()
             .then(data => setDataProperties(data))
             .catch(error => {
                 console.log(error);
             });
-        fetchNodeData()
-            .then(data => setNodeData(data))
-            .catch(error => {
-                console.log(error);
-            });
-        fetchObjectProperties()
+        fetchNodeDataAsync();
+        handleObjectPropertiesFetch()
             .then(data => setObjectProperties(data))
             .catch(error => {
                 console.log(error);
             });
-        fetchVarData()
+        handleVarDataFetch()
             .then(data => {
                 setVarData(data);
                 setVarIDs(Object.fromEntries(Object.keys(data).map(type => [type, 0])));
@@ -62,8 +68,12 @@ function Queries() {
     }, [selectedNode]);
 
     // Loading screen
-    if (!dataProperties || !nodeData || !objectProperties || !varData) {
-        return <div>Loading...</div>;
+    if (!dataProperties || !objectProperties || !varData) {
+        return (
+            <div className={QueriesStyles.loadingContainer}>
+                <div className={QueriesStyles.loadingAnimation} />
+            </div>
+        )
     }
 
     function generateColorList(varData) {

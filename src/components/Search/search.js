@@ -71,7 +71,6 @@ function Search({ varData, nodeData, colorList, isResults, addNode }) {
         <span className={SearchStyles.search}>
             <input ref={searchRef}
                 className={SearchStyles.input}
-                id={isResults ? 'searchResults' : 'searchConstraints'}
                 type="search"
                 placeholder={placeholderText}
                 onChange={handleChange}

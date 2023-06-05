@@ -33,3 +33,42 @@
     background-color: aliceblue;
     border: solid;
 }
+
+.loadingContainer {
+    padding: 10px;
+    margin: auto;
+    background-color: #ecebeb;
+    min-height: calc(100vh - 55px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadingContainer {
+    padding: 10px;
+    margin: auto;
+    background-color: #ecebeb;
+    min-height: calc(100vh - 55px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadingAnimation {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 8px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #c22535;
+    animation: spin 0.5s infinite linear;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

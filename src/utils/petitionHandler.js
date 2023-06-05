@@ -5,6 +5,61 @@ import { parseQuery, parseResponse } from "./queryParser.js";
 const proxyURL = config.backendUrl;
 const endpointURL = config.endpointUrl;
 
+export const handleDataPropertiesFetch = () => {
+    return fetchData('/data/data_properties');
+}
+
+export const handleNodeDataFetch = () => {
+    return fetchData('/data/nodes');
+}
+
+export const handleObjectPropertiesFetch = () => {
+    return fetchData('/data/object_properties');
+}
+
+export const handleVarDataFetch = () => {
+    return fetchData('/data/vars');
+}
+
+export const fetchData = (dataFile) => {
+    let reader;
+
+    return new Promise((resolve, reject) => {
+        fetch(`${proxyURL}${dataFile}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Request failed with status code ${response.status}`);
+                }
+                reader = response.body.getReader();
+
+                const decoder = new TextDecoder('utf-8');
+                let data = '';
+
+                function read() {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            const parsedData = JSON.parse(data);
+                            resolve(parsedData);
+                            reader.cancel();
+                            return;
+                        }
+                        const chunk = decoder.decode(value, { stream: true });
+                        data += chunk;
+                        return read();
+                    });
+                }
+                return read();
+            })
+            .catch((error) => {
+                console.error(error);
+                if (reader) {
+                    reader.cancel();
+                }
+                reject(new Error(`Failed to fetch data: ${error.message}`));
+            });
+    });
+}
+
 export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
     setIsLoading(true);
     let data = {
@@ -30,72 +85,4 @@ export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
                 reject(error);
             });
     });
-};
-
-export const handleDataPropertiesFetch = () => {
-    return new Promise((resolve, reject) => {
-        axios({
-            method: 'get',
-            url: `${proxyURL}/data/data_properties`,
-            headers: { 'Content-Type': 'application/json' }
-        })
-            .then(function (response) {
-                resolve(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-                reject(error);
-            });
-    });
-};
-
-export const handleNodeDataFetch = () => {
-    return new Promise((resolve, reject) => {
-        axios({
-            method: 'get',
-            url: `${proxyURL}/data/nodes`,
-            headers: { 'Content-Type': 'application/json' }
-        })
-            .then(function (response) {
-                resolve(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-                reject(error);
-            });
-    });
-};
-
-export const handleObjectPropertiesFetch = () => {
-    return new Promise((resolve, reject) => {
-        axios({
-            method: 'get',
-            url: `${proxyURL}/data/object_properties`,
-            headers: { 'Content-Type': 'application/json' }
-        })
-            .then(function (response) {
-                resolve(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-                reject(error);
-            });
-    });
-};
-
-export const handleVarDataFetch = () => {
-    return new Promise((resolve, reject) => {
-        axios({
-            method: 'get',
-            url: `${proxyURL}/data/vars`,
-            headers: { 'Content-Type': 'application/json' }
-        })
-            .then(function (response) {
-                resolve(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-                reject(error);
-            });
-    });
-};
+}
