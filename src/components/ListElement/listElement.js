@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ConstraintStyles from "./constraint.module.css";
+import ListElementStyles from "./listElement.module.css";
 
 function darken(color, amount) {
     const hex = color.replace("#", "");
@@ -8,7 +8,8 @@ function darken(color, amount) {
     return `#${newRgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
 }
 
-function Constraint({ id, data, type, color, addNode, isVar, graph }) {
+// Defines each element in both the var and node lists
+function ListElement({ id, data, type, color, addNode, isVar, graph }) {
     const [isHovered, setIsHovered] = useState(false);
 
     const label = isVar ? `${id} variable` : id;
@@ -36,7 +37,7 @@ function Constraint({ id, data, type, color, addNode, isVar, graph }) {
             style={listItemStyle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={ConstraintStyles.element}
+            className={ListElementStyles.element}
             onClick={handleClick}
         >
             <h2>{label}</h2>
@@ -45,4 +46,4 @@ function Constraint({ id, data, type, color, addNode, isVar, graph }) {
     );
 }
 
-export default Constraint;
+export default ListElement;

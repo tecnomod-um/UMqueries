@@ -16,7 +16,7 @@
 
 .constraint_container {
     flex: 1;
-    padding: 1em;
+    padding: 0 1em;
     max-width: 25%;
     height: 80vh;
 }

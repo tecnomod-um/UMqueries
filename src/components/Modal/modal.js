@@ -4,6 +4,7 @@ import ModalStyles from "./modal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import { getCategory } from "../../utils/typeChecker.js";
 
+// Used to define a node's data properties
 function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
     const modalRef = useRef(null);
 

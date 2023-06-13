@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
-import Search from '../components/Search/search';
+//import Search from '../components/Search/search';
+import SearchNodes from '../components/SearchNodes/searchNodes';
+import VarTray from '../components/VarTray/varTray';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import Modal from "../components/Modal/modal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import {
     handleDataPropertiesFetch,
-    handleNodeDataFetch,
     handleObjectPropertiesFetch,
     handleVarDataFetch
 } from "../utils/petitionHandler.js";
@@ -18,7 +19,6 @@ import {
 function Queries() {
     // Data generated from endpoint
     const [dataProperties, setDataProperties] = useState(null);
-    const [nodeData, setNodeData] = useState(null);
     const [objectProperties, setObjectProperties] = useState(null);
     const [varData, setVarData] = useState(null);
     // Data structures used through the app
@@ -29,15 +29,6 @@ function Queries() {
     const [varIDs, setVarIDs] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const fetchNodeDataAsync = async () => {
-        try {
-            const response = await handleNodeDataFetch();
-            setNodeData(response);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     // Loads endpoint data when first loaded
     useEffect(() => {
         handleDataPropertiesFetch()
@@ -45,7 +36,6 @@ function Queries() {
             .catch(error => {
                 console.log(error);
             });
-        fetchNodeDataAsync();
         handleObjectPropertiesFetch()
             .then(data => setObjectProperties(data))
             .catch(error => {
@@ -98,6 +88,7 @@ function Queries() {
             const varID = isVar ? varIDs[type] : -1;
             const label = isVar ? `${id} ${varID}` : id;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
+            if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
 
             const newNode = {
                 id: prevNodes.length ? prevNodes.slice(-1)[0].id + 1 : 0,
@@ -124,7 +115,6 @@ function Queries() {
                 isOptional: isOptional,
                 isTransitive: false
             };
-
             return [...prevEdges, newEdge];
         });
     }
@@ -166,7 +156,8 @@ function Queries() {
     return (
         <div className={QueriesStyles.queryContainer}>
             <div className={QueriesStyles.constraint_container}>
-                <Search varData={varData} nodeData={nodeData} colorList={colorList} isResults={false} addNode={addNode} />
+                <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
+                <VarTray varData={varData} colorList={colorList} addNode={addNode} />
             </div>
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />

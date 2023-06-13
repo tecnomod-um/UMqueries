@@ -6,7 +6,7 @@ import { getCategory } from "../../utils/typeChecker.js";
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
 import ResultTrayStyles from "./resultTray.module.css";
-import Search from "../Search/search";
+import SearchResults from "../SearchResults/searchResults";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
@@ -195,12 +195,11 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
-                    menu={shownOptionals}
-                />
+                    menu={shownOptionals} />
                 <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>{buttonInsideLabel}</button>
             </div>
-            <div className={ResultTrayStyles.resultsColumn}>{
-                <Search varData={startingVar} nodeData={resultData} isResults={true} addNode={""} />}
+            <div className={ResultTrayStyles.resultsColumn}>
+                <SearchResults startingData={startingVar} resultData={resultData} />
             </div>
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>

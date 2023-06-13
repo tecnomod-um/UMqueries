@@ -1,9 +1,10 @@
 import React from "react";
-import ConstraintListStyles from "./constraintList.module.css";
-import Constraint from '../Constraint/constraint';
+import ListStyles from "./list.module.css";
+import ListElement from '../ListElement/listElement';
 
 // Displays both all the elements and their variables
-function ConstraintList({ varData, filteredLists, colorList, addNode }) {
+function List({ varData, filteredLists, colorList, addNode }) {
+    if (!filteredLists) return null;
     function getCodeFromURI(uri) {
         return uri.substring(uri.lastIndexOf('/') + 1);
     }
@@ -13,10 +14,10 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
 
         Object.keys(varData).forEach(key => {
             if (`VAR_${key}` in filteredLists) {
-                const constraint = filteredLists[`VAR_${key}`];
+                const element = filteredLists[`VAR_${key}`];
                 result.push(
-                    <Constraint
-                        key={getCodeFromURI(constraint)}
+                    <ListElement
+                        key={getCodeFromURI(element)}
                         id={key.toUpperCase()}
                         data={null}
                         type={key}
@@ -28,11 +29,11 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
                 );
             }
 
-            if (filteredLists[key].length !== 0) {
-                const constraints = filteredLists[key];
+            if (filteredLists[key] && filteredLists[key].length !== 0) {
+                const elements = filteredLists[key];
                 result.push(
-                    constraints.map(constraint => (
-                        <Constraint
+                    elements.map(constraint => (
+                        <ListElement
                             key={getCodeFromURI(constraint.uri)}
                             id={constraint.label}
                             data={constraint.uri}
@@ -51,10 +52,10 @@ function ConstraintList({ varData, filteredLists, colorList, addNode }) {
     }
 
     return (
-        <ul className={ConstraintListStyles.constraintList}>
+        <ul className={ListStyles.list}>
             {listContent()}
         </ul>
     );
 }
 
-export default ConstraintList;
+export default List;

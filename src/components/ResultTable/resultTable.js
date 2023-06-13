@@ -38,7 +38,7 @@ function getTableContent(filteredLists) {
   );
 }
 
-// Displays the query results in a compact table
+// Displays the query results in a compact table with resizable columns
 const ResultTable = ({ filteredLists, minCellWidth }) => {
   const [tableHeight, setTableHeight] = useState("auto");
   const [activeIndex, setActiveIndex] = useState(null);

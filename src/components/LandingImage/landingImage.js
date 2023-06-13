@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import LandingImageStyles from "./landingImage.module.css";
 
+// Image component used in the landing page
 const LandingImage = ({ imageSrc, width, height }) => {
     const [animationOffset, setAnimationOffset] = useState(1);
     const imageRef = useRef(null);

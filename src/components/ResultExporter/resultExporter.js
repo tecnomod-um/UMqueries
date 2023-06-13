@@ -3,10 +3,10 @@ import { DropdownMenuItem } from "../Dropdown/dropdown";
 import { saveAs } from 'file-saver';
 import XLSX from 'xlsx/dist/xlsx.full.min.js';
 
+// Exports the result to the passed filetype
 const ResultExporter = ({ data, fileType }) => {
     const handleExport = () => {
         let content = '';
-        if (!data) return;
         switch (fileType) {
             case 'csv':
                 const csvContent = convertToCSV(data);
