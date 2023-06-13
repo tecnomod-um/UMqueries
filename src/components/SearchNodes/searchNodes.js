@@ -1,17 +1,24 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import List from "../List/list";
 import SearchNodesStyles from "./searchNodes.module.css";
 import { handleFilteredNodeDataFetch } from "../../utils/petitionHandler.js";
 
 function SearchNodes({ varData, colorList, addNode }) {
     const [searchField, setSearchField] = useState("");
-    const [data, setData] = useState("");
-    const searchRef = useRef(null);
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setData(null);
+        setIsLoading(true);
         handleFilteredNodeDataFetch(searchField)
-            .then((data) => {setData(data); console.log(data)})
+            .then((data) => {
+                setIsLoading(false);
+                setData(data);
+                console.log(data)
+            })
             .catch((error) => {
+                setIsLoading(false);
                 console.log(error);
             });
     }, [searchField]);
@@ -33,7 +40,6 @@ function SearchNodes({ varData, colorList, addNode }) {
     return (
         <span className={SearchNodesStyles.search}>
             <input
-                ref={searchRef}
                 className={SearchNodesStyles.input}
                 type="search"
                 placeholder={placeholderText}
@@ -43,7 +49,15 @@ function SearchNodes({ varData, colorList, addNode }) {
                 className={SearchNodesStyles.dataContainer}
                 style={{ overflowY: "auto", overflowX: "hidden", height: "calc(58% - 40px)" }}
             >
-                <List varData={varData} filteredLists={data} colorList={colorList} addNode={addNode} />
+                {isLoading && !data ? (
+                    <div className={SearchNodesStyles.loader}>
+                        <div className={SearchNodesStyles.dot}></div>
+                        <div className={SearchNodesStyles.dot}></div>
+                        <div className={SearchNodesStyles.dot}></div>
+                    </div>
+                ) : (
+                    <List varData={varData} filteredLists={data} colorList={colorList} addNode={addNode} />
+                )}
             </div>
         </span>
     );

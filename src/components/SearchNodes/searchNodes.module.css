@@ -49,3 +49,38 @@
 .input::-webkit-search-cancel-button {
     display: none;
 }
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .dot {
+    margin: 0 8px; /* Closer dots */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #c22535;
+    animation: dotScaling 0.9s cubic-bezier(0.645, 0.045, 0.355, 1) infinite; /* Slightly slower animation */
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes dotScaling {
+    0%, 100% { 
+      transform: scale(1);
+      background-color: #c22535; /* Original color */
+    }
+    50% { 
+      transform: scale(1.5);
+      background-color: #e63946; /* Transition color */
+    }
+  }
