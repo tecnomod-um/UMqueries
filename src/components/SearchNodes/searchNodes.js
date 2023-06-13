@@ -10,7 +10,7 @@ function SearchNodes({ varData, colorList, addNode }) {
 
     useEffect(() => {
         handleFilteredNodeDataFetch(searchField)
-            .then((data) => setData(data))
+            .then((data) => {setData(data); console.log(data)})
             .catch((error) => {
                 console.log(error);
             });

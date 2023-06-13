@@ -9,8 +9,8 @@ export const handleDataPropertiesFetch = () => {
     return fetchData(`/umq/data/data_properties`);
 }
 
-export const handleNodeDataFetch = () => {
-    return fetchData(`/umq/data/nodes`);
+export const handleFilteredNodeDataFetch = (filter) => {
+    return fetchData(`/umq/data/nodes?filter=${filter}`);
 }
 
 export const handleObjectPropertiesFetch = () => {
@@ -19,10 +19,6 @@ export const handleObjectPropertiesFetch = () => {
 
 export const handleVarDataFetch = () => {
     return fetchData(`/umq/data/vars`);
-}
-
-export const handleFilteredNodeDataFetch = (filter) => {
-    return fetchData(`/umq/data/nodes?filter=${filter}`);
 }
 
 export const fetchData = (dataFile) => {
@@ -82,7 +78,7 @@ export const fetchData = (dataFile) => {
                 reject(new Error(`Failed to fetch data: ${error.message}`));
             });
     });
-};
+}
 
 export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
     setIsLoading(true);
@@ -94,7 +90,7 @@ export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
     return new Promise((resolve, reject) => {
         axios({
             method: 'post',
-            url: `${proxyURL}/sparql`,
+            url: `${proxyURL}/umq/sparql`,
             data: data,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })

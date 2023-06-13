@@ -106,8 +106,8 @@ export const parseResponse = (response) => {
     const result = {};
 
     response.data.results.bindings.forEach((element) => {
-        const typeValue = element[Object.keys(element)[3]].value.toLowerCase();
-
+        const typeValue = element?.[Object.keys(element)[3]]?.value?.toLowerCase() ?? null;
+        if (!typeValue) return;
         if (!result[typeValue])
             result[typeValue] = [];
 
