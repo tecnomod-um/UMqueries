@@ -23,7 +23,12 @@ export const handleVarDataFetch = () => {
 
 export const fetchData = (dataFile) => {
     return new Promise((resolve, reject) => {
-        fetch(`${proxyURL}${dataFile}`)
+        fetch(`${proxyURL}${dataFile}`, {
+            credentials: 'include',
+            headers: {
+                'X-SPARQL-Endpoint': endpointURL,
+              },
+        })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Request failed with status code ${response.status}`);
@@ -92,6 +97,7 @@ export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
             method: 'post',
             url: `${proxyURL}/umq/sparql`,
             data: data,
+            withCredentials: true,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
             .then(function (response) {

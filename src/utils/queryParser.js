@@ -125,3 +125,21 @@ export const parseResponse = (response) => {
     console.log(result)
     return result;
 }
+
+// Fetch vars query
+export const varDataQuery = () => {
+    return (
+        `SELECT DISTINCT ?graph ?label WHERE {
+            GRAPH ?graph {?s ?p ?o}
+            OPTIONAL { ?graph <http://www.w3.org/2000/01/rdf-schema#label> ?rdfsLabel } 
+            OPTIONAL { ?graph <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel }
+            OPTIONAL { ?graph <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel }
+            BIND(COALESCE(?rdfsLabel, ?prefLabel, ?altLabel) AS ?label)
+            FILTER (
+                STRSTARTS(STR(?graph), "http") &&
+                !CONTAINS(STR(?graph), "localhost") &&
+                !CONTAINS(STR(?graph), "schemas") &&
+                !CONTAINS(STR(?graph), "www.w3.org/")
+            )
+        } ORDER BY ?graph`);
+}

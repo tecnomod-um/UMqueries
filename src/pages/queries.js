@@ -31,20 +31,18 @@ function Queries() {
 
     // Loads endpoint data when first loaded
     useEffect(() => {
-        handleDataPropertiesFetch()
-            .then(data => setDataProperties(data))
-            .catch(error => {
-                console.log(error);
-            });
-        handleObjectPropertiesFetch()
-            .then(data => setObjectProperties(data))
-            .catch(error => {
-                console.log(error);
-            });
         handleVarDataFetch()
             .then(data => {
                 setVarData(data);
                 setVarIDs(Object.fromEntries(Object.keys(data).map(type => [type, 0])));
+            })
+            .then(() => Promise.all([
+                handleObjectPropertiesFetch(),
+                handleDataPropertiesFetch()
+            ]))
+            .then(([objectPropertiesData, dataPropertiesData]) => {
+                setObjectProperties(objectPropertiesData);
+                setDataProperties(dataPropertiesData);
             })
             .catch(error => {
                 console.log(error);

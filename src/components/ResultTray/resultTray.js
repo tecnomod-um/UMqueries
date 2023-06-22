@@ -26,18 +26,18 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
         buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
         buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
-        shownProperties = (edgeData[selectedNode.type]
-            .map(edge => (
-                <DropdownNestedMenuItem
-                    label={edge.label}
-                    menu={getPropertyTargets(false, edge.object, edge.label, edge.property)} />)
-            ));
-        shownOptionals = (edgeData[selectedNode.type]
-            .map(edge => (
-                <DropdownNestedMenuItem
-                    label={edge.label}
-                    menu={getPropertyTargets(true, edge.object, edge.label, edge.property)} />)
-            ));
+        shownProperties = (edgeData[selectedNode.type]?.map(edge => (
+            <DropdownNestedMenuItem
+                label={edge.label}
+                menu={getPropertyTargets(false, edge.object, edge.label, edge.property)} />)
+        ) ?? []);
+
+
+        shownOptionals = (edgeData[selectedNode.type]?.map(edge => (
+            <DropdownNestedMenuItem
+                label={edge.label}
+                menu={getPropertyTargets(true, edge.object, edge.label, edge.property)} />)
+        ) ?? []);
     } else {
         buttonPropertyLabel = "No node selected";
         buttonOptionalLabel = "No node selected";
@@ -204,12 +204,14 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             <div className={ResultTrayStyles.queryColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
-                        menu={[
-                            <ResultExporter data={resultData} fileType="csv" />,
-                            <ResultExporter data={resultData} fileType="tsv" />,
-                            <ResultExporter data={resultData} fileType="txt" />,
-                            <ResultExporter data={resultData} fileType="ods" />
-                        ]}
+                        menu={
+                            resultData ?
+                                [
+                                    <ResultExporter data={resultData} fileType="csv" />,
+                                    <ResultExporter data={resultData} fileType="tsv" />,
+                                    <ResultExporter data={resultData} fileType="txt" />,
+                                    <ResultExporter data={resultData} fileType="ods" />
+                                ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
                     <QueryButton nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
                 </div>

@@ -27,7 +27,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
         const result = [];
         let input;
         // The type of the property will determine how it will show in the app
-        insideData[selectedNode.type].forEach((property) => {
+        insideData[selectedNode.type]?.forEach((property) => {
             const isVar = selectedNode.varID >= 0 ? true : false;
             const { object, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
@@ -94,7 +94,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
         const updatedNode = { ...selectedNode };
         updatedNode.properties = {};
 
-        insideData[selectedNode.type].forEach((property) => {
+        insideData[selectedNode.type]?.forEach((property) => {
             const { label } = property;
             const inputElement = inputRefs[label];
             if (inputElement) {
@@ -131,7 +131,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                 >
                     <div className={ModalStyles.modal}>
                         <div className={ModalStyles.modalHeader}>
-                            <h2>Node '{selectedNode.label}' data properties</h2>
+                            <h2>{insideData[selectedNode.type]? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}</h2>
                         </div>
                         <button className={ModalStyles.closeBtn} onClick={handleClose}>
                             <CloseIcon style={{ marginBottom: "-7px" }} />

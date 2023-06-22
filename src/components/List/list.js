@@ -17,7 +17,7 @@ function List({ varData, filteredLists, colorList, addNode }) {
                 const element = filteredLists[`VAR_${key}`];
                 result.push(
                     <ListElement
-                        key={getCodeFromURI(element)}
+                        key={`VAR_${key}`}
                         id={key.toUpperCase()}
                         data={null}
                         type={key}
