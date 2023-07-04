@@ -7,7 +7,7 @@
 
 .controlColumn,
 .queryColumn {
-    padding: 0.2em;
+    margin: 1vh 0 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,24 +17,30 @@
 }
 
 .resultsColumn {
+    margin: 1vh 0 1vh 0;
+    border-right: 1vw solid transparent;
+    border-left: 1vw solid transparent;
     width: 50%;
-    padding: 0.5em;
+    max-height: 27vh;
 }
 
 .buttonRow {
     display: flex;
-    white-space: nowrap;
     width: 100%;
     height: 100%;
-    gap: 0.3em;
-    margin-bottom: 0.3em;
+    gap: 1vh;
+    margin-bottom: 1vh;
 }
 
 .big_button,
 .var_button,
 .del_button {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 2px;
     display: inline-block;
-    margin-bottom: 0.4em;
+    margin-bottom: 1vh;
     font-size: 1vw;
     width: 100%;
     height: 100%;
@@ -46,17 +52,6 @@
     border-radius: 10px;
     background-color: #c22535;
     transition: background-color 0.3s, box-shadow 0.3s;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.var_button {
-    width: 70%;
-}
-
-.del_button {
-    width: 30%;
 }
 
 .big_button:hover,
@@ -65,9 +60,15 @@
     background-color: #e63946;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+.var_button {
+    width: 70%;
+}
+
+.del_button {
+    width: 30%;
+}
 
 @media (max-width: 768px) {
-
     .big_button,
     .var_button,
     .del_button {

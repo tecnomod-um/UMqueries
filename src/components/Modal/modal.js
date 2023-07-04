@@ -29,7 +29,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
         // The type of the property will determine how it will show in the app
         insideData[selectedNode.type]?.forEach((property) => {
             const isVar = selectedNode.varID >= 0 ? true : false;
-            const { object, label } = property;
+            const { type, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
             let value = '';
             let { checkShow, checkTransitive } = false;
@@ -38,7 +38,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                 checkShow = selectedNode.properties[label].show;
                 checkTransitive = selectedNode.properties[label].transitive;
             }
-            switch (getCategory(object)) {
+            switch (getCategory(type)) {
                 case 'link':
                     input = <input className={ModalStyles.input} type="url" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />;
                     break;
@@ -48,7 +48,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                 case 'select':
                     input = (
                         <select className={ModalStyles.input} key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)}>
-                            {object.map((X) => MakeItem(X))}
+                            {type.map((X) => MakeItem(X))}
                         </select>
                     );
                     break;
@@ -131,7 +131,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                 >
                     <div className={ModalStyles.modal}>
                         <div className={ModalStyles.modalHeader}>
-                            <h2>{insideData[selectedNode.type]? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}</h2>
+                            <h2>{insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}</h2>
                         </div>
                         <button className={ModalStyles.closeBtn} onClick={handleClose}>
                             <CloseIcon style={{ marginBottom: "-7px" }} />

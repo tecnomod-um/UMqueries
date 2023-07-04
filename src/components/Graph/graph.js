@@ -1,30 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import VisGraph from "react-vis-graph-wrapper";
 import GraphStyles from "./graph.module.css";
 
 // Vis.js Graph component.
 function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setIsOpen, toggleIsTransitive }) {
 
-  function getMapHeight() {
-    return (window.innerHeight / 1.70);
-  }
-
-  const [options, setOptions] = useState({
+  const options = {
     autoResize: false,
-    height: getMapHeight() + "px"
-  });
-
-  // Adjusts the graph height accordingly on resize
-  React.useEffect(() => {
-    function handleResize() {
-      setOptions({
-        autoResize: false,
-        height: getMapHeight() + "px"
-      });
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [])
+    height: '100%', // use relative height instead of static
+    width: '100%', // set the width of the graph to fill its container
+  };
 
   const graph = {
     nodes: nodesInGraph,

@@ -1,22 +1,14 @@
-.queryHeader {
-    padding: 20px;
-    color: black;
-    font-size: 1.5vw;
-    text-align: center;
-}
-
 .queryContainer {
     padding: 10px;
     margin: auto;
     background-color: #ecebeb;
-    min-height: calc(100vh - 55px);
     display: flex;
     flex-wrap: wrap;
 }
 
 .constraint_container {
+    margin: 0 1vw 0 0;
     flex: 1;
-    padding: 0 1em;
     max-width: 25%;
     height: 80vh;
 }
@@ -44,23 +36,32 @@
     align-items: center;
 }
 
-.loadingContainer {
-    padding: 10px;
-    margin: auto;
-    background-color: #ecebeb;
-    min-height: calc(100vh - 55px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.loadingAnimation {
+    position: relative;
+    width: 100px;
+    height: 100px;
 }
 
-.loadingAnimation {
+.loadingAnimation:before,
+.loadingAnimation:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100px;
     height: 100px;
     border-radius: 50%;
     border: 8px solid rgba(0, 0, 0, 0.1);
+}
+
+.loadingAnimation:before {
     border-top-color: #c22535;
-    animation: spin 0.5s infinite linear;
+    animation: spin 0.50s infinite linear;
+}
+
+.loadingAnimation:after {
+    border-top-color: rgba(0, 0, 0, 0.4);
+    animation: spin 0.75s infinite linear;
 }
 
 @keyframes spin {
@@ -70,5 +71,33 @@
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+.fadeOut {
+    animation: fadeOut 0.15s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 0.15s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

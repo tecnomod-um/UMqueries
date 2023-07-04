@@ -5,6 +5,27 @@ import { parseQuery, parseResponse } from "./queryParser.js";
 const proxyURL = config.backendUrl;
 const endpointURL = config.endpointUrl;
 
+export const populateWithEndpointData = (setVarData, setVarIDs, setObjectProperties, setDataProperties) => {
+    return Promise.all([
+        handleVarDataFetch(),
+        handleObjectPropertiesFetch(),
+        handleDataPropertiesFetch()
+    ])
+        .then(([varData, objectPropertiesData, dataPropertiesData]) => {
+            console.log(varData);
+            console.log(objectPropertiesData)
+            console.log(dataPropertiesData)
+
+            setVarData(varData);
+            setVarIDs(Object.fromEntries(Object.keys(varData).map(type => [type, 0])));
+            setObjectProperties(objectPropertiesData);
+            setDataProperties(dataPropertiesData);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
 export const handleDataPropertiesFetch = () => {
     return fetchData(`/umq/data/data_properties`);
 }
@@ -27,7 +48,7 @@ export const fetchData = (dataFile) => {
             credentials: 'include',
             headers: {
                 'X-SPARQL-Endpoint': endpointURL,
-              },
+            },
         })
             .then((response) => {
                 if (!response.ok) {

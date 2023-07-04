@@ -1,53 +1,42 @@
 import React, { useState, useEffect } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
-//import Search from '../components/Search/search';
 import SearchNodes from '../components/SearchNodes/searchNodes';
 import VarTray from '../components/VarTray/varTray';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import Modal from "../components/Modal/modal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
-import {
-    handleDataPropertiesFetch,
-    handleObjectPropertiesFetch,
-    handleVarDataFetch
-} from "../utils/petitionHandler.js";
+import { populateWithEndpointData } from "../utils/petitionHandler.js";
 
 
 // Main view. All functional elements will be shown here.
 function Queries() {
     // Data generated from endpoint
+    const [varData, setVarData] = useState(null);
     const [dataProperties, setDataProperties] = useState(null);
     const [objectProperties, setObjectProperties] = useState(null);
-    const [varData, setVarData] = useState(null);
     // Data structures used through the app
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
+    // Flags used in the UI
     const [isOpen, setIsOpen] = useState(false);
+    const [isFading, setIsFading] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+
 
     // Loads endpoint data when first loaded
     useEffect(() => {
-        handleVarDataFetch()
-            .then(data => {
-                setVarData(data);
-                setVarIDs(Object.fromEntries(Object.keys(data).map(type => [type, 0])));
-            })
-            .then(() => Promise.all([
-                handleObjectPropertiesFetch(),
-                handleDataPropertiesFetch()
-            ]))
-            .then(([objectPropertiesData, dataPropertiesData]) => {
-                setObjectProperties(objectPropertiesData);
-                setDataProperties(dataPropertiesData);
-            })
-            .catch(error => {
-                console.log(error);
+        populateWithEndpointData(setVarData, setVarIDs, setObjectProperties, setDataProperties)
+            .then(() => {
+                setTimeout(() => {
+                    setIsFading(true);
+                    setTimeout(() => setIsLoaded(true), 150);
+                });
             });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Updates modal to stop showing if currentNode is deleted
@@ -56,13 +45,21 @@ function Queries() {
     }, [selectedNode]);
 
     // Loading screen
-    if (!dataProperties || !objectProperties || !varData) {
+    if (!isLoaded) {
+        const loadingContainerClass = isFading
+            ? `${QueriesStyles.loadingContainer} ${QueriesStyles.fadeOut}`
+            : QueriesStyles.loadingContainer;
+
         return (
-            <div className={QueriesStyles.loadingContainer}>
+            <div className={loadingContainerClass}>
                 <div className={QueriesStyles.loadingAnimation} />
             </div>
-        )
+        );
     }
+
+    const mainContainerClass = isFading
+        ? `${QueriesStyles.queryContainer} ${QueriesStyles.fadeIn}`
+        : QueriesStyles.queryContainer;
 
     function generateColorList(varData) {
         const palette = distinctColors({
@@ -152,7 +149,7 @@ function Queries() {
     }
 
     return (
-        <div className={QueriesStyles.queryContainer}>
+        <div className={mainContainerClass}>
             <div className={QueriesStyles.constraint_container}>
                 <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
                 <VarTray varData={varData} colorList={colorList} addNode={addNode} />

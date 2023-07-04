@@ -160,22 +160,54 @@
 }
 
 .fieldContainer {
+    position: relative;
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(6, auto);
     padding: 10px;
 }
 
-.labelProperty,
-.labelCheckbox {
+.labelProperty {
+    position: absolute;
     display: inline-block;
     float: left;
-    padding-top: 5px;
+    margin: 10px 15px;
+    padding: 0.4em 0.5em;
     text-align: right;
     width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.labelProperty:hover {
+    width: max-content;
+    white-space: normal;
+    text-overflow: clip;
+}
+
+.labelCheckbox {
+    position: relative;
+    display: inline-block;
+    float: left;
+    padding: 0.4em 0.5em;
+    text-align: right;
+    width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .input {
+    margin-left: 150px;
     background: none;
     border: none;
     border-bottom: 2px solid #aaa;
@@ -221,6 +253,7 @@
     }
 
     .fieldContainer {
+        position: relative;
         padding: 5px;
     }
 }

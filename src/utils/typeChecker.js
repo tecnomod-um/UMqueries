@@ -1,7 +1,7 @@
 // Utility class to define modal fields. 
 // TODO fill with all w3c ontology field types
 export const getCategory = (inputType) => {
-    if (inputType.includes('uri') || inputType.includes('link') || inputType.includes('url'))
+    if (inputType.includes('uri') || inputType.includes('link') || inputType.includes('url') || inputType.includes('typed-literal'))
         return 'link';
     else if (inputType.includes('numeric') || inputType.includes('int') || inputType.includes('integer') || inputType.includes('long') || inputType.includes('decimal') || inputType.includes('byte'))
         return 'number';
