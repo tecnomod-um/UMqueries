@@ -67,7 +67,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
             }
             result.push(
                 <div className={ModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-checkbox`}>
-                    <label className={ModalStyles.labelProperty} htmlFor={label}>'{label.toUpperCase()}'</label>
+                    <label className={ModalStyles.labelProperty} htmlFor={label}>{label}</label>
                     {input}
                     <label className={ModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
                     <input className={ModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} name={`${label}_queriesShow`} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
@@ -113,7 +113,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
     return (
         <CSSTransition
             in={isOpen}
-            timeout={150}
+            timeout={{ enter: 150, exit: 0 }}
             classNames={{
                 enter: ModalStyles.fadeEnter,
                 enterActive: ModalStyles.fadeEnterActive,
@@ -130,8 +130,15 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className={ModalStyles.modal}>
-                        <div className={ModalStyles.modalHeader}>
-                            <h2>{insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}</h2>
+                        <div
+                            className={ModalStyles.modalHeader}
+                            style={{ background: selectedNode.color }} // Set the background color
+                        >
+                            <h2
+                                title={insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                            >
+                                {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                            </h2>
                         </div>
                         <button className={ModalStyles.closeBtn} onClick={handleClose}>
                             <CloseIcon style={{ marginBottom: "-7px" }} />

@@ -4,6 +4,31 @@ import { parseQuery, parseResponse } from "./queryParser.js";
 
 const proxyURL = config.backendUrl;
 const endpointURL = config.endpointUrl;
+let debounceTimeout;
+
+export const debounceFilteredNodeData = (delay) => {
+    return (filter, setData, setIsLoading) => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() =>
+            populateWithFilteredNodeData(filter, setData, setIsLoading)
+            , delay);
+    };
+}
+
+export const populateWithFilteredNodeData = (filter, setData, setIsLoading) => {
+    setIsLoading(true);
+    return Promise.all([
+        handleFilteredNodeDataFetch(filter),
+    ])
+        .then(([nodeData]) => {
+            setData(nodeData);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            console.log(error);
+            setIsLoading(false);
+        });
+}
 
 export const populateWithEndpointData = (setVarData, setVarIDs, setObjectProperties, setDataProperties) => {
     return Promise.all([
@@ -12,10 +37,6 @@ export const populateWithEndpointData = (setVarData, setVarIDs, setObjectPropert
         handleDataPropertiesFetch()
     ])
         .then(([varData, objectPropertiesData, dataPropertiesData]) => {
-            console.log(varData);
-            console.log(objectPropertiesData)
-            console.log(dataPropertiesData)
-
             setVarData(varData);
             setVarIDs(Object.fromEntries(Object.keys(varData).map(type => [type, 0])));
             setObjectProperties(objectPropertiesData);

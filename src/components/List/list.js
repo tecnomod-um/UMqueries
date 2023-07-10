@@ -1,23 +1,21 @@
 import React from "react";
 import ListStyles from "./list.module.css";
 import ListElement from '../ListElement/listElement';
+import { getItemFromURI } from "../../utils/stringFormatter";
 
 // Displays both all the elements and their variables
 function List({ varData, filteredLists, colorList, addNode }) {
     if (!filteredLists) return null;
-    function getCodeFromURI(uri) {
-        return uri.substring(uri.lastIndexOf('/') + 1);
-    }
 
     function listContent() {
         const result = [];
 
-        Object.keys(varData).forEach(key => {
+        Object.keys(varData).forEach((key, index) => {
+            const indexStr = index.toString();
             if (`VAR_${key}` in filteredLists) {
-                const element = filteredLists[`VAR_${key}`];
                 result.push(
                     <ListElement
-                        key={`VAR_${key}`}
+                        key={`VAR_${key}_${indexStr}`}
                         id={key.toUpperCase()}
                         data={null}
                         type={key}
@@ -32,9 +30,9 @@ function List({ varData, filteredLists, colorList, addNode }) {
             if (filteredLists[key] && filteredLists[key].length !== 0) {
                 const elements = filteredLists[key];
                 result.push(
-                    elements.map(constraint => (
+                    elements.map((constraint, idx) => (
                         <ListElement
-                            key={getCodeFromURI(constraint.uri)}
+                            key={`${getItemFromURI(constraint.uri)}_${indexStr}_${idx}`}
                             id={constraint.label}
                             data={constraint.uri}
                             type={key}

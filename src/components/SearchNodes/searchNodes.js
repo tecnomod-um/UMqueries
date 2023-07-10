@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import List from "../List/list";
 import SearchNodesStyles from "./searchNodes.module.css";
-import { handleFilteredNodeDataFetch } from "../../utils/petitionHandler.js";
+import { debounceFilteredNodeData } from "../../utils/petitionHandler.js";
 
 function SearchNodes({ varData, colorList, addNode }) {
     const [searchField, setSearchField] = useState("");
@@ -9,19 +9,10 @@ function SearchNodes({ varData, colorList, addNode }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        setData(null);
         setIsLoading(true);
-        handleFilteredNodeDataFetch(searchField)
-            .then((data) => {
-                setIsLoading(false);
-                setData(data);
-                console.log(data)
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                console.log(error);
-            });
-    }, [searchField]);
+        if (searchField.length >= 3 || !data)
+            debounceFilteredNodeData(300)(searchField, setData, setIsLoading);
+    }, [searchField, data]);
 
     const handleChange = (e) => setSearchField(e.target.value);
 
