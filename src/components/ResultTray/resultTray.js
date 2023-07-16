@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { GraphToFile, FileToGraph } from "../GraphExporter/graphExporter.js";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
@@ -9,10 +9,11 @@ import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
+function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
+    const inputRefs = useRef({});
 
     let shownProperties;
     let shownOptionals;
@@ -60,13 +61,33 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
 
     // Gets all nodes that could receive a property
     function getPropertyTargets(isOptional, object, label, property) {
+
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
-        let result = nodes.filter(generalNode => generalNode && generalNode.type === object && generalNode.id !== selectedNode.id)
+        const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
+        const result = nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
             .map(targetedNode => (
                 <DropdownMenuItem onClick={() => {
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional)
                 }}>{targetedNode.label} </DropdownMenuItem>))
+
+        if (acceptsAnyURI) {
+            if (!inputRefs.current[label]) {
+                inputRefs.current[label] = React.createRef();
+            }
+            result.unshift(
+                <DropdownMenuItem id="preventCloseDropdownItem">
+                    <input className={ResultTrayStyles.uriTextBox} type="text" placeholder="Enter URI" ref={inputRefs.current[label]} id={`inputUri+${label}`} />
+                    <button className={ResultTrayStyles.uriButton} onClick={(event) => {
+                        const contents = inputRefs.current[label]?.current.value;
+                        if (contents) {
+                            const uriId = addNode(contents, contents, 'uri', false, '', contents, true).id;
+                            addEdge(selectedNode.id, uriId, label, property, isOptional);
+                        }
+                    }}>OK</button>
+                </DropdownMenuItem>
+            );
+        }
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
@@ -196,7 +217,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
                     menu={shownOptionals} />
-                <button className={ResultTrayStyles.big_button} onClick={setIsOpen}>{buttonInsideLabel}</button>
+                <button className={ResultTrayStyles.big_button} onClick={() => setIsOpen(true)}>{buttonInsideLabel}</button>
             </div>
             <div className={ResultTrayStyles.resultsColumn}>
                 <SearchResults startingData={startingVar} resultData={resultData} />

@@ -9,9 +9,8 @@ function SearchNodes({ varData, colorList, addNode }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        setIsLoading(true);
-        if (searchField.length >= 3 || !data)
-            debounceFilteredNodeData(300)(searchField, setData, setIsLoading);
+        if (searchField.length >= 3 || !data || searchField === '')
+            debounceFilteredNodeData()(searchField, setData, setIsLoading);
     }, [searchField, data]);
 
     const handleChange = (e) => setSearchField(e.target.value);
@@ -40,7 +39,7 @@ function SearchNodes({ varData, colorList, addNode }) {
                 className={SearchNodesStyles.dataContainer}
                 style={{ overflowY: "auto", overflowX: "hidden", height: "calc(58% - 40px)" }}
             >
-                {isLoading && !data ? (
+                {isLoading ? (
                     <div className={SearchNodesStyles.loader}>
                         <div className={SearchNodesStyles.dot}></div>
                         <div className={SearchNodesStyles.dot}></div>

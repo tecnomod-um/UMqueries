@@ -78,25 +78,30 @@ function Queries() {
 
     const colorList = generateColorList(varData);
 
-    function addNode(id, data, type, isVar, graph) {
+    function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
+        let newNode;
         setNodes((prevNodes) => {
             const varID = isVar ? varIDs[type] : -1;
             const label = isVar ? `${id} ${varID}` : id;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
             if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
-
-            const newNode = {
+            const shape = uriOnly ? 'box' : 'big ellipse';
+            const color = uriOnly ? '#D3D3D3' : colorList[type];
+            newNode = {
                 id: prevNodes.length ? prevNodes.slice(-1)[0].id + 1 : 0,
                 data: uri,
                 label: label,
-                color: colorList[type],
+                color: color,
                 type: type,
                 varID: varID,
-                graph: graph
+                graph: graph,
+                class: classURI,
+                shape: shape
             };
 
             return [...prevNodes, newNode];
         });
+        return newNode;
     }
 
     function addEdge(id1, id2, label, data, isOptional) {
@@ -110,6 +115,7 @@ function Queries() {
                 isOptional: isOptional,
                 isTransitive: false
             };
+            console.log("🚀 ~ file: setEdges ~ newEdge:", newEdge)
             return [...prevEdges, newEdge];
         });
     }
@@ -157,7 +163,7 @@ function Queries() {
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                 <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
                 </div>
             </div>
             <Modal insideData={dataProperties} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />

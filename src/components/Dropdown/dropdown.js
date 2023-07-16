@@ -26,7 +26,7 @@ export function Dropdown({
 
     const handleClose = (event) => {
         event.stopPropagation();
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+        if ((anchorRef.current && anchorRef.current.contains(event.target)) || event.target.closest("#preventCloseDropdownItem")) {
             return;
         }
         handleForceClose();

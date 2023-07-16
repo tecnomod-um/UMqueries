@@ -10,19 +10,19 @@ function List({ varData, filteredLists, colorList, addNode }) {
     function listContent() {
         const result = [];
 
-        Object.keys(varData).forEach((key, index) => {
-            const indexStr = index.toString();
+        Object.keys(varData).forEach((key) => {
             if (`VAR_${key}` in filteredLists) {
                 result.push(
                     <ListElement
-                        key={`VAR_${key}_${indexStr}`}
+                        key={`VAR_${key}`}
                         id={key.toUpperCase()}
                         data={null}
                         type={key}
                         color={colorList[key]}
-                        addNode={addNode}
                         isVar={true}
                         graph={varData[key].uri_graph}
+                        classURI={varData[key].uri_element}
+                        addNode={addNode}
                     />
                 );
             }
@@ -32,14 +32,15 @@ function List({ varData, filteredLists, colorList, addNode }) {
                 result.push(
                     elements.map((constraint, idx) => (
                         <ListElement
-                            key={`${getItemFromURI(constraint.uri)}_${indexStr}_${idx}`}
+                            key={`${getItemFromURI(constraint.uri)}_${idx}`}
                             id={constraint.label}
                             data={constraint.uri}
                             type={key}
                             color={colorList[key]}
-                            addNode={addNode}
                             isVar={false}
                             graph={varData[key].uri_graph}
+                            classURI={varData[key].uri_element}
+                            addNode={addNode}
                         />
                     ))
                 );

@@ -9,7 +9,7 @@ function darken(color, amount) {
 }
 
 // Defines each element in both the var and node lists
-function ListElement({ id, data, type, color, addNode, isVar, graph }) {
+function ListElement({ id, data, type, color, isVar, graph, classURI, addNode }) {
     const [isHovered, setIsHovered] = useState(false);
 
     const label = isVar ? `${id} variable` : id;
@@ -29,7 +29,7 @@ function ListElement({ id, data, type, color, addNode, isVar, graph }) {
 
     const handleClick = (event) => {
         event.preventDefault();
-        addNode(id, data, type, isVar, graph);
+        addNode(id, data, type, isVar, graph, classURI, false);
     };
 
     return (

@@ -56,10 +56,12 @@
 
 .big_button:hover,
 .var_button:hover,
-.del_button:hover {
+.del_button:hover,
+.uriButton:hover {
     background-color: #e63946;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 .var_button {
     width: 70%;
 }
@@ -68,7 +70,38 @@
     width: 30%;
 }
 
+.uriTextBox {
+    padding: 1em;
+    width: 100%;
+    height: 38px;
+    margin: 0 1vh;
+    display: inline-block;
+    outline: none;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.uriButton {
+    background-color: #c22535;
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition-duration: 0.4s;
+}
+
 @media (max-width: 768px) {
+
     .big_button,
     .var_button,
     .del_button {

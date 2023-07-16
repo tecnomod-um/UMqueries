@@ -5,13 +5,17 @@ import { parseQuery, parseResponse } from "./queryParser.js";
 const proxyURL = config.backendUrl;
 const endpointURL = config.endpointUrl;
 let debounceTimeout;
+let lastFilter = null;
 
-export const debounceFilteredNodeData = (delay) => {
+export const debounceFilteredNodeData = () => {
     return (filter, setData, setIsLoading) => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() =>
-            populateWithFilteredNodeData(filter, setData, setIsLoading)
-            , delay);
+        if (filter !== lastFilter) {
+            clearTimeout(debounceTimeout);
+            setIsLoading(true);
+            debounceTimeout = setTimeout(() =>
+                populateWithFilteredNodeData(filter, setData, setIsLoading), config.debounceDelay);
+            lastFilter = filter;
+        }
     };
 }
 
@@ -33,30 +37,25 @@ export const populateWithFilteredNodeData = (filter, setData, setIsLoading) => {
 export const populateWithEndpointData = (setVarData, setVarIDs, setObjectProperties, setDataProperties) => {
     return Promise.all([
         handleVarDataFetch(),
-        handleObjectPropertiesFetch(),
-        handleDataPropertiesFetch()
+        handlePropertiesFetch()
     ])
-        .then(([varData, objectPropertiesData, dataPropertiesData]) => {
+        .then(([varData, propertiesData]) => {
             setVarData(varData);
             setVarIDs(Object.fromEntries(Object.keys(varData).map(type => [type, 0])));
-            setObjectProperties(objectPropertiesData);
-            setDataProperties(dataPropertiesData);
+            setObjectProperties(propertiesData.objectProperties);
+            setDataProperties(propertiesData.dataProperties);
         })
         .catch(error => {
             console.log(error);
         });
 }
 
-export const handleDataPropertiesFetch = () => {
-    return fetchData(`/umq/data/data_properties`);
+export const handlePropertiesFetch = () => {
+    return fetchData(`/umq/data/properties`);
 }
 
 export const handleFilteredNodeDataFetch = (filter) => {
     return fetchData(`/umq/data/nodes?filter=${filter}`);
-}
-
-export const handleObjectPropertiesFetch = () => {
-    return fetchData(`/umq/data/object_properties`);
 }
 
 export const handleVarDataFetch = () => {

@@ -14,7 +14,7 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
   const graph = {
     nodes: nodesInGraph,
     edges: edgesInGraph,
-  }
+  };
 
   const handleNodeSelection = (selectedNodes, selectedEdges) => {
     if (selectedNodes?.length > 0)

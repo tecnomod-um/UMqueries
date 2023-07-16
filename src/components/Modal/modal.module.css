@@ -206,7 +206,6 @@
 .labelCheckbox {
     position: relative;
     display: inline-block;
-    float: left;
     padding: 0.4em 0.5em;
     text-align: right;
     width: 140px;
