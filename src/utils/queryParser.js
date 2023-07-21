@@ -40,6 +40,8 @@ export const parseQuery = (nodes, edges, startingVar) => {
     // Create query body
     let graph = '';
     Object.keys(nodes).forEach(nodeInList => {
+        // If node is a uri list it will be skipped
+        if (nodeInList.uriOnly) return;
         const varNode = nodes[nodeInList].varID >= 0 ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
         // Build object properties
         graph = '';
@@ -52,7 +54,15 @@ export const parseQuery = (nodes, edges, startingVar) => {
                 let optional = edge.isOptional ? `OPTIONAL {` : ``;
                 let transitive = edge.isTransitive ? `*` : ``;
                 let targetNode = nodes.find(node => node.id === edge.to);
-                let subject = targetNode.varID >= 0 ? targetNode.data : `<${targetNode.data}>`;
+
+                let subject;
+                if (targetNode.uriOnly)
+                    subject = `VALUES { ${targetNode.map(item => `<${item}>`).join(' ')} }`;
+                else if (targetNode.varID >= 0)
+                    subject = targetNode.data;
+                else
+                    subject = `<${targetNode.data}>`;
+
                 body += `${optional}${varNode} <${edge.data}>${transitive} ${subject}${optional ? '}' : ''}.\n`;
             }
         });
@@ -124,22 +134,4 @@ export const parseResponse = (response) => {
     });
     console.log(result)
     return result;
-}
-
-// Fetch vars query
-export const varDataQuery = () => {
-    return (
-        `SELECT DISTINCT ?graph ?label WHERE {
-            GRAPH ?graph {?s ?p ?o}
-            OPTIONAL { ?graph <http://www.w3.org/2000/01/rdf-schema#label> ?rdfsLabel } 
-            OPTIONAL { ?graph <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel }
-            OPTIONAL { ?graph <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel }
-            BIND(COALESCE(?rdfsLabel, ?prefLabel, ?altLabel) AS ?label)
-            FILTER (
-                STRSTARTS(STR(?graph), "http") &&
-                !CONTAINS(STR(?graph), "localhost") &&
-                !CONTAINS(STR(?graph), "schemas") &&
-                !CONTAINS(STR(?graph), "www.w3.org/")
-            )
-        } ORDER BY ?graph`);
 }

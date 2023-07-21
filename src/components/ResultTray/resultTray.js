@@ -5,6 +5,7 @@ import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { getCategory } from "../../utils/typeChecker.js";
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
+import ValuesItem from "../ValuesItem/valuesItem";
 import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
 
@@ -13,6 +14,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
+    const [uriList, setUriList] = useState([]);
     const inputRefs = useRef({});
 
     let shownProperties;
@@ -32,7 +34,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 label={edge.label}
                 menu={getPropertyTargets(false, edge.object, edge.label, edge.property)} />)
         ) ?? []);
-
 
         shownOptionals = (edgeData[selectedNode.type]?.map(edge => (
             <DropdownNestedMenuItem
@@ -61,7 +62,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
 
     // Gets all nodes that could receive a property
     function getPropertyTargets(isOptional, object, label, property) {
-
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
         const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
@@ -71,23 +71,11 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional)
                 }}>{targetedNode.label} </DropdownMenuItem>))
 
-        if (acceptsAnyURI) {
-            if (!inputRefs.current[label]) {
-                inputRefs.current[label] = React.createRef();
-            }
-            result.unshift(
-                <DropdownMenuItem id="preventCloseDropdownItem">
-                    <input className={ResultTrayStyles.uriTextBox} type="text" placeholder="Enter URI" ref={inputRefs.current[label]} id={`inputUri+${label}`} />
-                    <button className={ResultTrayStyles.uriButton} onClick={(event) => {
-                        const contents = inputRefs.current[label]?.current.value;
-                        if (contents) {
-                            const uriId = addNode(contents, contents, 'uri', false, '', contents, true).id;
-                            addEdge(selectedNode.id, uriId, label, property, isOptional);
-                        }
-                    }}>OK</button>
-                </DropdownMenuItem>
-            );
+        if (!inputRefs.current[label]) {
+            inputRefs.current[label] = React.createRef();
         }
+        result.unshift(
+            <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
@@ -99,7 +87,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             "label": node.label,
             "uri_graph": node.graph
         };
-    };
+    }
 
     const metricContents = (node, property, isTotal, isMax) => {
         return {
@@ -111,7 +99,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             "varID": node.varID,
             "uri_graph": node.graph
         };
-    };
+    }
 
     // Gets all countable elements that could be queried
     function getMetricTargets(isTotal, isMax) {
@@ -212,6 +200,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                     <Dropdown
                         trigger={<button className={ResultTrayStyles.var_button}>{buttonPropertyLabel}</button>}
                         menu={shownProperties}
+                        uriList={uriList}
                     />
                 </div>
                 <Dropdown

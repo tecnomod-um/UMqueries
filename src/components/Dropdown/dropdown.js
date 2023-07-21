@@ -12,6 +12,7 @@ export function Dropdown({
     isOpen: controlledIsOpen,
     onOpen: onControlledOpen,
     minWidth,
+    uriList
 }) {
     const [isInternalOpen, setInternalOpen] = useState(null);
     const isOpen = controlledIsOpen || isInternalOpen;
@@ -27,6 +28,9 @@ export function Dropdown({
     const handleClose = (event) => {
         event.stopPropagation();
         if ((anchorRef.current && anchorRef.current.contains(event.target)) || event.target.closest("#preventCloseDropdownItem")) {
+            if (uriList && uriList.length > 0) {
+                handleForceClose();
+            }
             return;
         }
         handleForceClose();
