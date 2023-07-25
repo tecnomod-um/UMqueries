@@ -6,10 +6,9 @@ import AddIcon from '@mui/icons-material/Add';
 
 // Dropdown option that allows to build an URI values list for a property
 function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOptional, setUriList, addNode, addEdge }) {
-
     const handleKeyDown = (event) => {
-        event.preventDefault();
         if (event.key === 'Enter') {
+            event.preventDefault();
             const contents = inputRef?.current?.value;
             if (contents) {
                 setUriList(oldList => [...oldList, contents]);
@@ -57,9 +56,11 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                     onKeyDown={handleKeyDown}
                 />
                 <button className={ValuesItemStyles.uriButton} onClick={(event) => {
-                    const uriId = addNode(uriList.join('\n'), uriList, 'uri', false, '', uriList, true).id;
-                    addEdge(selectedNode.id, uriId, label, property, isOptional);
-                    setUriList([]);
+                    if (uriList.length > 0) {
+                        const uriId = addNode(uriList.join('\n'), uriList, 'uri', false, '', uriList, true).id;
+                        addEdge(selectedNode.id, uriId, label, property, isOptional);
+                        setUriList([]);
+                    }
                 }}>OK</button>
             </div>
         </div>
