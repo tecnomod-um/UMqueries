@@ -236,10 +236,50 @@
     transition: border-bottom-color 0.3s ease-in-out;
 }
 
+.inputWrapper {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: bottom;
+    position: relative
+}
+
+.operatorButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 70%;
+    width: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.25s ease, background-color 0.3s ease;
+    background-color: #6c757d;
+    color: #ffffff;
+    text-align: center;
+}
+
+.operatorButton:hover {
+    background-color: #5a6268;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .checkbox {
     height: 20px;
     width: 20px;
     background-color: #fff;
     border: 2px solid #aaa;
     border-radius: 2px;
+}
+
+.fieldContainer input[type="number"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.fieldContainer input[type="number"]::-webkit-inner-spin-button,
+.fieldContainer input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
 }

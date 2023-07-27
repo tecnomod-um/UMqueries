@@ -111,15 +111,16 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
                 .forEach(targetedNode => {
                     if (targetedNode.properties)
-                        Object.keys(targetedNode.properties).forEach(property => {
-                            let show = targetedNode.properties[property].show;
-                            if (show && getCategory(insideData[targetedNode.type].filter(item => item.label === property)[0].object) === 'number') {
+                        Object.entries(targetedNode.properties).forEach(([key, value]) => {
+                            let show = value.show;
+                            const category = getCategory(insideData[targetedNode.type].filter(entry => entry.property === value.uri)[0]?.type);
+                            if (show && (category === 'number' || category === 'decimal' || category === 'datetime')) {
                                 result.push(<DropdownMenuItem onClick={() =>
-                                    setStartingVar({ [targetedNode.id]: metricContents(targetedNode, property, isTotal, isMax) })
-                                }>{targetedNode.label + "'s '" + property + "'"}</DropdownMenuItem>);
-                                console.log(startingVar);
+                                    setStartingVar({ [targetedNode.id]: metricContents(targetedNode, key, isTotal, isMax) })
+                                }>{targetedNode.label + "'s '" + key + "'"}</DropdownMenuItem>);
                             }
                         });
+
                 });
         }
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
@@ -166,7 +167,8 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     // Load graph from file
     const onFileSelect = useCallback((queryData) => {
         loadGraph(queryData);
-        setStartingVar(queryData.startingVar)
+        if (queryData.startingVar)
+            setStartingVar(queryData.startingVar);
     }, [loadGraph]);
 
     // Remove nodes
@@ -183,8 +185,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     // Remove nodes on del press
     useEffect(() => {
         const handleKeyPress = (event) => {
-            if (event.key === "Delete")
+            if (event.key === "Delete") {
                 deleteSelected();
+                document.activeElement.blur();
+            }
         };
         window.addEventListener("keydown", handleKeyPress);
         return () => {

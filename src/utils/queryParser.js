@@ -21,6 +21,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
 
             // SELECT statement
             select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
+            
             // Get var types
             body += `?${varUri} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${varType} .\n`;
             // Get var labels

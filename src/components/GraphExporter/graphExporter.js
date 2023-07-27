@@ -5,8 +5,13 @@ import { saveAs } from 'file-saver';
 // Exports current query graph to .json file
 export function GraphToFile({ nodes, edges, startingVar }) {
   const exportQuery = useCallback(() => {
+    let modifiedNodes = nodes.map(node => {
+      let label = node.label.split(' ')[0];
+      return { ...node, label };
+    });
+
     const queryData = {
-      nodes: nodes,
+      nodes: modifiedNodes,
       edges: edges,
       startingVar: startingVar,
     };

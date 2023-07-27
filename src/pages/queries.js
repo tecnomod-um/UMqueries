@@ -9,7 +9,6 @@ import Modal from "../components/Modal/modal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 
-
 // Main view. All functional elements will be shown here.
 function Queries() {
     // Data generated from endpoint
@@ -26,8 +25,6 @@ function Queries() {
     const [isOpen, setIsOpen] = useState(false);
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-
-
     // Loads endpoint data when first loaded
     useEffect(() => {
         populateWithEndpointData(setVarData, setVarIDs, setObjectProperties, setDataProperties)
@@ -108,6 +105,7 @@ function Queries() {
         setEdges((prevEdges) => {
             const newEdge = {
                 id: prevEdges.length > 0 ? prevEdges.slice(-1)[0].id + 1 : 0,
+                dashes: isOptional,
                 from: id1,
                 to: id2,
                 label: label,
@@ -143,13 +141,62 @@ function Queries() {
         setSelectedEdge(null);
     }
 
+    function loadGraph(graph) {
+        setNodes([]);
+        setEdges([]);
+        const initialVarIDs = Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
+        setVarIDs(initialVarIDs);
+        let newVarIDs = { ...initialVarIDs };
+        const newNodes = graph.nodes.map((node, index) => {
+            const varID = node.varID !== -1 ? newVarIDs[node.type] : -1;
+            const label = node.varID !== -1 ? `${node.label} ${varID}` : node.label;
+            const uri = node.varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
+            const shape = node.shape === 'box' ? 'box' : 'big ellipse';
+            const color = node.shape === 'box' ? '#D3D3D3' : colorList[node.type];
+            if (node.varID !== -1) newVarIDs[node.type] = varID + 1;
+
+            const newNode = {
+                id: index,
+                data: uri,
+                label: label,
+                color: color,
+                type: node.type,
+                varID: varID,
+                graph: node.graph,
+                class: node.class,
+                shape: shape
+            };
+
+            if (node.properties) {
+                newNode.properties = node.properties;
+            }
+
+            return newNode;
+        });
+        setNodes(newNodes);
+        setVarIDs(newVarIDs);
+        const newEdges = graph.edges.map((edge, index) => {
+            return {
+                id: index,
+                dashes: edge.isOptional,
+                from: edge.from,
+                to: edge.to,
+                label: edge.label,
+                data: edge.data,
+                isOptional: edge.isOptional,
+                isTransitive: false
+            };
+        });
+        setEdges(newEdges);
+    }
+
     function toggleIsTransitive(edge) {
         let propCanBeTransitive = objectProperties[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
         if (propCanBeTransitive) {
             let label = edge.label;
             edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
             let newEdges = [...edges];
-            newEdges[edge.id] = { id: edge.id, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
+            newEdges[edge.id] = { id: edge.id, dashes: edge.isOptional, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
             setEdges(newEdges);
         }
     }
@@ -163,11 +210,12 @@ function Queries() {
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
                 <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} />
+                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
                 </div>
             </div>
             <Modal insideData={dataProperties} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
         </div>
     );
 }
+
 export default Queries;

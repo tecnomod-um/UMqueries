@@ -1,14 +1,24 @@
-// Utility class to define modal fields. 
-// TODO fill with all w3c ontology field types
 export const getCategory = (inputType) => {
-    if (inputType.includes('uri') || inputType.includes('link') || inputType.includes('url') || inputType.includes('typed-literal'))
-        return 'link';
-    else if (inputType.includes('numeric') || inputType.includes('int') || inputType.includes('integer') || inputType.includes('long') || inputType.includes('decimal') || inputType.includes('byte'))
-        return 'number';
-    else if (Array.isArray(inputType) || (typeof inputType === 'string' && inputType.includes('array')))
+    if (Array.isArray(inputType)) {
         return 'select';
-    else if (typeof inputType === 'string' && inputType.includes('boolean'))
-        return 'boolean';
-    else
-        return 'text';
+    }
+    const type = inputType.toLowerCase();
+    const patterns = [
+        { re: /uri|link|url|typed-literal/, return: 'link' },
+        { re: /numeric|int|integer|long|decimal|byte|short|nonnegativeinteger|unsignedlong|unsignedint|unsignedshort|unsignedbyte|positiveinteger/, return: 'number' },
+        { re: /float|double/, return: 'decimal' },
+        { re: /boolean/, return: 'boolean' },
+        { re: /datetime|date|time|gyear|gyearmonth|gmonth|gmonthday|gday|duration|daytimeduration|yearmonthduration/, return: 'datetime' },
+        { re: /string|normalizedstring|token|language|name|ncname|id|idref|idrefs|entity|entities|nmtoken|nmtokens/, return: 'text' },
+        { re: /base64binary|hexbinary/, return: 'binary' },
+        { re: /anyuri|qname|notation/, return: 'uri' },
+        { re: /array|enumeration/, return: 'select' }
+    ];
+
+    for (const pattern of patterns) {
+        if (pattern.re.test(type)) {
+            return pattern.return;
+        }
+    }
+    return 'text';
 }
