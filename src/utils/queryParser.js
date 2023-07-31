@@ -21,9 +21,11 @@ export const parseQuery = (nodes, edges, startingVar) => {
 
             // SELECT statement
             select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
+            /*
+                        // Get var types
+                        body += `?${varUri} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${varType} .\n`;
             
-            // Get var types
-            body += `?${varUri} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${varType} .\n`;
+            */
             // Get var labels
             body += `OPTIONAL { ?${varUri} <http://www.w3.org/2000/01/rdf-schema#label> ?${varUri}RdfsLabel } .\n`;
             body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varUri}PrefLabel } .\n`;
@@ -37,14 +39,22 @@ export const parseQuery = (nodes, edges, startingVar) => {
         });
     }
     body += '\n';
-
+    /*
+    if shape === 'box',
+    
+    */
     // Create query body
     let graph = '';
     Object.keys(nodes).forEach(nodeInList => {
+        console.log(nodes[nodeInList])
         // If node is a uri list it will be skipped
         if (nodeInList.uriOnly) return;
         const varNode = nodes[nodeInList].varID >= 0 ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
         // Build object properties
+
+        if (nodes[nodeInList].isVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
+            body += `?${nodes[nodeInList].data} <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?${nodes[nodeInList].class} .\n`;
+
         graph = '';
         edges.forEach(edge => {
             if (edge.from === nodes[nodeInList].id) {

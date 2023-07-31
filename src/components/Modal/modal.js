@@ -14,6 +14,25 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
         text: ['=', '⊆'],
     }), []);
 
+    const getOperatorTooltip = (operator) => {
+        switch (operator) {
+            case '=':
+                return 'is equal to value';
+            case '>':
+                return 'is greater than value';
+            case '<':
+                return 'is lesser than value';
+            case '<=':
+                return 'is lesser than or equal to value';
+            case '>=':
+                return 'is greater than or equal to value';
+            case '⊆':
+                return 'contains value';
+            default:
+                return '';
+        }
+    }
+
     const getNewOperator = (currentOperator, type) =>
         operatorLists[type][(operatorLists[type].indexOf(currentOperator) + 1) % operatorLists[type].length];
 
@@ -74,7 +93,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="url" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
                         </span>
                     );
                     break;
@@ -82,7 +101,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="number" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
                         </span>
                     );
                     break;
@@ -90,7 +109,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="number" step="any" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
                         </span>
                     );
                     break;
@@ -98,7 +117,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="datetime-local" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'number') })}>{operator}</button>
                         </span>
                     );
                     break;
@@ -124,7 +143,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="url" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
                         </span>
                     );
                     break;
@@ -133,7 +152,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     input = (
                         <span className={ModalStyles.inputWrapper}>
                             <input className={ModalStyles.input} type="text" key={`${selectedNode.label}-${label}`} id={label} name={label} disabled={!isVar} defaultValue={value} ref={el => (inputRefs[label] = el)} />
-                            <button className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
+                            <button title={getOperatorTooltip(operator)} className={ModalStyles.operatorButton} onClick={() => setOperators({ ...operators, [label]: getNewOperator(operator, 'text') })}>{operator}</button>
                         </span>
                     );
                     break;

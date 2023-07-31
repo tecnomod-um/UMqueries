@@ -78,6 +78,7 @@ function Queries() {
     function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
         let newNode;
         setNodes((prevNodes) => {
+            const maxId = prevNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
             const varID = isVar ? varIDs[type] : -1;
             const label = isVar ? `${id} ${varID}` : id;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
@@ -85,7 +86,7 @@ function Queries() {
             const shape = uriOnly ? 'box' : 'big ellipse';
             const color = uriOnly ? '#D3D3D3' : colorList[type];
             newNode = {
-                id: prevNodes.length ? prevNodes.slice(-1)[0].id + 1 : 0,
+                id: maxId + 1,
                 data: uri,
                 label: label,
                 color: color,
@@ -95,16 +96,17 @@ function Queries() {
                 class: classURI,
                 shape: shape
             };
-
+    
             return [...prevNodes, newNode];
         });
         return newNode;
-    }
+    }    
 
     function addEdge(id1, id2, label, data, isOptional) {
         setEdges((prevEdges) => {
+            const maxId = prevEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
             const newEdge = {
-                id: prevEdges.length > 0 ? prevEdges.slice(-1)[0].id + 1 : 0,
+                id: maxId + 1,
                 dashes: isOptional,
                 from: id1,
                 to: id2,
@@ -113,19 +115,19 @@ function Queries() {
                 isOptional: isOptional,
                 isTransitive: false
             };
-            console.log("🚀 ~ file: setEdges ~ newEdge:", newEdge)
             return [...prevEdges, newEdge];
         });
-    }
+    }    
 
     function setNode(updatedNode) {
         setNodes(nodes => {
             let newNodes = nodes.filter(node => node.id !== updatedNode.id);
             newNodes.push(updatedNode);
+            newNodes.sort((node1, node2) => node1.id - node2.id);
             return newNodes;
         });
         setSelectedNode(updatedNode);
-    }
+    }    
 
     function removeNode() {
         setEdges(edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id)));
@@ -147,6 +149,9 @@ function Queries() {
         const initialVarIDs = Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
         setVarIDs(initialVarIDs);
         let newVarIDs = { ...initialVarIDs };
+
+        let nodeIdToIndex = {};  // Map from node IDs to their index in the newNodes array
+
         const newNodes = graph.nodes.map((node, index) => {
             const varID = node.varID !== -1 ? newVarIDs[node.type] : -1;
             const label = node.varID !== -1 ? `${node.label} ${varID}` : node.label;
@@ -156,7 +161,7 @@ function Queries() {
             if (node.varID !== -1) newVarIDs[node.type] = varID + 1;
 
             const newNode = {
-                id: index,
+                id: node.id,  // Use the actual node id, not the index
                 data: uri,
                 label: label,
                 color: color,
@@ -166,6 +171,8 @@ function Queries() {
                 class: node.class,
                 shape: shape
             };
+
+            nodeIdToIndex[node.id] = index;  // Store the index for later use in edges
 
             if (node.properties) {
                 newNode.properties = node.properties;
@@ -179,8 +186,8 @@ function Queries() {
             return {
                 id: index,
                 dashes: edge.isOptional,
-                from: edge.from,
-                to: edge.to,
+                from: nodeIdToIndex[edge.from],  // Use the correct index from the map
+                to: nodeIdToIndex[edge.to],  // Use the correct index from the map
                 label: edge.label,
                 data: edge.data,
                 isOptional: edge.isOptional,
