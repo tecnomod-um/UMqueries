@@ -194,6 +194,7 @@ function Modal({ insideData, selectedNode, isOpen, setIsOpen, setNode }) {
                     uri: property.property,
                     data: inputElement.value,
                     show: inputRefs[label + '_queriesShow'].checked,
+                    type: getCategory(property.type),
                     transitive: inputRefs[label + '_queriesTransitive'].checked,
                 };
             }
