@@ -96,11 +96,11 @@ function Queries() {
                 class: classURI,
                 shape: shape
             };
-    
+
             return [...prevNodes, newNode];
         });
         return newNode;
-    }    
+    }
 
     function addEdge(id1, id2, label, data, isOptional) {
         setEdges((prevEdges) => {
@@ -117,7 +117,7 @@ function Queries() {
             };
             return [...prevEdges, newEdge];
         });
-    }    
+    }
 
     function setNode(updatedNode) {
         setNodes(nodes => {
@@ -127,7 +127,7 @@ function Queries() {
             return newNodes;
         });
         setSelectedNode(updatedNode);
-    }    
+    }
 
     function removeNode() {
         setEdges(edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id)));
@@ -216,9 +216,7 @@ function Queries() {
             </div>
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
-                <div className={QueriesStyles.tray}>
-                    <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
-                </div>
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
             </div>
             <Modal insideData={dataProperties} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
         </div>

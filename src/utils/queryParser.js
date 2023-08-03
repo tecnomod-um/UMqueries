@@ -1,4 +1,4 @@
-import { capitalizeFirst, cleanString, addSpaceChars } from "./stringFormatter.js";
+import { capitalizeFirst, cleanString, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
 
 const getOperatorString = (operator, type, value, varNodeData) => {
     const valueString = ['number', 'decimal', 'datetime'].includes(type) ? value : `"${value}"`;
@@ -28,16 +28,16 @@ export const parseQuery = (nodes, edges, startingVar) => {
         body += '?s ?p ?o .';
     } else {
         Object.keys(startingVar).forEach(nodeId => {
-            const varLabel = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID;
+            //const varLabel = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID;
             const varUri = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI';
             const varType = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___type';
-            const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
+            //const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
 
             // SELECT statement
             // TODO redo select statements to only relevan things select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
-            select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
+            // select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
+            select += ` ?${varUri} ?${varType}`;
 
-            // TODO do label fetching in different query
             /*
             // Get var labels
             body += `OPTIONAL { ?${varUri} <http://www.w3.org/2000/01/rdf-schema#label> ?${varUri}RdfsLabel } .\n`;
@@ -89,7 +89,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
                 let show = nodes[nodeInList].properties[property].show;
                 let data = nodes[nodeInList].properties[property].data;
                 if (show || data) {
-                    let varProperty = cleanString(capitalizeFirst(property) + '_' + nodes[nodeInList].varID);
+                    let varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type + '___' + nodes[nodeInList].varID);
                     let uri = nodes[nodeInList].properties[property].uri;
                     let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
 
@@ -122,17 +122,20 @@ export const parseQuery = (nodes, edges, startingVar) => {
 export const parseResponse = (response) => {
     const result = {};
 
-    response.data.results.bindings.forEach((element) => {
-        const typeValue = element?.[Object.keys(element)[3]]?.value?.toLowerCase() ?? null;
+    response.data.results.bindings.forEach((entry) => {
+        const typeValue = entry?.[Object.keys(entry)[3]]?.value?.toLowerCase() ?? null;
         if (!typeValue) return;
         if (!result[typeValue])
             result[typeValue] = [];
 
+        //const varLabel = lolvarUri
+        //const varTypeLabel = varType
+
         const elementFields = {};
 
-        Object.keys(element).forEach((field, index) => {
+        Object.keys(entry).forEach((field, index) => {
             if (index !== 3) {
-                const fieldValue = element[field].value;
+                const fieldValue = entry[field].value;
                 elementFields[addSpaceChars(field)] = fieldValue;
             }
         });

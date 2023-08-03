@@ -101,3 +101,25 @@
         opacity: 1;
     }
 }
+
+@media (max-width: 768px) {
+    .queryContainer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .constraint_container {
+        max-width: 100%;
+        width: 90%;
+        height: 30vh;
+        margin: 0 auto;
+    }
+
+    .graph_container {
+        max-width: 100%;
+        width: 90%;
+        margin: 1em auto;
+    }
+}
+
+

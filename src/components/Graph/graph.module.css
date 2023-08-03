@@ -8,3 +8,9 @@
     margin: 0 0 1vh 0;
     box-sizing: border-box;
 }
+
+@media (max-width: 768px) {
+    .map {
+      height: 25vh;
+    }
+  }

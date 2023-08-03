@@ -15,3 +15,7 @@ export const cleanString = str => {
 export const addSpaceChars = str => {
     return str.replaceAll("___", " ");
 }
+
+export const removeSpaceChars = str => {
+    return str.replaceAll(" ", "___");
+}

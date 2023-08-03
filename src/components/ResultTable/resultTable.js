@@ -72,21 +72,21 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
 
   const mouseMove = useCallback(
     (e) => {
+      const scrollLeft = tableElement.current.scrollLeft;
       const gridColumns = columns.map((col, i) => {
         if (i === activeIndex) {
-          const width = e.clientX - col.ref.current.offsetLeft;
-
+          const width = e.clientX - (col.ref.current.offsetLeft - scrollLeft);
           if (width >= minCellWidth) {
             return `${width}px`;
           }
         }
         return `${col.ref.current.offsetWidth}px`;
       });
-
       tableElement.current.style.gridTemplateColumns = gridColumns.join(" ");
     },
     [activeIndex, columns, minCellWidth]
   );
+
 
   const mouseUp = useCallback(() => {
     setActiveIndex(null);
@@ -105,24 +105,24 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
   }, [activeIndex, mouseMove, mouseUp]);
 
   return (
-        <table className={ResultTableStyles.resTable} style={{ gridTemplateColumns }} ref={tableElement}>
-          <thead className={ResultTableStyles.resThead}>
-            <tr className={ResultTableStyles.resTr}>
-              {columns.map(({ ref, text }, i) => (
-                <th className={ResultTableStyles.resTh} ref={ref} key={text}>
-                  <span className={ResultTableStyles.resSpan}>{text}</span>
-                  <div
-                    style={{ height: tableHeight }}
-                    onMouseDown={() => mouseDown(i)}
-                    className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"
-                      }`}
-                  />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          {getTableContent(filteredLists)}
-        </table>
+    <table className={ResultTableStyles.resTable} style={{ gridTemplateColumns }} ref={tableElement}>
+      <thead className={ResultTableStyles.resThead}>
+        <tr className={ResultTableStyles.resTr}>
+          {columns.map(({ ref, text }, i) => (
+            <th className={ResultTableStyles.resTh} ref={ref} key={text}>
+              <span className={ResultTableStyles.resSpan}>{text}</span>
+              <div
+                style={{ height: tableHeight }}
+                onMouseDown={() => mouseDown(i)}
+                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"
+                  }`}
+              />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      {getTableContent(filteredLists)}
+    </table>
   );
 };
 

@@ -3,8 +3,8 @@
   display: grid;
   overflow-y: hidden;
   overflow-x: auto;
+  table-layout: fixed;
 }
-
 
 .resThead,
 .resTbody,
