@@ -18,38 +18,17 @@ export const parseQuery = (nodes, edges, startingVar) => {
     let select = 'SELECT DISTINCT';
     let body = 'WHERE {\n';
 
-    // TODO metric
+    // TODO metric settings
     if (startingVar[Object.keys(startingVar)[0]].isMetric) {
         const metricNode = startingVar[Object.keys(startingVar)[0]];
         const varLabel = capitalizeFirst(metricNode.type) + '_' + metricNode.varID;
         const aggregateFunction = metricNode.isMax ? 'MAX' : metricNode.isMin ? 'MIN' : 'COUNT';
-
         select += ` ${aggregateFunction}(?${varLabel}) AS ?result`;
         body += '?s ?p ?o .';
     } else {
         Object.keys(startingVar).forEach(nodeId => {
-            //const varLabel = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID;
             const varUri = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI';
-            const varType = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___type';
-            //const varTypeLabel = 'VarTypeLabel_' + startingVar[nodeId].type + '_' + startingVar[nodeId].varID;
-
-            // SELECT statement
-            // TODO redo select statements to only relevan things select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
-            // select += ` ?${varLabel} ?${varUri} ?${varType} ?${varTypeLabel}`;
-            select += ` ?${varUri} ?${varType}`;
-
-            /*
-            // Get var labels
-            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2000/01/rdf-schema#label> ?${varUri}RdfsLabel } .\n`;
-            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varUri}PrefLabel } .\n`;
-            body += `OPTIONAL { ?${varUri} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varUri}AltLabel } .\n`;
-            body += `BIND(COALESCE(?${varUri}RdfsLabel, ?${varUri}PrefLabel, ?${varUri}AltLabel) AS ?${varLabel})\n`;
-            // Get varType labels
-            body += `OPTIONAL { ?${varType} <http://www.w3.org/2000/01/rdf-schema#label> ?${varType}RdfsLabel } .\n`;
-            body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#prefLabel> ?${varType}PrefLabel } .\n`;
-            body += `OPTIONAL { ?${varType} <http://www.w3.org/2004/02/skos/core#altLabel> ?${varType}AltLabel } .\n`;
-            body += `BIND(COALESCE(?${varType}RdfsLabel, ?${varType}PrefLabel, ?${varType}AltLabel) AS ?${varTypeLabel})\n`;
-            */
+            select += ` ?${varUri}`;
         });
     }
     body += '\n';
@@ -60,7 +39,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
         if (nodeInList.shape === 'box') return;
         const nodeIsVar = nodes[nodeInList].varID >= 0;
         const varNode = nodeIsVar ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
-        // Apply class restrictions
+        // Apply class/graph restrictions
         let graph = '';
         if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
             body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`;
@@ -74,8 +53,10 @@ export const parseQuery = (nodes, edges, startingVar) => {
             let transitive = edge.isTransitive ? `*` : ``;
             let targetNode = nodes.find(node => node.id === edge.to);
             let subject;
-            if (targetNode.shape === 'box')
-                subject = `VALUES { ${targetNode.map(item => `<${item}>`).join(' ')} }`;
+            if (targetNode.shape === 'box') {
+                subject = `?uriList_${nodeInList}`;
+                body += `VALUES ?uriList_${nodeInList} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }`;
+            }
             else if (targetNode.varID >= 0)
                 subject = targetNode.data;
             else
@@ -101,7 +82,6 @@ export const parseQuery = (nodes, edges, startingVar) => {
         }
         if (graph) body += `}\n`;
     });
-
     // Add metric aggregations
     Object.keys(startingVar).forEach(nodeId => {
         const metricNode = startingVar[nodeId];
@@ -115,33 +95,48 @@ export const parseQuery = (nodes, edges, startingVar) => {
     });
 
     body += '}';
+    console.log(select + '\n' + body + '\n')
     return select + '\n' + body + '\n';
 }
 
-// Parses the response body
 export const parseResponse = (response) => {
-    const result = {};
+    const resultURIAndLabels = {};
+    const resultOther = {};
 
-    response.data.results.bindings.forEach((entry) => {
-        const typeValue = entry?.[Object.keys(entry)[3]]?.value?.toLowerCase() ?? null;
-        if (!typeValue) return;
-        if (!result[typeValue])
-            result[typeValue] = [];
+    response.data.results.bindings.forEach((binding) => {
+        const keysInThisBinding = new Set();
+        Object.entries(binding).forEach(([key, value]) => {
+            // Establish query columns
+            const keyWithSpaces = addSpaceChars(key);
+            keysInThisBinding.add(keyWithSpaces);
 
-        //const varLabel = lolvarUri
-        //const varTypeLabel = varType
-
-        const elementFields = {};
-
-        Object.keys(entry).forEach((field, index) => {
-            if (index !== 3) {
-                const fieldValue = entry[field].value;
-                elementFields[addSpaceChars(field)] = fieldValue;
+            if (value.type === 'uri') {
+                const labelFieldName = keyWithSpaces.replace(/URI/g, 'Label');
+                keysInThisBinding.add(labelFieldName);
+                if (!resultURIAndLabels[labelFieldName]) {
+                    resultURIAndLabels[labelFieldName] = [];
+                }
+                resultURIAndLabels[labelFieldName].push(value.label);
+                if (!resultURIAndLabels[keyWithSpaces])
+                    resultURIAndLabels[keyWithSpaces] = [];
+                resultURIAndLabels[keyWithSpaces].push(value.value);
+            } else {
+                if (!resultOther[keyWithSpaces])
+                    resultOther[keyWithSpaces] = [];
+                resultOther[keyWithSpaces].push(value.value);
             }
         });
-
-        result[typeValue].push(elementFields);
+        // Ensure all arrays have the same length by filling missing values with ""
+        [...Object.keys(resultURIAndLabels), ...Object.keys(resultOther)].forEach(key => {
+            if (!keysInThisBinding.has(key)) {
+                if (resultURIAndLabels[key]) {
+                    resultURIAndLabels[key].push("");
+                } else {
+                    resultOther[key].push("");
+                }
+            }
+        });
     });
-    console.log(result)
+    const result = { ...resultURIAndLabels, ...resultOther };
     return result;
 }

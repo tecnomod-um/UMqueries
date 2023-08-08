@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { GraphToFile, FileToGraph } from "../GraphExporter/graphExporter.js";
-import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { getCategory } from "../../utils/typeChecker.js";
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
 import ValuesItem from "../ValuesItem/valuesItem";
 import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
+
+import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
@@ -48,6 +50,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         shownOptionals = (<span />);
     }
 
+
+    const numVarsSelected = Object.keys(startingVar).length;
+    buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
+    /*
     const varsInGraph = nodes.filter(generalNode => generalNode && generalNode.varID >= 0).length;
     if (!Object.keys(startingVar).length) buttonVarToShowLabel = 'No nodes shown';
     else if (startingVar[Object.keys(startingVar)[0]].isMetric) {
@@ -59,6 +65,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         buttonVarToShowLabel = capitalizeFirst("" + varName) + " " + startingVar[Object.keys(startingVar)[0]].varID + " shown";
     }
     else buttonVarToShowLabel = 'All nodes shown';
+    */
 
     // Gets all nodes that could receive a property
     function getPropertyTargets(isOptional, object, label, property) {
@@ -126,29 +133,38 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
-    function showAllVars() {
-        const result = nodes
-            .filter(generalNode => generalNode && generalNode.varID >= 0)
-            .reduce((acc, targetedNode) => {
-                return {
-                    ...acc,
-                    [targetedNode.id]: nodeContents(targetedNode)
-                };
-            }, {});
-
-        setStartingVar(result);
-    }
-
-    // Get all things that could be shown in the results
     function getShownTargets() {
-        // Show specific var in results
+        const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10))); // Convert keys to numbers and then to a set for O(1) lookups
+
+        // Toggle selected state for a given node
+        const toggleNodeSelection = (nodeId, nodeContents) => {
+            setStartingVar(prevStartingVar => {
+                const updatedStartingVar = { ...prevStartingVar };
+                if (nodeId in prevStartingVar) {
+                    delete updatedStartingVar[nodeId];
+                } else {
+                    updatedStartingVar[nodeId] = nodeContents;
+                }
+                return updatedStartingVar;
+            });
+        };
+
         let result = nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
             .map(targetedNode => {
-                return (<DropdownMenuItem onClick={() => setStartingVar({ [targetedNode.id]: nodeContents(targetedNode) })}>{targetedNode.label}</DropdownMenuItem>)
+                return (
+                    <DropdownMenuItem id="preventCloseDropdownItem" onClick={event => {
+                        event.stopPropagation();
+                        toggleNodeSelection(targetedNode.id, nodeContents(targetedNode));
+                    }}>
+                        <span className={ResultTrayStyles.shownNode}>
+                            {targetedNode.label}
+                            {selectedNodesSet.has(targetedNode.id) ? <DeleteIcon sx={{ color: 'darkgray' }} /> : <AddIcon sx={{ color: 'darkgray' }} />}
+                        </span>
+                    </DropdownMenuItem>
+                );
             });
-        // Show all vars in results
-        result.push(<DropdownMenuItem onClick={showAllVars}> All variables </DropdownMenuItem>);
-        // Show parameter / node counts in results
+
+        // You can still retain the other functionalities like metrics
         let countMenu = [
             (<DropdownNestedMenuItem
                 label="Get min"
@@ -160,6 +176,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 label="Get count"
                 menu={getMetricTargets(true)} />)
         ];
+
         result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);
         return result;
     }

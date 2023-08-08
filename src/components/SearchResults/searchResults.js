@@ -1,55 +1,40 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import ResultTable from "../ResultTable/resultTable";
 import SearchStyles from "./searchResults.module.css";
 
-// Search functionality of the result table component
-function SearchResults({ startingData, resultData }) {
+function SearchResults({ resultData }) {
+    const [searchTerm, setSearchTerm] = useState("");
+    const handleChange = e => setSearchTerm(e.target.value.toLowerCase());
 
-    const [searchField, setSearchField] = useState("");
-    const searchRef = useRef(null);
+    const filteredResult = useMemo(() => {
+        let filteredResult = {};
+        if (resultData) {
+            Object.keys(resultData).forEach(key => {
+                filteredResult[key] = resultData[key].filter((_, idx) => {
+                    // Check if the searchTerm exists in any of the array entries at the current index
+                    return Object.values(resultData).some(array =>
+                        array[idx] && array[idx].toLowerCase().includes(searchTerm)
+                    );
+                });
+            });
+        }
+        return filteredResult;
+    }, [resultData, searchTerm]);
 
-    const handleChange = e => setSearchField(e.target.value);
-
-    function getFilteredList(elementList) {
-        if (!elementList) return null;
-        return elementList.filter((element) => {
-            const searchFieldLower = searchField.toLowerCase();
-            for (const field in element) {
-                if (element.hasOwnProperty(field) &&
-                    typeof element[field] === 'string' &&
-                    element[field].toLowerCase().includes(searchFieldLower))
-                    return true;
-            }
-            return false;
-        });
-    }
-
-    let filteredResultLists = {};
-    let placeholderText = "";
-
-    if (startingData && resultData) {
-        placeholderText = "Search by ";
-        Object.keys(resultData).forEach(key => {
-            filteredResultLists[key] = getFilteredList(resultData[key]);
-            placeholderText = placeholderText + key + ", ";
-        });
-        placeholderText = placeholderText.slice(0, -2);
-    }
-
-    if (Object.keys(filteredResultLists).length === 0) {
-        placeholderText = "No elements to display";
-    }
+    const placeholderText = resultData
+        ? `Search by ${Object.keys(resultData).join(", ")}`
+        : "No elements to display";
 
     return (
         <span className={SearchStyles.search}>
-            <input ref={searchRef}
+            <input
                 className={SearchStyles.input}
                 type="search"
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
-            <div className={SearchStyles.dataContainer} style={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(100% - 40px)' }}>
-                <ResultTable filteredLists={filteredResultLists} minCellWidth={120} />
+            <div className={SearchStyles.dataContainer}>
+                <ResultTable filteredLists={filteredResult} minCellWidth={120} />
             </div>
         </span>
     );

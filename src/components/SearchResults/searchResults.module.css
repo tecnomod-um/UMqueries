@@ -18,29 +18,17 @@
     text-overflow: ellipsis;
 }
 
+
 .dataContainer {
     display: grid;
     grid-template-columns: 1fr;
     margin: 1vh 0 0 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-Y: auto;
+    overflow-X: hidden;
+    height: calc(100% - 40px);
     border-radius: 4px;
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    scrollbar-width: thin;
-    scrollbar-color: #ccc #f5f5f5;
-}
-
-.dataContainer::-webkit-scrollbar {
-    width: 10px;
-}
-
-.dataContainer::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-}
-
-.dataContainer::-webkit-scrollbar-track {
-    background-color: #f5f5f5;
 }
 
 .input::-ms-clear {

@@ -33,46 +33,39 @@ const ResultExporter = ({ data, fileType }) => {
     };
 
     const convertToCSV = (data) => {
-        const nestedArrays = Object.values(data);
-        const headers = Object.keys(nestedArrays[0][0]).join(',');
-        const rows = nestedArrays.flatMap((nestedArray) =>
-            nestedArray.map((item) => Object.values(item).join(','))
+        const headers = Object.keys(data).join(',');
+        const rows = Array.from({ length: data[Object.keys(data)[0]].length }, (_, idx) =>
+            Object.values(data).map((column) => column[idx]).join(',')
         );
         return `${headers}\n${rows.join('\n')}`;
     };
 
     const convertToTSV = (data) => {
-        const nestedArrays = Object.values(data);
-        const headers = Object.keys(nestedArrays[0][0]).join('\t');
-        const rows = nestedArrays.flatMap((nestedArray) =>
-            nestedArray.map((item) => Object.values(item).join('\t'))
+        const headers = Object.keys(data).join('\t');
+        const rows = Array.from({ length: data[Object.keys(data)[0]].length }, (_, idx) =>
+            Object.values(data).map((column) => column[idx]).join('\t')
         );
         return `${headers}\n${rows.join('\n')}`;
     };
 
     const convertToTXT = (data) => {
-        const nestedArrays = Object.values(data);
-        const headers = Object.keys(nestedArrays[0][0]).join('\t');
-        const rows = nestedArrays.flatMap((nestedArray) => {
-            const rowData = nestedArray.map((item) => Object.values(item).join('\t'));
-            return rowData.length ? rowData : ['']; // Add an empty row if no data in the array
-        });
-        return `${headers}\n${rows.join('\n')}`;
-    };
+        const headers = Object.keys(data);
+        const rows = Array.from({ length: data[headers[0]].length }, (_, idx) =>
+            headers.map((header) => `${header}: ${data[header][idx]}`).join(', ')
+        );
+        return rows.join('\n');
+    };    
 
     const convertToODS = (data) => {
         const workbook = XLSX.utils.book_new();
-        const combinedData = Object.values(data).flatMap((sheetDataArray) => sheetDataArray);
-        const headers = Array.from(new Set(combinedData.flatMap(Object.keys)));
-        const sheetData = combinedData.map(Object.values);
-        const sheet = XLSX.utils.json_to_sheet([headers], { skipHeader: true });
-        XLSX.utils.sheet_add_json(sheet, sheetData, { skipHeader: true, origin: 'A2' });
-        XLSX.utils.book_append_sheet(workbook, sheet, 'Combined Data');
-
+        const headers = Object.keys(data);
+        const rows = Array.from({ length: data[headers[0]].length }, (_, idx) =>
+            Object.values(data).map((column) => column[idx])
+        );
+        const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Query results');
         const odsContent = XLSX.write(workbook, { bookType: 'ods', type: 'binary' });
-        const content = new Blob([s2ab(odsContent)], {
-            type: 'application/vnd.oasis.opendocument.spreadsheet',
-        });
+        const content = new Blob([s2ab(odsContent)], { type: 'application/vnd.oasis.opendocument.spreadsheet' });
         return URL.createObjectURL(content);
     };
 
