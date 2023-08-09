@@ -27,7 +27,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     let buttonVarToShowLabel;
 
     // Update button labels dynamically
-    if (selectedNode != null) {
+    if (selectedNode != null && selectedNode.shape !== 'box') {
         buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
         buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
         buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
@@ -149,21 +149,21 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
             });
         };
 
-        let result = nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
+        let result = nodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
             .map(targetedNode => {
+                const label = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
                 return (
                     <DropdownMenuItem id="preventCloseDropdownItem" onClick={event => {
                         event.stopPropagation();
                         toggleNodeSelection(targetedNode.id, nodeContents(targetedNode));
                     }}>
                         <span className={ResultTrayStyles.shownNode}>
-                            {targetedNode.label}
+                            {label}
                             {selectedNodesSet.has(targetedNode.id) ? <DeleteIcon sx={{ color: 'darkgray' }} /> : <AddIcon sx={{ color: 'darkgray' }} />}
                         </span>
                     </DropdownMenuItem>
                 );
             });
-
         // You can still retain the other functionalities like metrics
         let countMenu = [
             (<DropdownNestedMenuItem

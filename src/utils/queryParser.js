@@ -27,7 +27,8 @@ export const parseQuery = (nodes, edges, startingVar) => {
         body += '?s ?p ?o .';
     } else {
         Object.keys(startingVar).forEach(nodeId => {
-            const varUri = capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI';
+            const varUri = startingVar[nodeId].varID >= 0 ?
+                capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;
             select += ` ?${varUri}`;
         });
     }
@@ -54,8 +55,8 @@ export const parseQuery = (nodes, edges, startingVar) => {
             let targetNode = nodes.find(node => node.id === edge.to);
             let subject;
             if (targetNode.shape === 'box') {
-                subject = `?uriList_${nodeInList}`;
-                body += `VALUES ?uriList_${nodeInList} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }`;
+                subject = `?List___${targetNode.id}___URI`;
+                body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }`;
             }
             else if (targetNode.varID >= 0)
                 subject = targetNode.data;
@@ -121,6 +122,7 @@ export const parseResponse = (response) => {
                     resultURIAndLabels[keyWithSpaces] = [];
                 resultURIAndLabels[keyWithSpaces].push(value.value);
             } else {
+                console.log(value.value)
                 if (!resultOther[keyWithSpaces])
                     resultOther[keyWithSpaces] = [];
                 resultOther[keyWithSpaces].push(value.value);
