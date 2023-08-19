@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setIsOpen, loadGraph }) {
+function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -176,8 +176,11 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 label="Get count"
                 menu={getMetricTargets(true)} />)
         ];
-
         result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);
+        result.push(<DropdownMenuItem id="preventCloseDropdownItem" onClick={event => {
+            event.stopPropagation();
+            setBindingsOpen(true);
+        }} >Bindings...</DropdownMenuItem>);
         return result;
     }
 
@@ -227,7 +230,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
                     menu={shownOptionals} />
-                <button className={ResultTrayStyles.big_button} onClick={() => setIsOpen(true)}>{buttonInsideLabel}</button>
+                <button className={ResultTrayStyles.big_button} onClick={() => setDataOpen(true)}>{buttonInsideLabel}</button>
             </div>
             <div className={ResultTrayStyles.resultsColumn}>
                 <SearchResults startingData={startingVar} resultData={resultData} />

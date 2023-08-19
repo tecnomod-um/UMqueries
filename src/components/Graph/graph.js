@@ -3,7 +3,7 @@ import VisGraph from "react-vis-graph-wrapper";
 import GraphStyles from "./graph.module.css";
 
 // Vis.js Graph component.
-function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setIsOpen, toggleIsTransitive }) {
+function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setDataOpen, toggleIsTransitive }) {
 
   const options = {
     autoResize: false,
@@ -28,7 +28,7 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
     click: ({ nodes, edges }) => handleNodeSelection(nodes, edges),
     doubleClick: ({ nodes, edges }) => {
       if (nodes.length > 0)
-        setIsOpen(true);
+        setDataOpen(true);
       else if (edges.length > 0)
         toggleIsTransitive(edgesInGraph.find(edge => edge.id === Number(edges)));
     },

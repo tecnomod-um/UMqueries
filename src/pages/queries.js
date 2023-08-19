@@ -5,7 +5,8 @@ import SearchNodes from '../components/SearchNodes/searchNodes';
 import VarTray from '../components/VarTray/varTray';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
-import Modal from "../components/Modal/modal";
+import DataModal from "../components/DataModal/dataModal";
+import BindingsModal from "../components/BindingsModal/bindingsModal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 
@@ -22,7 +23,8 @@ function Queries() {
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
     // Flags used in the UI
-    const [isOpen, setIsOpen] = useState(false);
+    const [isDataOpen, setDataOpen] = useState(false);
+    const [isBindingsOpen, setBindingsOpen] = useState(false);
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     // Loads endpoint data when first loaded
@@ -38,7 +40,7 @@ function Queries() {
 
     // Updates modal to stop showing if currentNode is deleted
     useEffect(() => {
-        if (!selectedNode) setIsOpen(false);
+        if (!selectedNode) setDataOpen(false);
     }, [selectedNode]);
 
     // Loading screen
@@ -134,7 +136,7 @@ function Queries() {
         setNodes(nodes.filter(node => node.id !== selectedNode.id));
         setSelectedNode(null);
         setSelectedEdge(null);
-        setIsOpen(false);
+        setDataOpen(false);
     }
 
     function removeEdge() {
@@ -215,10 +217,11 @@ function Queries() {
                 <VarTray varData={varData} colorList={colorList} addNode={addNode} />
             </div>
             <div className={QueriesStyles.graph_container}>
-                <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setIsOpen={setIsOpen} toggleIsTransitive={toggleIsTransitive} />
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setIsOpen={setIsOpen} loadGraph={loadGraph} />
+                <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen}  loadGraph={loadGraph} />
             </div>
-            <Modal insideData={dataProperties} selectedNode={selectedNode} isOpen={isOpen} setIsOpen={setIsOpen} setNode={setNode} />
+            <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
+            <BindingsModal selectedNode={selectedNode} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />
         </div>
     );
 }

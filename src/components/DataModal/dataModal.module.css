@@ -1,0 +1,285 @@
+.fadeEnter {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+}
+
+.fadeEnterActive {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.fadeExit {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.fadeExitActive {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+}
+
+.darkBG {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal {
+    background: white;
+    width: 80vw;
+    max-width: 700px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 1000;
+    text-align: center;
+}
+
+.modalHeader {
+    border-radius: 16px 16px 0 0;
+    color: black;
+    font-size: 24px;
+    padding: 35px;
+    text-align: center;
+    border-bottom: 1px solid #e1e1e1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 20px;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+.heading {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+.modalContent {
+    box-sizing: border-box;
+    max-height: calc(100vh - 225px);
+    overflow-y: auto;
+}
+
+.modalActions {
+    align-items: center;
+    border-radius: 0 0 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+}
+
+.actionsContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.closeBtn {
+    align-self: flex-end;
+    border: none;
+    background: transparent;
+    border-radius: 20px;
+    color: black;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    margin-right: 2px;
+    margin-top: 2px;
+    padding: 4px 4px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.closeBtn:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+.cancelBtn {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 10px 20px;
+    transition: transform 0.25s ease, background-color 0.3s ease;
+    background-color: #c22535;
+    color: #ffffff;
+    text-align: center;
+}
+
+.cancelBtn:hover {
+    background-color: #e63946;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.setBtn {
+    background-color: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.setBtn:before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 12px;
+    background-color: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.setBtn:hover:before {
+    opacity: 0.5;
+}
+
+.fieldContainer {
+    position: relative;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(6, 1fr);
+    padding: 10px;
+}
+
+.labelProperty {
+    position: absolute;
+    display: inline-block;
+    margin: 10px 15px;
+    padding: 0.4em 0.5em;
+    text-align: center;
+    width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    z-index: 1;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.labelCheckbox {
+    position: relative;
+    display: inline-block;
+    padding: 0.4em 0.5em;
+    text-align: right;
+    width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.labelProperty:hover,
+.labelCheckbox:hover {
+    width: max-content;
+    min-width: 140px;
+    white-space: normal;
+    text-overflow: clip;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.input {
+    margin-left: 150px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    outline: none;
+    transition: border-bottom-color 0.3s ease-in-out;
+}
+
+.inputWrapper {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: bottom;
+    position: relative
+}
+
+.operatorButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 70%;
+    width: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.25s ease, background-color 0.3s ease;
+    background-color: #6c757d;
+    color: #ffffff;
+    text-align: center;
+}
+
+.operatorButton:hover {
+    background-color: #5a6268;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox {
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #aaa;
+    border-radius: 2px;
+}
+
+.fieldContainer input[type="number"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.fieldContainer input[type="number"]::-webkit-inner-spin-button,
+.fieldContainer input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
