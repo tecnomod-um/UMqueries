@@ -29,7 +29,6 @@ export function GraphToFile({ nodes, edges, startingVar }) {
 // Imports a query .json file to the app 
 export function FileToGraph({ onFileSelect }) {
   const fileInputRef = useRef(null);
-
   const handleFileSelect = () => {
     if (fileInputRef.current.files.length > 0) {
       const file = fileInputRef.current.files[0];

@@ -55,12 +55,16 @@ function Queries() {
             </div>
         );
     }
+    // Can't connect to server screen
+    else if (varData == null)
+        return <div className={QueriesStyles.error_screen}>Server can't be reached at the moment. Try again later.</div>;
 
     const mainContainerClass = isFading
         ? `${QueriesStyles.queryContainer} ${QueriesStyles.fadeIn}`
         : QueriesStyles.queryContainer;
 
     function generateColorList(varData) {
+        if (!varData) return {};
         const palette = distinctColors({
             count: Object.keys(varData).length,
             chromaMin: 15,
@@ -218,7 +222,7 @@ function Queries() {
             </div>
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen}  loadGraph={loadGraph} />
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal selectedNode={selectedNode} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />

@@ -18,11 +18,15 @@ function SearchNodes({ varData, colorList, addNode }) {
     let placeholderText = "";
 
     if (varData) {
-        placeholderText = "Search by ";
-        Object.keys(varData).forEach((key) => {
-            placeholderText = placeholderText + key + ", ";
-        });
-        placeholderText = placeholderText.slice(0, -2);
+        if (Object.keys(varData).length === 0) placeholderText = "No nodes detected";
+        else {
+            placeholderText = "Search by ";
+            Object.keys(varData).forEach((key) => {
+                placeholderText = placeholderText + key + ", ";
+            });
+            placeholderText = placeholderText.slice(0, -2);
+
+        }
     } else {
         placeholderText = "No elements to display";
     }

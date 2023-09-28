@@ -102,6 +102,15 @@
     }
 }
 
+.error_screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    color: darkgray;
+    font-size: 2em;
+}
+
 @media (max-width: 768px) {
     .queryContainer {
         flex-direction: column;
