@@ -26,22 +26,52 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     let buttonInsideLabel;
     let buttonVarToShowLabel;
 
-    // Update button labels dynamically
+    // Creates both property dropdown menus
+    const createGroupedMenuItems = (edges, isOptional) => {
+        const edgeGroups = edges?.reduce((acc, edge) => {
+            acc[edge.fromInstance ? 'fromInstance' : 'notFromInstance'].push(
+                <DropdownNestedMenuItem
+                    label={edge.label}
+                    menu={getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance)}
+                />
+            );
+            return acc;
+        }, { fromInstance: [], notFromInstance: [] });
+        const separator = edgeGroups?.fromInstance.length && edgeGroups?.notFromInstance.length ? (
+            <div className={ResultTrayStyles.dropdownSeparator} />
+        ) : null;
+
+        return [...(edgeGroups?.fromInstance || []), separator, ...(edgeGroups?.notFromInstance || [])].filter(Boolean);
+    }
+
+    // Gets all nodes that could receive a property
+    function getPropertyTargets(isOptional, object, label, property, isFromInstance) {
+        let textAddition = "";
+        if (isOptional) textAddition = " (Optional)";
+        const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
+        const result = nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
+            .map(targetedNode => (
+                <DropdownMenuItem onClick={() => {
+                    addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
+                }}>{targetedNode.label} </DropdownMenuItem>))
+
+        if (!inputRefs.current[label]) {
+            inputRefs.current[label] = React.createRef();   
+        }
+        result.unshift(
+            <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
+        return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
+    }
+
+    // Populate on node selected
     if (selectedNode != null && selectedNode.shape !== 'box') {
         buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
         buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
         buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
-        shownProperties = (edgeData[selectedNode.type]?.map(edge => (
-            <DropdownNestedMenuItem
-                label={edge.label}
-                menu={getPropertyTargets(false, edge.object, edge.label, edge.property)} />)
-        ) ?? []);
 
-        shownOptionals = (edgeData[selectedNode.type]?.map(edge => (
-            <DropdownNestedMenuItem
-                label={edge.label}
-                menu={getPropertyTargets(true, edge.object, edge.label, edge.property)} />)
-        ) ?? []);
+        const edgesForSelectedNode = edgeData[selectedNode.type];
+        shownProperties = createGroupedMenuItems(edgesForSelectedNode, false);
+        shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
     } else {
         buttonPropertyLabel = "No node selected";
         buttonOptionalLabel = "No node selected";
@@ -49,7 +79,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
         shownProperties = (<span />);
         shownOptionals = (<span />);
     }
-
 
     const numVarsSelected = Object.keys(startingVar).length;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
@@ -66,25 +95,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
     }
     else buttonVarToShowLabel = 'All nodes shown';
     */
-
-    // Gets all nodes that could receive a property
-    function getPropertyTargets(isOptional, object, label, property) {
-        let textAddition = "";
-        if (isOptional) textAddition = " (Optional)";
-        const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
-        const result = nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
-            .map(targetedNode => (
-                <DropdownMenuItem onClick={() => {
-                    addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional)
-                }}>{targetedNode.label} </DropdownMenuItem>))
-
-        if (!inputRefs.current[label]) {
-            inputRefs.current[label] = React.createRef();
-        }
-        result.unshift(
-            <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
-        return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
-    }
 
     const nodeContents = (node) => {
         return {

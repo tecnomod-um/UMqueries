@@ -108,7 +108,7 @@ function Queries() {
         return newNode;
     }
 
-    function addEdge(id1, id2, label, data, isOptional) {
+    function addEdge(id1, id2, label, data, isOptional, isFromInstance) {
         setEdges((prevEdges) => {
             const maxId = prevEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
             const newEdge = {
@@ -119,7 +119,8 @@ function Queries() {
                 label: label,
                 data: data,
                 isOptional: isOptional,
-                isTransitive: false
+                isTransitive: false,
+                isFromInstance: isFromInstance
             };
             return [...prevEdges, newEdge];
         });

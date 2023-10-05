@@ -84,3 +84,8 @@
     justify-content: space-between;
     width: 100%;
 }
+
+.dropdownSeparator {
+    height: 1px;
+    background-color: lightgray;
+}

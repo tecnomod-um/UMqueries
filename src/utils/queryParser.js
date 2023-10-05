@@ -27,26 +27,59 @@ export const parseQuery = (nodes, edges, startingVar) => {
         body += '?s ?p ?o .';
     } else {
         Object.keys(startingVar).forEach(nodeId => {
-            const varUri = startingVar[nodeId].varID >= 0 ?
-                capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;
-            select += ` ?${varUri}`;
+            // Add both general and instance variables
+            let hasClassVariable = false;
+            let hasInstanceVariable = false;
+            edges.forEach(edge => {
+                if (edge.from === Number(nodeId)) {
+                    hasClassVariable = hasClassVariable || !edge.isFromInstance;
+                    hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
+                }
+            });
+            if (hasClassVariable) {
+                const varUri = startingVar[nodeId].varID >= 0 ?
+                    capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;
+                select += ` ?${varUri}`;
+            }
+            if (hasInstanceVariable) {
+                const varInstanceUri = startingVar[nodeId].varID >= 0 ?
+                    capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI___instance' : `List___${nodeId}___URI___instance`;
+                select += ` ?${varInstanceUri}`;
+            }
         });
     }
-    body += '\n';
-
     // Create query body
     Object.keys(nodes).forEach(nodeInList => {
         // If node is a uri list it will be skipped
         if (nodeInList.shape === 'box') return;
         const nodeIsVar = nodes[nodeInList].varID >= 0;
         const varNode = nodeIsVar ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
+        // Detect both general and instance edges
+        let hasClassVariable = false;
+        let hasInstanceVariable = false;
+        edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(edge => {
+            hasClassVariable = hasClassVariable || edge.fromInstance;
+            hasInstanceVariable = hasInstanceVariable || !edge.fromInstance;
+        });
         // Apply class/graph restrictions
         let graph = '';
-        if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
-            body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`;
-        else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
-            graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
-            body += graph;
+        if (hasClassVariable) {
+            if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
+                body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`;
+            else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
+                graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
+                body += graph;
+            }
+        }
+        // Apply instance restrictions
+        if (hasInstanceVariable) {
+            if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
+                body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode} .\n${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`
+            else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
+                graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
+                body += graph;
+                body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode}___class .\n${varNode}___class <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .\n`;
+            }
         }
         // Build object properties
         edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(edge => {
@@ -54,6 +87,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
             let transitive = edge.isTransitive ? `*` : ``;
             let targetNode = nodes.find(node => node.id === edge.to);
             let subject;
+            let instance = edge.isFromInstance ? `___instance` : ``;
             if (targetNode.shape === 'box') {
                 subject = `?List___${targetNode.id}___URI`;
                 body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }`;
@@ -63,7 +97,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
             else
                 subject = `<${targetNode.data}>`;
 
-            body += `${optional}${varNode} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
+            body += `${optional}${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
         });
         // Build data properties
         if (nodes[nodeInList].properties) {
