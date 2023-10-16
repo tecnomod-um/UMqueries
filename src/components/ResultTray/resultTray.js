@@ -7,7 +7,6 @@ import ResultExporter from "../ResultExporter/resultExporter";
 import ValuesItem from "../ValuesItem/valuesItem";
 import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
-
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 

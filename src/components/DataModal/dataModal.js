@@ -8,7 +8,7 @@ import { getCategory } from "../../utils/typeChecker.js";
 function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode }) {
     const [operators, setOperators] = useState({});
     const modalRef = useRef(null);
-
+    const inputRefs = {};
     const operatorLists = useMemo(() => ({
         number: ['=', '>', '<', '<=', '>='],
         text: ['=', '⊆'],
@@ -68,8 +68,6 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
             window.removeEventListener("keyup", handleKeyUp);
         };
     }, [isDataOpen, setDataOpen]);
-
-    const inputRefs = {};
 
     function getInsideDataFields() {
         const MakeItem = (X) => <option key={X}>{X}</option>;
@@ -158,7 +156,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     break;
             }
             result.push(
-                <div className={DataModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-checkbox`}>
+                <div className={DataModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-row`}>
                     <label className={DataModalStyles.labelProperty} htmlFor={label}>{label}</label>
                     {input}
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
@@ -176,7 +174,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
 
     const handleClose = () => {
         setDataOpen(false);
-    };
+    }
 
     if (!selectedNode || !selectedNode.label) {
         return null;
@@ -202,7 +200,6 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                 updatedNode.properties[label].operator = operators[label];
             }
         });
-        console.log(updatedNode)
         setNode(updatedNode);
         setDataOpen(false);
     }

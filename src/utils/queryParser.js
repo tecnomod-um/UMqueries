@@ -30,12 +30,8 @@ export const parseQuery = (nodes, edges, startingVar) => {
             // Add both general and instance variables
             let hasClassVariable = false;
             let hasInstanceVariable = false;
-            edges.forEach(edge => {
-                if (edge.from === Number(nodeId)) {
-                    hasClassVariable = hasClassVariable || !edge.isFromInstance;
-                    hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
-                }
-            });
+            hasInstanceVariable = edges.some(edge => edge.from === Number(nodeId) && edge.isFromInstance);
+            hasClassVariable = edges.some(edge => (edge.from === Number(nodeId) && !edge.isFromInstance) || (edge.to === Number(nodeId)));
             if (hasClassVariable) {
                 const varUri = startingVar[nodeId].varID >= 0 ?
                     capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;

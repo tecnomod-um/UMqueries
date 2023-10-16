@@ -9,6 +9,8 @@ import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
+import { getCategory } from "../utils/typeChecker.js";
+
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -91,6 +93,7 @@ function Queries() {
             if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
             const shape = uriOnly ? 'box' : 'big ellipse';
             const color = uriOnly ? '#D3D3D3' : colorList[type];
+
             newNode = {
                 id: maxId + 1,
                 data: uri,
@@ -100,9 +103,20 @@ function Queries() {
                 varID: varID,
                 graph: graph,
                 class: classURI,
-                shape: shape
-            };
+                shape: shape,
+                properties: {}
+            }
 
+            dataProperties[type]?.forEach(property => {
+                newNode.properties[property.label] = {
+                    uri: property.property,
+                    data: '',
+                    show: false,
+                    type: getCategory(property.type),
+                    transitive: false,
+                    operator: '=',
+                }
+            });
             return [...prevNodes, newNode];
         });
         return newNode;
@@ -226,7 +240,7 @@ function Queries() {
                 <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal selectedNode={selectedNode} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />
+            <BindingsModal nodes={nodes} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />
         </div>
     );
 }
