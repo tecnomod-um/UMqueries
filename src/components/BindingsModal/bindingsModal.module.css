@@ -222,23 +222,36 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.bindingName {
+    font-weight: bold;
+    color: #333;
+    background-color: #f3f3f3;
+    padding: 0.4em 0.5em;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .bindingRow {
     display: grid;
-    grid-template-columns: 1fr 2fr 0.5fr 1fr;
+    grid-template-columns: 1.5fr 4fr 1fr 0.4fr 0.1fr;
     align-items: center;
     grid-gap: 10px;
     padding: 10px;
     border-bottom: 1px solid #e1e1e1;
 }
 
-.bindingName {
-    font-weight: bold;
-    color: #333;
+.bindingExpression {
+    text-align: left;
+    color: #444;
+    font-size: 0.9em;
 }
 
-.bindingExpression {
-    text-align: center;
-    color: #555;
+.showInResultsLabel {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
 .bindingRemove {
@@ -249,6 +262,15 @@
 
 .bindingRemove:hover {
     background: none;
+    cursor: pointer;
+}
+
+.errorIcon {
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a00;
 }
 
 .input {

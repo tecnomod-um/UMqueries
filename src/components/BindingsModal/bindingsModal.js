@@ -15,6 +15,7 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
     const [tempBindings, setTempBindings] = useState([]);
     const [bindingName, setBindingName] = useState("");
     const [showInResults, setShowInResults] = useState(false);
+    const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
     const operatorList = useMemo(() => (['+', '-', '*', '/']), []);
 
@@ -64,7 +65,15 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         if (!secondBuilderValue) setDefaultValuesToFirstOption(setSecondBuilderValue);
     }, [firstBuilderValue, secondBuilderValue, setDefaultValuesToFirstOption]);
 
+    const isValueInTempBindings = (value) => {
+        return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
+    }
+
     const handleClose = () => {
+        if (isValueInTempBindings(firstBuilderValue))
+            setDefaultValuesToFirstOption(setFirstBuilderValue);
+        if (isValueInTempBindings(secondBuilderValue))
+            setDefaultValuesToFirstOption(setSecondBuilderValue);
         setTempBindings([]);
         setBindingsOpen(false);
     }
@@ -77,18 +86,9 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         return <option key={element.label} value={element.value}>{element.label}</option>;
     }
 
-    const handleOptionChange = (event, element) => {
+    const handleOptionChange = (event, setValue) => {
         const value = JSON.parse(event.target.options[event.target.selectedIndex].value);
-        switch (element) {
-            case 1:
-                setFirstBuilderValue(value);
-                break;
-            case 2:
-                setSecondBuilderValue(value);
-                break;
-            default:
-                break;
-        }
+        setValue(value);
     }
 
     const getNewOperator = (currentOperator) =>
@@ -114,6 +114,7 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
             const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
             return {
                 isFromNode: false,
+                bindingId: foundBinding.id,
                 label: foundBinding.label,
             };
         } else {
@@ -128,22 +129,14 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
     }
 
     const addBinding = () => {
-        if (!bindingName.trim()) {
-            alert('Binding name cannot be empty.');
+        showError(false);
+        if ((!bindingName.trim()) || ([...bindings, ...tempBindings].some(b => b.label === bindingName))) {
+            showError(true);
             return;
         }
-        if (tempBindings.some(b => b.label === bindingName)) {
-            alert('Binding with the same name already exists.');
-            return;
-        }
-
         const firstValueInfo = findNodeInfo(firstBuilderValue);
         const secondValueInfo = findNodeInfo(secondBuilderValue);
 
-        if (!firstValueInfo || !secondValueInfo) {
-            alert('Failed to create binding due to an internal error.');
-            return;
-        }
         const newBinding = {
             id: Date.now(),
             label: bindingName,
@@ -152,38 +145,44 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
             secondValue: secondValueInfo,
             showInResults: showInResults
         }
-
         setTempBindings(prev => [...prev, newBinding]);
     }
 
     const handleSubmit = () => {
-        setBindings(tempBindings);
+        setBindings([...bindings, ...tempBindings]);
         handleClose();
     }
 
-    const handleRemoveVariable = (index, source) => {
-        const sourceList = source === 'bindings' ? bindings : tempBindings;
-        const removedValue = JSON.stringify(sourceList[index]);
-        if (removedValue === JSON.stringify(firstBuilderValue)) {
-            console.log("removed");
+    const removeBindingAndDependencies = (bindingId, bindingArray, tempBindingArray) => {
+        if (firstBuilderValue && firstBuilderValue.bindingId === bindingId)
             setDefaultValuesToFirstOption(setFirstBuilderValue);
-        }
-        if (removedValue === JSON.stringify(secondBuilderValue)) {
-            console.log("removed");
+        if (secondBuilderValue && secondBuilderValue.bindingId === bindingId)
             setDefaultValuesToFirstOption(setSecondBuilderValue);
+        let updatedBindings = bindingArray.filter(b => b.id !== bindingId);
+        let updatedTempBindings = tempBindingArray.filter(b => b.id !== bindingId);
+
+        const dependentBindings = [...updatedBindings, ...updatedTempBindings].filter(binding =>
+            binding.firstValue.bindingId === bindingId || binding.secondValue.bindingId === bindingId
+        );
+        for (const dependentBinding of dependentBindings) {
+            [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(dependentBinding.id, updatedBindings, updatedTempBindings);
         }
-        const updatedVariables = [...sourceList];
-        updatedVariables.splice(index, 1);
-        if (source === 'bindings') {
-            setBindings(updatedVariables);
-        } else {
-            setTempBindings(updatedVariables);
-        }
+        return [updatedBindings, updatedTempBindings];
     }
+
+    const handleRemoveVariable = (bindingId, source) => {
+        let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
+        setBindings(updatedBindings);
+        setTempBindings(updatedTempBindings);
+    }
+
 
     function bindingBuilder() {
         const numericProperties = getNumericProperties(nodes, tempBindings);
-        const optionSet = numericProperties.map((item) => makeItem(item));
+        const hasOptions = numericProperties && numericProperties.length > 0;
+        const optionSet = hasOptions
+            ? numericProperties.map((item) => makeItem(item))
+            : [<option key="no-options" value="">{`No options available`}</option>];
 
         return (
             <div className={BindingModalStyles.bindingBuilder}>
@@ -194,13 +193,16 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                             className={BindingModalStyles.input}
                             type="text"
                             value={bindingName}
+                            disabled={!hasOptions}
                             onChange={e => setBindingName(e.target.value)} />
+                        {error && <CloseIcon className={BindingModalStyles.errorIcon} />}
                     </span>
                     <label className={BindingModalStyles.labelEquals}>equals</label>
                     <select
                         className={BindingModalStyles.input}
                         value={JSON.stringify(firstBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, 1)}
+                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue)}
+                        disabled={!hasOptions}
                     >
                         {optionSet}
                     </select>
@@ -214,7 +216,8 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                     <select
                         className={BindingModalStyles.input}
                         value={JSON.stringify(secondBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, 2)}
+                        onChange={(e) => handleOptionChange(e, setSecondBuilderValue)}
+                        disabled={!hasOptions}
                     >
                         {optionSet}
                     </select>
@@ -224,8 +227,9 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                         type="checkbox"
                         style={{ display: 'inline-block' }}
                         checked={showInResults}
+                        disabled={!hasOptions}
                         onChange={e => setShowInResults(e.target.checked)} />
-                    <button className={BindingModalStyles.addButton} onClick={() => addBinding()}>Add binding</button>
+                    <button className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>Add binding</button>
                 </div>
             </div>
         );
@@ -241,11 +245,13 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
             <div
                 key={binding.id}
                 className={BindingModalStyles.bindingRow}
-                style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
+                style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}
+            >
                 <div className={BindingModalStyles.bindingName}>{binding.label}</div>
                 <div className={BindingModalStyles.bindingExpression}>
                     {binding.firstValue.label} {binding.operator} {binding.secondValue.label}
                 </div>
+                <label className={BindingModalStyles.showInResultsLabel}>Show in results:</label>
                 <input
                     className={BindingModalStyles.checkbox}
                     type="checkbox"
@@ -262,7 +268,7 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                         }
                     }}
                 />
-                <button className={BindingModalStyles.bindingRemove} onClick={() => handleRemoveVariable(index, binding.source)}>
+                <button className={BindingModalStyles.bindingRemove} onClick={() => handleRemoveVariable(binding.id, binding.source)}>
                     <DeleteIcon />
                 </button>
             </div>
