@@ -21,6 +21,7 @@ function Queries() {
     // Data structures used through the app
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [bindings, setBindings] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
@@ -167,6 +168,8 @@ function Queries() {
     function loadGraph(graph) {
         setNodes([]);
         setEdges([]);
+        setBindings([]);
+
         const initialVarIDs = Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
         setVarIDs(initialVarIDs);
         let newVarIDs = { ...initialVarIDs };
@@ -216,6 +219,10 @@ function Queries() {
             };
         });
         setEdges(newEdges);
+
+        if (graph.bindings && Array.isArray(graph.bindings)) {
+            setBindings(graph.bindings);
+        }
     }
 
     function toggleIsTransitive(edge) {
@@ -237,10 +244,10 @@ function Queries() {
             </div>
             <div className={QueriesStyles.graph_container}>
                 <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal nodes={nodes} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />
+            <BindingsModal nodes={nodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
         </div>
     );
 }

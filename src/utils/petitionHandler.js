@@ -127,11 +127,11 @@ export const fetchData = (dataFile) => {
     });
 }
 
-export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
+export const handleQuery = (nodes, edges, bindings, startingVar, setIsLoading) => {
     setIsLoading(true);
     let data = {
         endpoint: endpointURL,
-        query: parseQuery(nodes, edges, startingVar)
+        query: parseQuery(nodes, edges, bindings, startingVar)
     };
 
     return new Promise((resolve, reject) => {

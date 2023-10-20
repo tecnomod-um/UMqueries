@@ -3,7 +3,7 @@ import GraphToFileStyles from './graphExporter.module.css';
 import { saveAs } from 'file-saver';
 
 // Exports current query graph to .json file
-export function GraphToFile({ nodes, edges, startingVar }) {
+export function GraphToFile({ nodes, edges, bindings, startingVar }) {
   const exportQuery = useCallback(() => {
     let modifiedNodes = nodes.map(node => {
       let label = node.label.split(' ')[0];
@@ -13,6 +13,7 @@ export function GraphToFile({ nodes, edges, startingVar }) {
     const queryData = {
       nodes: modifiedNodes,
       edges: edges,
+      bindings: bindings,
       startingVar: startingVar,
     };
 
@@ -20,7 +21,7 @@ export function GraphToFile({ nodes, edges, startingVar }) {
     const fileData = JSON.stringify(queryData, null, 2);
     const blob = new Blob([fileData], { type: "application/json" });
     saveAs(blob, fileName);
-  }, [nodes, edges, startingVar]);
+  }, [nodes, edges, bindings, startingVar]);
 
   return (<button className={GraphToFileStyles.file_button} onClick={exportQuery}>Export query</button>
   );
@@ -33,13 +34,11 @@ export function FileToGraph({ onFileSelect }) {
     if (fileInputRef.current.files.length > 0) {
       const file = fileInputRef.current.files[0];
       const reader = new FileReader();
-
       reader.onload = (event) => {
         const fileData = event.target.result;
         const queryData = JSON.parse(fileData);
         onFileSelect(queryData);
-      };
-
+      }
       reader.readAsText(file);
     }
   };

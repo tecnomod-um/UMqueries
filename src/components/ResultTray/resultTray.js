@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
+function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -55,7 +55,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                 }}>{targetedNode.label} </DropdownMenuItem>))
 
         if (!inputRefs.current[label]) {
-            inputRefs.current[label] = React.createRef();   
+            inputRefs.current[label] = React.createRef();
         }
         result.unshift(
             <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
@@ -256,14 +256,14 @@ function ResultTray({ edgeData, insideData, nodes, edges, selectedNode, selected
                                     <ResultExporter data={resultData} fileType="ods" />
                                 ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
-                    <QueryButton nodes={nodes} edges={edges} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
+                    <QueryButton nodes={nodes} edges={edges} bindings={bindings} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
                     menu={getShownTargets()}
                 />
                 <div className={ResultTrayStyles.buttonRow}>
-                    <GraphToFile nodes={nodes} edges={edges} startingVar={startingVar} />
+                    <GraphToFile nodes={nodes} edges={edges} bindings={bindings} startingVar={startingVar} />
                     <FileToGraph onFileSelect={onFileSelect} />
                 </div>
             </div>

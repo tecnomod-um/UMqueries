@@ -6,9 +6,8 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
-function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
+function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
     const modalRef = useRef(null);
-    const [bindings, setBindings] = useState([]);
     const [operator, setOperator] = useState('+');
     const [firstBuilderValue, setFirstBuilderValue] = useState("");
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
@@ -19,6 +18,7 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
     const operatorList = useMemo(() => (['+', '-', '*', '/']), []);
 
+    // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
         const nodeNumericValues = (nodes ?? []).flatMap(node => {
             return Object.entries(node.properties)
@@ -36,7 +36,6 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                     })
                 }));
         });
-
         const combinedBindingsValues = bindings.concat(tempBindings).map(binding => ({
             label: binding.label,
             isFromNode: false,
@@ -47,7 +46,6 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
                 bindingId: binding.id
             })
         }));
-
         return [...nodeNumericValues, ...combinedBindingsValues];
     }, [nodes, bindings, tempBindings]);
 
@@ -65,30 +63,8 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         if (!secondBuilderValue) setDefaultValuesToFirstOption(setSecondBuilderValue);
     }, [firstBuilderValue, secondBuilderValue, setDefaultValuesToFirstOption]);
 
-    const isValueInTempBindings = (value) => {
-        return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
-    }
-
-    const handleClose = () => {
-        if (isValueInTempBindings(firstBuilderValue))
-            setDefaultValuesToFirstOption(setFirstBuilderValue);
-        if (isValueInTempBindings(secondBuilderValue))
-            setDefaultValuesToFirstOption(setSecondBuilderValue);
-        setTempBindings([]);
-        setBindingsOpen(false);
-    }
-
-    const toggleBindingBuilderVisibility = () => {
-        setShowBindingBuilder(!showBindingBuilder);
-    }
-
     const makeItem = (element) => {
         return <option key={element.label} value={element.value}>{element.label}</option>;
-    }
-
-    const handleOptionChange = (event, setValue) => {
-        const value = JSON.parse(event.target.options[event.target.selectedIndex].value);
-        setValue(value);
     }
 
     const getNewOperator = (currentOperator) =>
@@ -109,7 +85,8 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         }
     }
 
-    const findNodeInfo = (value) => {
+    // Creates the value's structure from the element it refers to
+    const findValueInfo = (value) => {
         if (!value.isFromNode) {
             const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
             return {
@@ -134,8 +111,8 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
             showError(true);
             return;
         }
-        const firstValueInfo = findNodeInfo(firstBuilderValue);
-        const secondValueInfo = findNodeInfo(secondBuilderValue);
+        const firstValueInfo = findValueInfo(firstBuilderValue);
+        const secondValueInfo = findValueInfo(secondBuilderValue);
 
         const newBinding = {
             id: Date.now(),
@@ -146,11 +123,6 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
             showInResults: showInResults
         }
         setTempBindings(prev => [...prev, newBinding]);
-    }
-
-    const handleSubmit = () => {
-        setBindings([...bindings, ...tempBindings]);
-        handleClose();
     }
 
     const removeBindingAndDependencies = (bindingId, bindingArray, tempBindingArray) => {
@@ -170,13 +142,40 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         return [updatedBindings, updatedTempBindings];
     }
 
+    const isValueInTempBindings = (value) => {
+        return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
+    }
+
+    const handleClose = () => {
+        if (isValueInTempBindings(firstBuilderValue))
+            setDefaultValuesToFirstOption(setFirstBuilderValue);
+        if (isValueInTempBindings(secondBuilderValue))
+            setDefaultValuesToFirstOption(setSecondBuilderValue);
+        setTempBindings([]);
+        setBindingsOpen(false);
+    }
+
     const handleRemoveVariable = (bindingId, source) => {
         let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
         setBindings(updatedBindings);
         setTempBindings(updatedTempBindings);
     }
+    
+    const handleSubmit = () => {
+        setBindings([...bindings, ...tempBindings]);
+        handleClose();
+    }
 
+    const handleOptionChange = (event, setValue) => {
+        const value = JSON.parse(event.target.options[event.target.selectedIndex].value);
+        setValue(value);
+    }
 
+    const toggleBindingBuilderVisibility = () => {
+        setShowBindingBuilder(!showBindingBuilder);
+    }
+
+    // Binding builder interface definition
     function bindingBuilder() {
         const numericProperties = getNumericProperties(nodes, tempBindings);
         const hasOptions = numericProperties && numericProperties.length > 0;
@@ -235,12 +234,12 @@ function BindingsModal({ nodes, isBindingsOpen, setBindingsOpen }) {
         );
     }
 
+    // Defined bindings interface definition
     const renderBindings = () => {
         const allBindings = [
             ...bindings.map(item => ({ ...item, source: 'bindings' })),
             ...tempBindings.map(item => ({ ...item, source: 'tempBindings' }))
         ];
-
         return allBindings.map((binding, index) => (
             <div
                 key={binding.id}

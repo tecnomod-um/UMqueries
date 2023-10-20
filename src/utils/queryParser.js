@@ -14,10 +14,9 @@ const getOperatorString = (operator, type, value, varNodeData) => {
 }
 
 // All SPARQL logic goes here
-export const parseQuery = (nodes, edges, startingVar) => {
+export const parseQuery = (nodes, edges, bindings, startingVar) => {
     let select = 'SELECT DISTINCT';
     let body = 'WHERE {\n';
-
     // TODO metric settings
     if (startingVar[Object.keys(startingVar)[0]].isMetric) {
         const metricNode = startingVar[Object.keys(startingVar)[0]];
@@ -30,8 +29,11 @@ export const parseQuery = (nodes, edges, startingVar) => {
             // Add both general and instance variables
             let hasClassVariable = false;
             let hasInstanceVariable = false;
+            // node will define instance variables if it has instance properties
             hasInstanceVariable = edges.some(edge => edge.from === Number(nodeId) && edge.isFromInstance);
-            hasClassVariable = edges.some(edge => (edge.from === Number(nodeId) && !edge.isFromInstance) || (edge.to === Number(nodeId)));
+            // node will define class variables if it either has no properties or has a class property
+            hasClassVariable = !edges.some(edge => (edge.from === Number(nodeId) || edge.to === Number(nodeId))) ||
+                edges.some(edge => (edge.from === Number(nodeId) && !edge.isFromInstance) || (edge.to === Number(nodeId)));
             if (hasClassVariable) {
                 const varUri = startingVar[nodeId].varID >= 0 ?
                     capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;
@@ -51,7 +53,7 @@ export const parseQuery = (nodes, edges, startingVar) => {
         const nodeIsVar = nodes[nodeInList].varID >= 0;
         const varNode = nodeIsVar ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
         // Detect both general and instance edges
-        let hasClassVariable = false;
+        let hasClassVariable = !edges.some(edge => (edge.from === nodes[nodeInList].id || edge.to === nodes[nodeInList].id));
         let hasInstanceVariable = false;
         edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(edge => {
             hasClassVariable = hasClassVariable || edge.fromInstance;
@@ -95,24 +97,25 @@ export const parseQuery = (nodes, edges, startingVar) => {
 
             body += `${optional}${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
         });
-        // Build data properties
-        if (nodes[nodeInList].properties) {
-            Object.keys(nodes[nodeInList].properties).forEach(property => {
-                let show = nodes[nodeInList].properties[property].show;
-                let data = nodes[nodeInList].properties[property].data;
-                if (show || data) {
-                    let varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type + '___' + nodes[nodeInList].varID);
-                    let uri = nodes[nodeInList].properties[property].uri;
-                    let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
+        // Build data properties and binding elements
+        console.log(bindings)
+        Object.keys(nodes[nodeInList].properties).forEach(property => {
+            let show = nodes[nodeInList].properties[property].show;
+            let data = nodes[nodeInList].properties[property].data;
+            if (show || data) {
+                let varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type + '___' + nodes[nodeInList].varID);
+                let uri = nodes[nodeInList].properties[property].uri;
+                let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
 
-                    body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
-                    if (show) select += ' ?' + varProperty;
-                    if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty)} ) .\n`;
-                }
-            });
-        }
+                body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
+                if (show) select += ' ?' + varProperty;
+                if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty)} ) .\n`;
+            }
+        });
         if (graph) body += `}\n`;
     });
+    // Build bindings
+
     // Add metric aggregations
     Object.keys(startingVar).forEach(nodeId => {
         const metricNode = startingVar[nodeId];

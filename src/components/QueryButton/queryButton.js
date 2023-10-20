@@ -3,7 +3,7 @@ import { handleQuery } from "../../utils/petitionHandler.js";
 import QueryButtonStyles from "./queryButton.module.css";
 
 // Sends current query to backend
-const SparqlQuery = ({ nodes, edges, startingVar, setResultData }) => {
+const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     function inputValidator(startingVar) {
@@ -14,7 +14,7 @@ const SparqlQuery = ({ nodes, edges, startingVar, setResultData }) => {
 
     const sendQuery = () => {
         if (inputValidator(startingVar)) {
-            handleQuery(nodes, edges, startingVar, setIsLoading)
+            handleQuery(nodes, edges, bindings, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);
                 })
