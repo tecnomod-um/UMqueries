@@ -1,4 +1,4 @@
-import { capitalizeFirst, cleanString, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
+import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
 
 const getOperatorString = (operator, type, value, varNodeData) => {
     const valueString = ['number', 'decimal', 'datetime'].includes(type) ? value : `"${value}"`;
@@ -97,16 +97,19 @@ export const parseQuery = (nodes, edges, bindings, startingVar) => {
 
             body += `${optional}${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
         });
-        // Build data properties and binding elements
-        console.log(bindings)
+        // Build data properties
         Object.keys(nodes[nodeInList].properties).forEach(property => {
-            let show = nodes[nodeInList].properties[property].show;
-            let data = nodes[nodeInList].properties[property].data;
-            if (show || data) {
-                let varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type + '___' + nodes[nodeInList].varID);
-                let uri = nodes[nodeInList].properties[property].uri;
-                let transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
-
+            const show = nodes[nodeInList].properties[property].show;
+            const data = nodes[nodeInList].properties[property].data;
+            const uri = nodes[nodeInList].properties[property].uri;
+            const usedInBinding = bindings.some(binding =>
+                (binding.firstValue.isFromNode && binding.firstValue.nodeId === nodes[nodeInList].id && binding.firstValue.property === uri) ||
+                (binding.secondValue.isFromNode && binding.secondValue.nodeId === nodes[nodeInList].id && binding.secondValue.property === uri)
+            );
+            if (show || data || usedInBinding) {
+                const varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                const uri = nodes[nodeInList].properties[property].uri;
+                const transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                 body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
                 if (show) select += ' ?' + varProperty;
                 if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty)} ) .\n`;
@@ -114,8 +117,16 @@ export const parseQuery = (nodes, edges, bindings, startingVar) => {
         });
         if (graph) body += `}\n`;
     });
-    // Build bindings
-
+    // Build binding elements
+    bindings.forEach(binding => {
+        const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
+        const operator = binding.operator;
+        const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${removeSpaceChars(binding.firstValue.label)}`;
+        const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${removeSpaceChars(binding.secondValue.label)}`;
+        if (binding.showInResults)
+            select += ' ?' + bindingName;
+        body += `BIND (${firstValue} ${operator} ${secondValue} AS ?${bindingName})\n`;
+    });
     // Add metric aggregations
     Object.keys(startingVar).forEach(nodeId => {
         const metricNode = startingVar[nodeId];
@@ -127,7 +138,6 @@ export const parseQuery = (nodes, edges, bindings, startingVar) => {
                 body += `FILTER (?${metricVarLabel}_value = "${metricNode.property_label}") .\n`;
         }
     });
-
     body += '}';
     console.log(select + '\n' + body + '\n')
     return select + '\n' + body + '\n';
@@ -143,7 +153,6 @@ export const parseResponse = (response) => {
             // Establish query columns
             const keyWithSpaces = addSpaceChars(key);
             keysInThisBinding.add(keyWithSpaces);
-
             if (value.type === 'uri') {
                 const labelFieldName = keyWithSpaces.replace(/URI/g, 'Label');
                 keysInThisBinding.add(labelFieldName);
@@ -155,7 +164,6 @@ export const parseResponse = (response) => {
                     resultURIAndLabels[keyWithSpaces] = [];
                 resultURIAndLabels[keyWithSpaces].push(value.value);
             } else {
-                console.log(value.value)
                 if (!resultOther[keyWithSpaces])
                     resultOther[keyWithSpaces] = [];
                 resultOther[keyWithSpaces].push(value.value);

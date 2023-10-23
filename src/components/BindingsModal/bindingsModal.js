@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { CSSTransition } from "react-transition-group";
 import BindingModalStyles from "./bindingsModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -9,6 +10,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
     const modalRef = useRef(null);
     const [operator, setOperator] = useState('+');
+    const [firstCustomValue, setFirstCustomValue] = useState(0);
+    const [secondCustomValue, setSecondCustomValue] = useState(0);
+    const [showFirstCustomInput, setFirstCustomInput] = useState(false);
+    const [showSecondCustomInput, setSecondCustomInput] = useState(false);
     const [firstBuilderValue, setFirstBuilderValue] = useState("");
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
     const [tempBindings, setTempBindings] = useState([]);
@@ -24,12 +29,12 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
             return Object.entries(node.properties)
                 .filter(([key, property]) => property.type === "number")
                 .map(([key, property]) => ({
-                    label: `${node.label}'s ${key}`,
+                    label: capitalizeFirst(`${key} ${node.label}`),
                     isFromNode: true,
                     nodeId: node.id,
                     propertyUri: property.uri,
                     value: JSON.stringify({
-                        label: `${node.label}'s ${key}`,
+                        label: capitalizeFirst(`${key} ${node.label}`),
                         isFromNode: true,
                         nodeId: node.id,
                         propertyUri: property.uri
@@ -84,36 +89,35 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                 return '';
         }
     }
-
     // Creates the value's structure from the element it refers to
     const findValueInfo = (value) => {
-        if (!value.isFromNode) {
-            const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
+        if (value.isFromNode) {
+            return {
+                isFromNode: true,
+                isCustom: false,
+                nodeId: value.nodeId,
+                property: value.propertyUri,
+                label: value.label,
+            };
+        }
+        const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
+        if (foundBinding) {
             return {
                 isFromNode: false,
+                isCustom: false,
                 bindingId: foundBinding.id,
                 label: foundBinding.label,
             };
-        } else {
-            const node = nodes.find(n => n.id === value.nodeId);
-            return {
-                isFromNode: true,
-                nodeId: value.nodeId,
-                property: value.propertyUri,
-                label: `${node.label}'s ${value.propertyUri}`,
-            };
         }
     }
-
     const addBinding = () => {
         showError(false);
         if ((!bindingName.trim()) || ([...bindings, ...tempBindings].some(b => b.label === bindingName))) {
             showError(true);
             return;
         }
-        const firstValueInfo = findValueInfo(firstBuilderValue);
-        const secondValueInfo = findValueInfo(secondBuilderValue);
-
+        const firstValueInfo = showFirstCustomInput ? { isFromNode: false, isCustom: true, value: firstCustomValue, label: `Custom value (${firstCustomValue})` } : findValueInfo(firstBuilderValue);
+        const secondValueInfo = showSecondCustomInput ? { isFromNode: false, isCustom: true, value: secondCustomValue, label: `Custom value (${secondCustomValue})` } : findValueInfo(secondBuilderValue);
         const newBinding = {
             id: Date.now(),
             label: bindingName,
@@ -155,20 +159,25 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
         setBindingsOpen(false);
     }
 
-    const handleRemoveVariable = (bindingId, source) => {
+    const handleRemoveVariable = (bindingId) => {
         let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
         setBindings(updatedBindings);
         setTempBindings(updatedTempBindings);
     }
-    
+
     const handleSubmit = () => {
         setBindings([...bindings, ...tempBindings]);
         handleClose();
     }
 
-    const handleOptionChange = (event, setValue) => {
+    const handleOptionChange = (event, setValue, setCustomInput) => {
         const value = JSON.parse(event.target.options[event.target.selectedIndex].value);
-        setValue(value);
+        if (value.custom) {
+            setCustomInput(true);
+        } else {
+            setCustomInput(false);
+            setValue(value);
+        }
     }
 
     const toggleBindingBuilderVisibility = () => {
@@ -180,12 +189,25 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
         const numericProperties = getNumericProperties(nodes, tempBindings);
         const hasOptions = numericProperties && numericProperties.length > 0;
         const optionSet = hasOptions
-            ? numericProperties.map((item) => makeItem(item))
+            ? [
+                ...numericProperties.map((item) => makeItem(item)),
+                <option key="custom-value" value={JSON.stringify({ custom: true })}>
+                    Custom value
+                </option>
+            ]
             : [<option key="no-options" value="">{`No options available`}</option>];
 
+        let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr";
+        if (showFirstCustomInput && showSecondCustomInput) {
+            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 105px 35px 1fr 20px 1fr";
+        } else if (showFirstCustomInput) {
+            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 150px 1fr 20px 1fr";
+        } else if (showSecondCustomInput) {
+            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr";
+        }
         return (
             <div className={BindingModalStyles.bindingBuilder}>
-                <div className={BindingModalStyles.fieldContainer}>
+                <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
                     <label className={BindingModalStyles.labelVarname}>Variable</label>
                     <span className={BindingModalStyles.inputWrapper}>
                         <input
@@ -199,12 +221,20 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                     <label className={BindingModalStyles.labelEquals}>equals</label>
                     <select
                         className={BindingModalStyles.input}
-                        value={JSON.stringify(firstBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue)}
+                        value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
+                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
                         disabled={!hasOptions}
                     >
                         {optionSet}
                     </select>
+                    {showFirstCustomInput && (
+                        <input
+                            type="number"
+                            value={firstCustomValue}
+                            onChange={(e) => e.target.value ? setFirstCustomValue(parseInt(e.target.value, 10)) : setFirstCustomValue(0)}
+                            className={BindingModalStyles.input}
+                        />
+                    )}
                     <button
                         title={getOperatorTooltip(operator)}
                         className={BindingModalStyles.operatorButton}
@@ -214,12 +244,20 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                     </button>
                     <select
                         className={BindingModalStyles.input}
-                        value={JSON.stringify(secondBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, setSecondBuilderValue)}
+                        value={showSecondCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(secondBuilderValue)}
+                        onChange={(e) => handleOptionChange(e, setSecondBuilderValue, setSecondCustomInput)}
                         disabled={!hasOptions}
                     >
                         {optionSet}
                     </select>
+                    {showSecondCustomInput && (
+                        <input
+                            type="number"
+                            value={secondCustomValue}
+                            onChange={(e) => e.target.value ? setSecondCustomValue(parseInt(e.target.value, 10)) : setSecondCustomValue(0)}
+                            className={BindingModalStyles.input}
+                        />
+                    )}
                     <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
                     <input
                         className={BindingModalStyles.checkbox}

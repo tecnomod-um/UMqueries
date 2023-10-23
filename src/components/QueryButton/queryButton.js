@@ -24,7 +24,7 @@ const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => 
                 });
         }
     };
-
+    
     return (
         <button className={QueryButtonStyles.big_button} onClick={() => sendQuery()} disabled={isLoading}>
             {isLoading ? <div className={QueryButtonStyles.loader}></div> : 'Query'}
