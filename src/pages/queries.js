@@ -3,6 +3,7 @@ import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
 import SearchNodes from '../components/SearchNodes/searchNodes';
 import VarTray from '../components/VarTray/varTray';
+import UnionTray from '../components/UnionTray/unionTray';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
@@ -28,6 +29,7 @@ function Queries() {
     // Flags used in the UI
     const [isDataOpen, setDataOpen] = useState(false);
     const [isBindingsOpen, setBindingsOpen] = useState(false);
+    const [isUnionTrayOpen, setUnionTrayOpen] = useState(false);
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     // Loads endpoint data when first loaded
@@ -83,6 +85,10 @@ function Queries() {
     }
 
     const colorList = generateColorList(varData);
+
+    const toggleUnionTray = () => {
+        setUnionTrayOpen(prevState => !prevState);
+    }
 
     function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
         let newNode;
@@ -242,8 +248,11 @@ function Queries() {
                 <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
                 <VarTray varData={varData} colorList={colorList} addNode={addNode} />
             </div>
-            <div className={QueriesStyles.graph_container}>
-                <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
+            <div className={QueriesStyles.main_container}>
+                <span className={QueriesStyles.graph_wrapper}>
+                    <UnionTray isOpen={isUnionTrayOpen} toggleTray={toggleUnionTray} />
+                    <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
+                </span>
                 <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
