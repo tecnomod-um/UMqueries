@@ -14,6 +14,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
     const [secondCustomValue, setSecondCustomValue] = useState(0);
     const [showFirstCustomInput, setFirstCustomInput] = useState(false);
     const [showSecondCustomInput, setSecondCustomInput] = useState(false);
+    const [activeBindings, setActiveBindings] = useState([]);
     const [firstBuilderValue, setFirstBuilderValue] = useState("");
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
     const [tempBindings, setTempBindings] = useState([]);
@@ -78,10 +79,15 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
 
     // Remove and update bindings
     const handleRemoveVariable = useCallback((bindingId) => {
-        let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
-        setBindings(updatedBindings);
-        setTempBindings(updatedTempBindings);
-    }, [bindings, tempBindings, setBindings, setTempBindings, removeBindingAndDependencies]);
+        const updatedActiveBindings = activeBindings.filter(bId => bId !== bindingId);
+        setActiveBindings(updatedActiveBindings);
+
+        setTimeout(() => {
+            let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
+            setBindings(updatedBindings);
+            setTempBindings(updatedTempBindings);
+        }, 500); // 500ms which is the duration of your transition
+    }, [bindings, tempBindings, setBindings, setTempBindings, removeBindingAndDependencies, activeBindings]);
 
     // Updates bindings on node removal
     useEffect(() => {
@@ -98,6 +104,12 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
     useEffect(() => {
         if (!isBindingsOpen) setShowBindingBuilder(bindings.length === 0);
     }, [isBindingsOpen, bindings]);
+
+    // Fading in effect
+    useEffect(() => {
+        const currentBindingIds = [...bindings, ...tempBindings].map(item => item.id);
+        setActiveBindings(currentBindingIds);
+    }, [bindings, tempBindings]);
 
     // Sets up the selects' default option so thats visually coherent
     useEffect(() => {
@@ -304,14 +316,13 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
         return allBindings.map((binding, index) => (
             <div
                 key={binding.id}
-                className={BindingModalStyles.bindingRow}
-                style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}
-            >
+                className={`${BindingModalStyles.bindingRow} ${activeBindings.includes(binding.id) ? BindingModalStyles.bindingRowActive : ''}`}
+                style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
                 <div className={BindingModalStyles.bindingName}>{binding.label}</div>
                 <div className={BindingModalStyles.bindingExpression}>
                     {binding.firstValue.label} {binding.operator} {binding.secondValue.label}
                 </div>
-                <label className={BindingModalStyles.showInResultsLabel}>Show in results:</label>
+                <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
                 <input
                     className={BindingModalStyles.checkbox}
                     type="checkbox"
@@ -326,8 +337,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                         } else {
                             setTempBindings(updatedBindings);
                         }
-                    }}
-                />
+                    }} />
                 <button className={BindingModalStyles.bindingRemove} onClick={() => handleRemoveVariable(binding.id, binding.source)}>
                     <DeleteIcon />
                 </button>
