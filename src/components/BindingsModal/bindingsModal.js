@@ -21,7 +21,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
     const [showInResults, setShowInResults] = useState(false);
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
-    const operatorList = useMemo(() => (['+', '-', '*', '/']), []);
+    const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<']), []);
 
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
@@ -41,28 +41,65 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                     })
                 }));
         });
-        const combinedBindingsValues = bindings.concat(tempBindings).map(binding => ({
-            label: binding.label,
-            isFromNode: false,
-            bindingId: binding.id,
-            value: JSON.stringify({
+        const combinedBindingsValues = [...bindings, ...tempBindings].filter(binding => !usesRestrictedOperator(binding))
+            .map(binding => ({
                 label: binding.label,
                 isFromNode: false,
-                bindingId: binding.id
-            })
-        }));
+                bindingId: binding.id,
+                value: JSON.stringify({
+                    label: binding.label,
+                    isFromNode: false,
+                    bindingId: binding.id
+                })
+            }));
         return [...nodeNumericValues, ...combinedBindingsValues];
     }, [nodes, bindings, tempBindings]);
 
+    // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
         const numericProperties = getNumericProperties(nodes, tempBindings);
         setSelectedValue(numericProperties[0]);
     }, [nodes, tempBindings, getNumericProperties]);
 
+    // Recursively removes a binding tree
+    const removeBindingAndDependencies = useCallback((bindingId, bindingArray, tempBindingArray) => {
+        if (firstBuilderValue && firstBuilderValue.bindingId === bindingId)
+            setDefaultValuesToFirstOption(setFirstBuilderValue);
+        if (secondBuilderValue && secondBuilderValue.bindingId === bindingId)
+            setDefaultValuesToFirstOption(setSecondBuilderValue);
+        let updatedBindings = bindingArray.filter(b => b.id !== bindingId);
+        let updatedTempBindings = tempBindingArray.filter(b => b.id !== bindingId);
+        const dependentBindings = [...updatedBindings, ...updatedTempBindings].filter(binding =>
+            binding.firstValue.bindingId === bindingId || binding.secondValue.bindingId === bindingId);
+        for (const dependentBinding of dependentBindings)
+            [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(dependentBinding.id, updatedBindings, updatedTempBindings);
+        return [updatedBindings, updatedTempBindings];
+    }, [firstBuilderValue, secondBuilderValue, setDefaultValuesToFirstOption]);
+
+    // Remove and update bindings
+    const handleRemoveVariable = useCallback((bindingId) => {
+        let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
+        setBindings(updatedBindings);
+        setTempBindings(updatedTempBindings);
+    }, [bindings, tempBindings, setBindings, setTempBindings, removeBindingAndDependencies]);
+
+    // Updates bindings on node removal
+    useEffect(() => {
+        const bindingsToRemove = bindings.filter(binding =>
+            (binding.firstValue.isFromNode && !nodes.some(node => node.id === binding.firstValue.nodeId)) ||
+            (binding.secondValue.isFromNode && !nodes.some(node => node.id === binding.secondValue.nodeId))
+        );
+        bindingsToRemove.forEach(binding =>
+            handleRemoveVariable(binding.id)
+        );
+    }, [nodes, bindings, handleRemoveVariable]);
+
+    // Sets up the builder visibility
     useEffect(() => {
         if (!isBindingsOpen) setShowBindingBuilder(bindings.length === 0);
     }, [isBindingsOpen, bindings]);
 
+    // Sets up the selects' default option so thats visually coherent
     useEffect(() => {
         if (!firstBuilderValue) setDefaultValuesToFirstOption(setFirstBuilderValue);
         if (!secondBuilderValue) setDefaultValuesToFirstOption(setSecondBuilderValue);
@@ -85,10 +122,19 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                 return 'multiplied by';
             case '/':
                 return 'divided by';
+            case '>':
+                return 'greater than';
+            case '<':
+                return 'less than';
             default:
                 return '';
         }
     }
+
+    const usesRestrictedOperator = (binding) => {
+        return ['>', '<'].includes(binding.operator);
+    }
+
     // Creates the value's structure from the element it refers to
     const findValueInfo = (value) => {
         if (value.isFromNode) {
@@ -110,6 +156,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
             };
         }
     }
+
     const addBinding = () => {
         showError(false);
         if ((!bindingName.trim()) || ([...bindings, ...tempBindings].some(b => b.label === bindingName))) {
@@ -129,23 +176,6 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
         setTempBindings(prev => [...prev, newBinding]);
     }
 
-    const removeBindingAndDependencies = (bindingId, bindingArray, tempBindingArray) => {
-        if (firstBuilderValue && firstBuilderValue.bindingId === bindingId)
-            setDefaultValuesToFirstOption(setFirstBuilderValue);
-        if (secondBuilderValue && secondBuilderValue.bindingId === bindingId)
-            setDefaultValuesToFirstOption(setSecondBuilderValue);
-        let updatedBindings = bindingArray.filter(b => b.id !== bindingId);
-        let updatedTempBindings = tempBindingArray.filter(b => b.id !== bindingId);
-
-        const dependentBindings = [...updatedBindings, ...updatedTempBindings].filter(binding =>
-            binding.firstValue.bindingId === bindingId || binding.secondValue.bindingId === bindingId
-        );
-        for (const dependentBinding of dependentBindings) {
-            [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(dependentBinding.id, updatedBindings, updatedTempBindings);
-        }
-        return [updatedBindings, updatedTempBindings];
-    }
-
     const isValueInTempBindings = (value) => {
         return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
     }
@@ -157,12 +187,6 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
             setDefaultValuesToFirstOption(setSecondBuilderValue);
         setTempBindings([]);
         setBindingsOpen(false);
-    }
-
-    const handleRemoveVariable = (bindingId) => {
-        let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
-        setBindings(updatedBindings);
-        setTempBindings(updatedTempBindings);
     }
 
     const handleSubmit = () => {
@@ -196,7 +220,6 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                 </option>
             ]
             : [<option key="no-options" value="">{`No options available`}</option>];
-
         let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr";
         if (showFirstCustomInput && showSecondCustomInput) {
             gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 105px 35px 1fr 20px 1fr";

@@ -13,7 +13,7 @@ const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => 
     }
 
     const sendQuery = () => {
-        if (inputValidator(startingVar)) {
+        if (inputValidator(startingVar)|| bindings.some(binding => binding.showInResults)) {
             handleQuery(nodes, edges, bindings, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);
@@ -24,7 +24,7 @@ const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => 
                 });
         }
     };
-    
+
     return (
         <button className={QueryButtonStyles.big_button} onClick={() => sendQuery()} disabled={isLoading}>
             {isLoading ? <div className={QueryButtonStyles.loader}></div> : 'Query'}

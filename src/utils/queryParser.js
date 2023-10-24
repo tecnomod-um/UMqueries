@@ -18,7 +18,7 @@ export const parseQuery = (nodes, edges, bindings, startingVar) => {
     let select = 'SELECT DISTINCT';
     let body = 'WHERE {\n';
     // TODO metric settings
-    if (startingVar[Object.keys(startingVar)[0]].isMetric) {
+    if (Object.keys(startingVar).length > 0 && startingVar[Object.keys(startingVar)[0]].isMetric) {
         const metricNode = startingVar[Object.keys(startingVar)[0]];
         const varLabel = capitalizeFirst(metricNode.type) + '_' + metricNode.varID;
         const aggregateFunction = metricNode.isMax ? 'MAX' : metricNode.isMin ? 'MIN' : 'COUNT';
@@ -121,8 +121,8 @@ export const parseQuery = (nodes, edges, bindings, startingVar) => {
     bindings.forEach(binding => {
         const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
         const operator = binding.operator;
-        const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${removeSpaceChars(binding.firstValue.label)}`;
-        const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${removeSpaceChars(binding.secondValue.label)}`;
+        const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
+        const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
         if (binding.showInResults)
             select += ' ?' + bindingName;
         body += `BIND (${firstValue} ${operator} ${secondValue} AS ?${bindingName})\n`;
