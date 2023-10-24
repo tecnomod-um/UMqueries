@@ -258,8 +258,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
                         className={BindingModalStyles.input}
                         value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
                         onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
-                        disabled={!hasOptions}
-                    >
+                        disabled={!hasOptions}>
                         {optionSet}
                     </select>
                     {showFirstCustomInput && (
