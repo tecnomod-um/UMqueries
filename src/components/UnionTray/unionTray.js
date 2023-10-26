@@ -22,7 +22,7 @@ function UnionTray({ unions, setUnions, isUnionTrayOpen, toggleUnionTray }) {
             showError(true);
             return;
         }
-        const newId = (Math.max(...unions.map(item => Number(item.id))) + 1).toString();
+        const newId = unions.length === 0 ? '0' : (Math.max(...unions.map(item => Number(item.id))) + 1).toString();
         setUnions([...unions, { id: newId, label: graphLabel }]);
         setGraphLabel('');
         showError(false);
@@ -38,7 +38,7 @@ function UnionTray({ unions, setUnions, isUnionTrayOpen, toggleUnionTray }) {
                     <div className={UnionTrayStyles.header}>
                         <input
                             className={UnionTrayStyles.unionInput}
-                            placeholder="Define new graph"
+                            placeholder="Define new graph."
                             value={graphLabel}
                             onChange={e => setGraphLabel(e.target.value)}
                             onKeyDown={handleKeyDown}

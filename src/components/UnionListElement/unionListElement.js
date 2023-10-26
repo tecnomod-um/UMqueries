@@ -5,7 +5,6 @@ import UnionListElementStyles from './unionListElement.module.css';
 
 function UnionListElement({ id, label, setUnions }) {
 
-    // TODO HEAVY FUNCTIONALLITY HERE
     const handleClick = (event) => {
         event.preventDefault();
         console.log(id + ' clicked');
