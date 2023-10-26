@@ -1,0 +1,70 @@
+.element {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    margin: 1vh 0;
+    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 36px;
+}
+
+.element span {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0 10px;
+    line-height: 36px;
+    color: #333;
+    align-self: center;
+}
+
+.element:hover {
+    background-color: #eee;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.arrowBtn,
+.deleteBtn {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s ease;
+    height: 100%;
+    width: 36px;
+}
+
+.arrowBtn {
+    background-color: green;
+    border-radius: 4px 0 0 4px;
+    color: white;
+}
+
+.deleteBtn {
+    background-color: red;
+    border-radius: 0 4px 4px 0;
+}
+
+.arrowBtn:hover,
+.deleteBtn:hover {
+    filter: brightness(0.9);
+    box-shadow: none;
+}
+
+.arrowBtn:hover ~ .element,
+.deleteBtn:hover ~ .element {
+    background-color: #f9f9f9;
+    box-shadow: none;
+}

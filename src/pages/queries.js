@@ -22,6 +22,7 @@ function Queries() {
     // Data structures used through the app
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [unions, setUnions] = useState([]);
     const [bindings, setBindings] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
@@ -250,7 +251,7 @@ function Queries() {
             </div>
             <div className={QueriesStyles.main_container}>
                 <span className={QueriesStyles.graph_wrapper}>
-                    <UnionTray isOpen={isUnionTrayOpen} toggleTray={toggleUnionTray} />
+                    <UnionTray unions={unions} setUnions={setUnions} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
                 <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />

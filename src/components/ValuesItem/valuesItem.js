@@ -67,4 +67,4 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
         </DropdownMenuItem>);
 }
 
-export default ValuesItem;
+export default React.memo(ValuesItem);

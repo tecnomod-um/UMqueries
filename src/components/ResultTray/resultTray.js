@@ -173,7 +173,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
                     </DropdownMenuItem>
                 );
             });
-        // You can still retain the other functionalities like metrics
         let countMenu = [
             (<DropdownNestedMenuItem
                 label="Get min"
