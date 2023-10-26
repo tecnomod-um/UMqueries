@@ -5,40 +5,29 @@ import NestedMenuItem from "./nestedMenuItem";
 import styles from "./dropdown.module.css";
 
 // Dropdown component used throughout the application
-export function Dropdown({
-    trigger,
-    menu,
-    keepopen: keepOpenGlobal,
-    isOpen: controlledIsOpen,
-    onOpen: onControlledOpen,
-    minWidth,
-    uriList
-}) {
+export function Dropdown({ trigger, menu, keepopen: keepOpenGlobal, isOpen: controlledIsOpen, onOpen: onControlledOpen, minWidth }) {
+
     const [isInternalOpen, setInternalOpen] = useState(null);
     const isOpen = controlledIsOpen || isInternalOpen;
     const anchorRef = useRef(null);
 
     const handleOpen = (event) => {
         event.stopPropagation();
-        if (menu.length) {
+        if (menu.length)
             onControlledOpen ? onControlledOpen(event.currentTarget) : setInternalOpen(event.currentTarget);
-        }
-    };
+    }
 
     const handleClose = (event) => {
         event.stopPropagation();
-        if ((anchorRef.current && anchorRef.current.contains(event.target)) || event.target.closest("#preventCloseDropdownItem")) {
-            if (uriList && uriList.length > 0) {
-                handleForceClose();
-            }
+        if (anchorRef.current && (anchorRef.current === event.target || anchorRef.current.contains(event.target)))
             return;
-        }
+
         handleForceClose();
-    };
+    }
 
     const handleForceClose = () => {
         onControlledOpen ? onControlledOpen(null) : setInternalOpen(null);
-    };
+    }
 
     const renderMenu = (menuItem, index) => {
         const { keepopen: keepOpenLocal, ...props } = menuItem.props;
@@ -55,19 +44,16 @@ export function Dropdown({
             key: index,
             ...extraProps,
             onClick: (event) => {
-                event.stopPropagation();
-
-                if (!keepOpenGlobal && !keepOpenLocal) {
+                if (menuItem.props.preventCloseOnClick)
+                    event.stopPropagation();
+                if (!keepOpenGlobal && !keepOpenLocal && !menuItem.props.preventCloseOnClick)
                     handleClose(event);
-                }
-
-                if (menuItem.props.onClick) {
+                if (menuItem.props.onClick)
                     menuItem.props.onClick(event);
-                }
             },
             children: props.menu ? React.Children.map(props.menu, renderMenu) : props.children,
         });
-    };
+    }
 
     return (
         <>
@@ -82,6 +68,15 @@ export function Dropdown({
     );
 }
 
-export const DropdownMenuItem = (props) => <MenuItem {...props} className={styles.dropdown} />;
+export const DropdownMenuItem = (props) => {
+    const { disableRipple, preventCloseOnClick, ...otherProps } = props;
+    return (
+        <MenuItem
+            {...otherProps}
+            disableRipple={disableRipple}
+            className={styles.dropdown}
+        />
+    );
+}
 
 export const DropdownNestedMenuItem = (props) => <NestedMenuItem {...props} className={styles.dropdown} />;

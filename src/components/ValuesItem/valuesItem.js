@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 // Dropdown option that allows to build an URI values list for a property
 function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOptional, setUriList, addNode, addEdge }) {
     const handleKeyDown = (event) => {
+        event.stopPropagation();
         if (event.key === 'Enter') {
             event.preventDefault();
             const contents = inputRef?.current?.value;
@@ -18,7 +19,7 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
     }
 
     return (
-        <DropdownMenuItem id="preventCloseDropdownItem" tabIndex={-1}><div className={ValuesItemStyles.uriContainer}>
+        <DropdownMenuItem tabIndex={-1} disableRipple={true}><div className={ValuesItemStyles.uriContainer}>
             {uriList.length > 0 && (
                 <div className={ValuesItemStyles.uriList}>
                     {uriList.map((uri, index) => (
@@ -48,7 +49,7 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                 <input
                     className={ValuesItemStyles.uriTextBox}
                     type="text"
-                    placeholder="Enter URI"
+                    placeholder="Enter URI values"
                     ref={inputRef}
                     id={`inputUri+${label}`}
                     onFocus={(e) => { e.stopPropagation(); e.preventDefault(); }}

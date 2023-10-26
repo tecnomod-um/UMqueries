@@ -162,7 +162,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
             .map(targetedNode => {
                 const label = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
                 return (
-                    <DropdownMenuItem id="preventCloseDropdownItem" onClick={event => {
+                    <DropdownMenuItem preventCloseOnClick={true} disableRipple={true} onClick={event => {
                         event.stopPropagation();
                         toggleNodeSelection(targetedNode.id, nodeContents(targetedNode));
                     }}>
@@ -185,7 +185,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
                 menu={getMetricTargets(true)} />)
         ];
         result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);
-        result.push(<DropdownMenuItem id="preventCloseDropdownItem" onClick={event => {
+        result.push(<DropdownMenuItem onClick={event => {
             event.stopPropagation();
             setBindingsOpen(true);
         }} >Bindings...</DropdownMenuItem>);
