@@ -31,6 +31,6 @@ const LandingImage = ({ imageSrc, width, height }) => {
             <img ref={imageRef} src={imageSrc} alt="Sample" width={width} height={height} />
         </div>
     );
-};
+}
 
 export default React.memo(LandingImage);

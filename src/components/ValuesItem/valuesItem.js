@@ -58,7 +58,7 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                 />
                 <button className={ValuesItemStyles.uriButton} onClick={(event) => {
                     if (uriList.length > 0) {
-                        const uriId = addNode(uriList.join('\n'), uriList, 'uri', false, '', uriList, true).id;
+                        const uriId = addNode(uriList.join('\n'), uriList, 'uri', false, '', uriList, true, false).id;
                         addEdge(selectedNode.id, uriId, label, property, isOptional);
                         setUriList([]);
                     }

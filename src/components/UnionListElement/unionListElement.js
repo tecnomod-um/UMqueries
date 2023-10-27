@@ -25,7 +25,7 @@ function UnionListElement({ id, label, removeDisabled, changeActiveGraph, isGrap
     return (
         <li className={UnionListElementStyles.element} onClick={e => handleClick(e)}>
             <button className={UnionListElementStyles.arrowBtn} disabled={isGraphLoop(id)} onClick={handleArrowClick}
-                title={isGraphLoop ? "Adding this graph to the active one would cause a loop." : ""}>
+                title={isGraphLoop(id) ? "Adding this graph to the active one would cause a loop." : ""}>
                 <ArrowLeft style={{ fontSize: '34px' }} />
             </button>
             <span>{label}</span>

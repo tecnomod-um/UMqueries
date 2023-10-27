@@ -86,7 +86,7 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
             let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
             setBindings(updatedBindings);
             setTempBindings(updatedTempBindings);
-        }, 500); // 500ms which is the duration of your transition
+        }, 500);
     }, [bindings, tempBindings, setBindings, setTempBindings, removeBindingAndDependencies, activeBindings]);
 
     // Updates bindings on node removal

@@ -51,6 +51,12 @@ input[type=checkbox] {
     user-select: none;
 }
 
+.hamburger,
+label[for="menuToggle"] {
+    cursor: pointer;
+}
+
+
 @media (max-width: 768px) {
     .menu {
         display: none;

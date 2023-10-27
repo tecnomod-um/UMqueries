@@ -7,8 +7,8 @@ function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, s
 
   const options = {
     autoResize: false,
-    height: '100%', // use relative height instead of static
-    width: '100%', // set the width of the graph to fill its container
+    height: '100%',
+    width: '100%',
   };
 
   const graph = {

@@ -29,7 +29,7 @@ function ListElement({ id, data, type, color, isVar, graph, classURI, addNode })
 
     const handleClick = (event) => {
         event.preventDefault();
-        addNode(id, data, type, isVar, graph, classURI, false);
+        addNode(id, data, type, isVar, graph, classURI, false, false);
     };
 
     return (

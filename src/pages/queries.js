@@ -37,8 +37,6 @@ function Queries() {
     const nodes = activeGraph.nodes;
     const edges = activeGraph.edges;
 
-    console.log(activeGraphId);
-
     // Loads endpoint data when first loaded
     useEffect(() => {
         populateWithEndpointData(setVarData, setVarIDs, setObjectProperties, setDataProperties)
@@ -103,6 +101,28 @@ function Queries() {
 
     // Graphs won't be able to be added to others if doing so would cause a loop
     function isGraphLoop(graphId) {
+        if (graphId === activeGraphId) return true;
+        const graphToAdd = graphs.find(graph => graph.id === graphId);
+        if (!graphToAdd) return false;
+
+        const traverseNodes = (nodeId, visited, originalNode) => {
+            if (visited[nodeId])
+                return nodeId === originalNode;
+            visited[nodeId] = true;
+
+            const nodeEdges = edges.filter(edge => edge.from === nodeId);
+            for (let edge of nodeEdges) {
+                const nextNodeId = edge.to;
+                if (traverseNodes(nextNodeId, visited, originalNode))
+                    return true;
+            }
+            return false;
+        };
+        for (let node of graphToAdd.nodes) {
+            const visited = {};
+            if (traverseNodes(node.id, visited, node.id))
+                return true;
+        }
         return false;
     }
 
@@ -112,11 +132,13 @@ function Queries() {
         setGraphs([...graphs, newGraph]);
         return true;
     }
+
     // Adds the passed graph as a node to the active one
     function addGraphNode(graphId) {
         if (isGraphLoop(graphId)) return false;
-        return true;
+        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
     }
+
     function removeGraph(graphId) {
         if (graphs.length <= 1)
             return false;
@@ -135,18 +157,18 @@ function Queries() {
         return true;
     }
 
-    function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
+    function addNode(id, data, type, isVar, graph, classURI, uriOnly, isGraph) {
         let newNode;
         setGraphs(prevGraphs => {
             const newNodes = [...prevGraphs[activeGraphIndex].nodes];
             const maxId = newNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
             const varID = isVar ? varIDs[type] : -1;
-            const label = isVar ? `${id} ${varID}` : id;
+            const label = isVar ? `${id} ${varID}` : isGraph ? data : id;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
             if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
-            const shape = uriOnly ? 'box' : 'big ellipse';
-            const color = uriOnly ? '#D3D3D3' : colorList[type];
-
+            const shape = uriOnly ? 'box' : isGraph ? 'circle' : 'big ellipse';
+            const color = uriOnly ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
+            const fontColor = isGraph ? 'white' : 'black';
             newNode = {
                 id: maxId + 1,
                 data: uri,
@@ -157,6 +179,7 @@ function Queries() {
                 graph: graph,
                 class: classURI,
                 shape: shape,
+                font: { color: fontColor },
                 properties: {}
             }
 
