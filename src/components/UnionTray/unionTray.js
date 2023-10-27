@@ -6,24 +6,23 @@ import UnionList from '../UnionList/unionList';
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from '@mui/icons-material/Add';
 
-function UnionTray({ unions, setUnions, isUnionTrayOpen, toggleUnionTray }) {
+function UnionTray({ graphs, isGraphLoop, addGraph, removeGraph, changeActiveGraph, addGraphNode, isUnionTrayOpen, toggleUnionTray }) {
     const [graphLabel, setGraphLabel] = useState('');
     const [error, showError] = useState(false);
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
-            addUnion();
+            addGraphEntry();
         }
     }
 
-    const addUnion = () => {
-        if ((!graphLabel.trim()) || (unions.some(graph => graph.label === graphLabel))) {
+    const addGraphEntry = () => {
+        if ((!graphLabel.trim()) || (graphs.some(graph => graph.label === graphLabel))) {
             showError(true);
             return;
         }
-        const newId = unions.length === 0 ? '0' : (Math.max(...unions.map(item => Number(item.id))) + 1).toString();
-        setUnions([...unions, { id: newId, label: graphLabel }]);
+        addGraph(graphLabel, null);
         setGraphLabel('');
         showError(false);
     }
@@ -38,17 +37,17 @@ function UnionTray({ unions, setUnions, isUnionTrayOpen, toggleUnionTray }) {
                     <div className={UnionTrayStyles.header}>
                         <input
                             className={UnionTrayStyles.unionInput}
-                            placeholder="Define new graph."
+                            placeholder="Define new graph"
                             value={graphLabel}
                             onChange={e => setGraphLabel(e.target.value)}
                             onKeyDown={handleKeyDown}
                         />
                         {error && <CloseIcon className={UnionTrayStyles.errorIcon} />}
-                        <button className={UnionTrayStyles.addButton} onClick={addUnion}>
+                        <button className={UnionTrayStyles.addButton} onClick={addGraphEntry}>
                             <AddIcon />
                         </button>
                     </div>
-                    <UnionList unions={unions} setUnions={setUnions} />
+                    <UnionList graphs={graphs} changeActiveGraph={changeActiveGraph} isGraphLoop={isGraphLoop} addGraphNode={addGraphNode} removeGraph={removeGraph} />
                 </div>
             )}
         </div>

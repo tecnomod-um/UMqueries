@@ -63,8 +63,8 @@
     box-shadow: none;
 }
 
-.arrowBtn:hover ~ .element,
-.deleteBtn:hover ~ .element {
+.arrowBtn:hover~.element,
+.deleteBtn:hover~.element {
     background-color: #f9f9f9;
     box-shadow: none;
 }

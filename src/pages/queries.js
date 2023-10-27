@@ -12,7 +12,6 @@ import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
 
-
 // Main view. All functional elements will be shown here.
 function Queries() {
     // Data generated from endpoint
@@ -20,9 +19,8 @@ function Queries() {
     const [dataProperties, setDataProperties] = useState(null);
     const [objectProperties, setObjectProperties] = useState(null);
     // Data structures used through the app
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
-    const [unions, setUnions] = useState([]);
+    const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [] }]);
+    const [activeGraphId, setActiveGraph] = useState(0);
     const [bindings, setBindings] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
@@ -33,6 +31,14 @@ function Queries() {
     const [isUnionTrayOpen, setUnionTrayOpen] = useState(false);
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    // Graph currently being displayed
+    const activeGraph = graphs.find(graph => graph.id === activeGraphId);
+    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
+    const nodes = activeGraph.nodes;
+    const edges = activeGraph.edges;
+
+    console.log(activeGraphId);
+
     // Loads endpoint data when first loaded
     useEffect(() => {
         populateWithEndpointData(setVarData, setVarIDs, setObjectProperties, setDataProperties)
@@ -91,10 +97,49 @@ function Queries() {
         setUnionTrayOpen(prevState => !prevState);
     }
 
+    function changeActiveGraph(graphId) {
+        setActiveGraph(graphId);
+    }
+
+    // Graphs won't be able to be added to others if doing so would cause a loop
+    function isGraphLoop(graphId) {
+        return false;
+    }
+
+    function addGraph(label, graph) {
+        const newId = Math.max(...graphs.map(item => Number(item.id))) + 1;
+        const newGraph = graph ? graph : { id: newId, label: label, nodes: [], edges: [] }
+        setGraphs([...graphs, newGraph]);
+        return true;
+    }
+    // Adds the passed graph as a node to the active one
+    function addGraphNode(graphId) {
+        if (isGraphLoop(graphId)) return false;
+        return true;
+    }
+    function removeGraph(graphId) {
+        if (graphs.length <= 1)
+            return false;
+        setGraphs(prevGraphs => {
+            const graphIndex = prevGraphs.findIndex(graph => graph.id === graphId);
+            if (graphId === activeGraphId) {
+                if (graphIndex > 0)
+                    setActiveGraph(prevGraphs[graphIndex - 1].id);
+                else if (graphIndex < prevGraphs.length - 1)
+                    setActiveGraph(prevGraphs[graphIndex + 1].id);
+                else
+                    setActiveGraph(prevGraphs[0].id);
+            }
+            return [...prevGraphs.slice(0, graphIndex), ...prevGraphs.slice(graphIndex + 1)];
+        });
+        return true;
+    }
+
     function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
         let newNode;
-        setNodes((prevNodes) => {
-            const maxId = prevNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
+        setGraphs(prevGraphs => {
+            const newNodes = [...prevGraphs[activeGraphIndex].nodes];
+            const maxId = newNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
             const varID = isVar ? varIDs[type] : -1;
             const label = isVar ? `${id} ${varID}` : id;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
@@ -125,15 +170,19 @@ function Queries() {
                     operator: '=',
                 }
             });
-            return [...prevNodes, newNode];
+            newNodes.push(newNode);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], nodes: newNodes };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
         return newNode;
     }
 
     function addEdge(id1, id2, label, data, isOptional, isFromInstance) {
-        setEdges((prevEdges) => {
-            const maxId = prevEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
-            const newEdge = {
+        let newEdge;
+        setGraphs((prevGraphs) => {
+            const newEdges = [...prevGraphs[activeGraphIndex].edges];
+            const maxId = newEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
+            newEdge = {
                 id: maxId + 1,
                 dashes: isOptional,
                 from: id1,
@@ -144,35 +193,56 @@ function Queries() {
                 isTransitive: false,
                 isFromInstance: isFromInstance
             };
-            return [...prevEdges, newEdge];
+            newEdges.push(newEdge);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
+        return newEdge;
     }
 
     function setNode(updatedNode) {
-        setNodes(nodes => {
-            let newNodes = nodes.filter(node => node.id !== updatedNode.id);
+        setGraphs(graphs => {
+            let newNodes = graphs[activeGraphIndex].nodes.filter(node => node.id !== updatedNode.id);
             newNodes.push(updatedNode);
             newNodes.sort((node1, node2) => node1.id - node2.id);
-            return newNodes;
+            const updatedGraph = { ...graphs[activeGraphIndex], nodes: newNodes };
+            return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
         });
         setSelectedNode(updatedNode);
     }
 
     function removeNode() {
-        setEdges(edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id)));
-        setNodes(nodes.filter(node => node.id !== selectedNode.id));
-        setSelectedNode(null);
-        setSelectedEdge(null);
-        setDataOpen(false);
+        if (selectedNode) {
+            setGraphs(graphs => {
+                const updatedEdges = graphs[activeGraphIndex].edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id));
+                const updatedNodes = graphs[activeGraphIndex].nodes.filter(node => node.id !== selectedNode.id);
+                const updatedGraph = { ...graphs[activeGraphIndex], nodes: updatedNodes, edges: updatedEdges };
+                return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
+            });
+            setSelectedNode(null);
+            setSelectedEdge(null);
+            setDataOpen(false);
+            return true;
+        } return false;
     }
 
     function removeEdge() {
-        setEdges(edges.filter(edge => (edge.id !== selectedEdge.id)));
-        setSelectedNode(null);
-        setSelectedEdge(null);
+        if (selectedEdge) {
+            setGraphs(graphs => {
+                const updatedEdges = graphs[activeGraphIndex].edges.filter(edge => (edge.id !== selectedEdge.id));
+                const updatedGraph = { ...graphs[activeGraphIndex], edges: updatedEdges };
+                return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
+            });
+            setSelectedNode(null);
+            setSelectedEdge(null);
+            return true;
+        } return false;
     }
 
     function loadGraph(graph) {
+        /*
+        TODO
+
         setNodes([]);
         setEdges([]);
         setBindings([]);
@@ -230,17 +300,29 @@ function Queries() {
         if (graph.bindings && Array.isArray(graph.bindings)) {
             setBindings(graph.bindings);
         }
+        */
     }
 
     function toggleIsTransitive(edge) {
-        let propCanBeTransitive = objectProperties[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
-        if (propCanBeTransitive) {
-            let label = edge.label;
-            edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
-            let newEdges = [...edges];
-            newEdges[edge.id] = { id: edge.id, dashes: edge.isOptional, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
-            setEdges(newEdges);
-        }
+        let propCanBeTransitive;
+        setGraphs(prevGraphs => {
+            propCanBeTransitive = objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
+            if (propCanBeTransitive) {
+                let label = edge.label;
+                edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
+                let newEdges = [...prevGraphs[activeGraphIndex].edges];
+                const edgeIndex = newEdges.findIndex(e => e.id === edge.id);
+                newEdges[edgeIndex] = {
+                    ...edge,
+                    label: label,
+                    isTransitive: !edge.isTransitive
+                };
+                const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+                return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+            }
+            return prevGraphs;
+        });
+        return propCanBeTransitive;
     }
 
     return (
@@ -251,7 +333,7 @@ function Queries() {
             </div>
             <div className={QueriesStyles.main_container}>
                 <span className={QueriesStyles.graph_wrapper}>
-                    <UnionTray unions={unions} setUnions={setUnions} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
+                    <UnionTray graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
                 <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />

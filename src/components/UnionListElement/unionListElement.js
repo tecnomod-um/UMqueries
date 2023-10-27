@@ -3,30 +3,34 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowLeft from '@mui/icons-material/ArrowLeft';
 import UnionListElementStyles from './unionListElement.module.css';
 
-function UnionListElement({ id, label, setUnions }) {
+function UnionListElement({ id, label, removeDisabled, changeActiveGraph, isGraphLoop, addGraphNode, removeGraph }) {
 
     const handleClick = (event) => {
         event.preventDefault();
-        console.log(id + ' clicked');
+        changeActiveGraph(id);
     }
 
     const handleArrowClick = (event) => {
         event.stopPropagation();
-        console.log('Adding ' + id);
+        if (!isGraphLoop(id))
+            addGraphNode(id);
     }
 
     const handleDeleteClick = (event) => {
         event.stopPropagation();
-        setUnions(prevData => prevData.filter(item => item.id !== id));
+        if (!removeDisabled)
+            removeGraph(id);
     }
 
     return (
         <li className={UnionListElementStyles.element} onClick={e => handleClick(e)}>
-            <button className={UnionListElementStyles.arrowBtn} onClick={handleArrowClick}>
+            <button className={UnionListElementStyles.arrowBtn} disabled={isGraphLoop(id)} onClick={handleArrowClick}
+                title={isGraphLoop ? "Adding this graph to the active one would cause a loop." : ""}>
                 <ArrowLeft style={{ fontSize: '34px' }} />
             </button>
             <span>{label}</span>
-            <button className={UnionListElementStyles.deleteBtn} onClick={handleDeleteClick}>
+            <button className={UnionListElementStyles.deleteBtn} disabled={removeDisabled} onClick={handleDeleteClick}
+                title={removeDisabled ? "A minimum of one graph is required." : ""}>
                 <DeleteIcon style={{ color: 'white' }} />
             </button>
         </li>
