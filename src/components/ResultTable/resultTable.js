@@ -3,30 +3,30 @@ import ResultTableStyles from "./resultTable.module.css";
 
 function getTableHeaders(filteredLists) {
   if (!filteredLists) {
-      return [];
+    return [];
   }
   return Object.keys(filteredLists);
 }
 
 function getTableContent(filteredLists) {
   if (!filteredLists || Object.keys(filteredLists).length === 0) {
-      return null;
+    return null;
   }
 
   const rowCount = Object.values(filteredLists)[0].length;
 
   return (
-      <tbody className={ResultTableStyles.resTbody}>
-          {[...Array(rowCount)].map((_, rowIndex) => (
-              <tr key={`row-${rowIndex}`} className={ResultTableStyles.resTr}>
-                  {Object.keys(filteredLists).map((key) => (
-                      <td key={`${key}-${rowIndex}`} className={ResultTableStyles.resTd}>
-                          <span className={ResultTableStyles.resSpan}>{filteredLists[key][rowIndex]}</span>
-                      </td>
-                  ))}
-              </tr>
+    <tbody className={ResultTableStyles.resTbody}>
+      {[...Array(rowCount)].map((_, rowIndex) => (
+        <tr key={`row-${rowIndex}`} className={ResultTableStyles.resTr}>
+          {Object.keys(filteredLists).map((key) => (
+            <td key={`${key}-${rowIndex}`} className={ResultTableStyles.resTd}>
+              <span className={ResultTableStyles.resSpan}>{filteredLists[key][rowIndex]}</span>
+            </td>
           ))}
-      </tbody>
+        </tr>
+      ))}
+    </tbody>
   );
 }
 
@@ -116,6 +116,6 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
       {getTableContent(filteredLists)}
     </table>
   );
-};
+}
 
 export default ResultTable;

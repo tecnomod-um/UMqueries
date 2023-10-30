@@ -6,7 +6,7 @@ import UnionList from '../UnionList/unionList';
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from '@mui/icons-material/Add';
 
-function UnionTray({ graphs, isGraphLoop, addGraph, removeGraph, changeActiveGraph, addGraphNode, isUnionTrayOpen, toggleUnionTray }) {
+function UnionTray({ graphs, isGraphLoop, addGraph, removeGraph, activeGraphId, changeActiveGraph, addGraphNode, isUnionTrayOpen, toggleUnionTray }) {
     const [graphLabel, setGraphLabel] = useState('');
     const [error, showError] = useState(false);
 
@@ -35,19 +35,21 @@ function UnionTray({ graphs, isGraphLoop, addGraph, removeGraph, changeActiveGra
             {isUnionTrayOpen && (
                 <div className={UnionTrayStyles.content}>
                     <div className={UnionTrayStyles.header}>
-                        <input
-                            className={UnionTrayStyles.unionInput}
-                            placeholder="Define new graph"
-                            value={graphLabel}
-                            onChange={e => setGraphLabel(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                        {error && <CloseIcon className={UnionTrayStyles.errorIcon} />}
+                        <div className={UnionTrayStyles.inputWrapper}>
+                            <input
+                                className={UnionTrayStyles.unionInput}
+                                placeholder="Define new graph"
+                                value={graphLabel}
+                                onChange={e => setGraphLabel(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
+                            {error && <CloseIcon className={UnionTrayStyles.errorIcon} />}
+                        </div>
                         <button className={UnionTrayStyles.addButton} onClick={addGraphEntry}>
                             <AddIcon />
                         </button>
                     </div>
-                    <UnionList graphs={graphs} changeActiveGraph={changeActiveGraph} isGraphLoop={isGraphLoop} addGraphNode={addGraphNode} removeGraph={removeGraph} />
+                    <UnionList graphs={graphs} activeGraphId={activeGraphId} changeActiveGraph={changeActiveGraph} isGraphLoop={isGraphLoop} addGraphNode={addGraphNode} removeGraph={removeGraph} />
                 </div>
             )}
         </div>

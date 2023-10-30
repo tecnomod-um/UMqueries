@@ -99,29 +99,22 @@ function Queries() {
         setActiveGraph(graphId);
     }
 
-    // Graphs won't be able to be added to others if doing so would cause a loop
-    function isGraphLoop(graphId) {
-        if (graphId === activeGraphId) return true;
-        const graphToAdd = graphs.find(graph => graph.id === graphId);
-        if (!graphToAdd) return false;
+    // Checks if adding a graph would create a loop.
+    function isGraphLoop(graphIdToAdd, currentGraphId, visitedGraphs) {
+        if (graphIdToAdd === currentGraphId)
+            return true;
+        if (visitedGraphs.has(graphIdToAdd))
+            return true;
 
-        const traverseNodes = (nodeId, visited, originalNode) => {
-            if (visited[nodeId])
-                return nodeId === originalNode;
-            visited[nodeId] = true;
-
-            const nodeEdges = edges.filter(edge => edge.from === nodeId);
-            for (let edge of nodeEdges) {
-                const nextNodeId = edge.to;
-                if (traverseNodes(nextNodeId, visited, originalNode))
+        visitedGraphs.add(graphIdToAdd);
+        const graphToAdd = graphs.find(graph => graph.id === graphIdToAdd);
+        for (const node of graphToAdd.nodes) {
+            if (node.shape === 'circle' && node.data) {
+                if (node.data === currentGraphId)
+                    return true;
+                if (isGraphLoop(graphIdToAdd, node.data, visitedGraphs))
                     return true;
             }
-            return false;
-        };
-        for (let node of graphToAdd.nodes) {
-            const visited = {};
-            if (traverseNodes(node.id, visited, node.id))
-                return true;
         }
         return false;
     }
@@ -135,7 +128,7 @@ function Queries() {
 
     // Adds the passed graph as a node to the active one
     function addGraphNode(graphId) {
-        if (isGraphLoop(graphId)) return false;
+        if (isGraphLoop(graphId, activeGraphId, new Set())) return false;
         return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
     }
 
@@ -163,8 +156,8 @@ function Queries() {
             const newNodes = [...prevGraphs[activeGraphIndex].nodes];
             const maxId = newNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
             const varID = isVar ? varIDs[type] : -1;
+            const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : isGraph ? id : data;
             const label = isVar ? `${id} ${varID}` : isGraph ? data : id;
-            const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
             if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
             const shape = uriOnly ? 'box' : isGraph ? 'circle' : 'big ellipse';
             const color = uriOnly ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
@@ -356,7 +349,7 @@ function Queries() {
             </div>
             <div className={QueriesStyles.main_container}>
                 <span className={QueriesStyles.graph_wrapper}>
-                    <UnionTray graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
+                    <UnionTray graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} activeGraphId={activeGraphId} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
                 <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />

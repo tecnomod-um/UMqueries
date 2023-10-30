@@ -2,7 +2,7 @@ import React from 'react';
 import UnionListElement from '../UnionListElement/unionListElement';
 import UnionListStyles from './unionList.module.css';
 
-function UnionList({ graphs, changeActiveGraph, isGraphLoop, addGraphNode, removeGraph }) {
+function UnionList({ graphs, activeGraphId, changeActiveGraph, isGraphLoop, addGraphNode, removeGraph }) {
     return (
         <ul className={UnionListStyles.list}>
             {graphs.map(graph =>
@@ -12,7 +12,7 @@ function UnionList({ graphs, changeActiveGraph, isGraphLoop, addGraphNode, remov
                     label={graph.label}
                     removeDisabled={graphs.length <= 1}
                     changeActiveGraph={changeActiveGraph}
-                    isGraphLoop={isGraphLoop}
+                    isGraphLoop={isGraphLoop(graph.id, activeGraphId, new Set())}
                     addGraphNode={addGraphNode}
                     removeGraph={removeGraph}
                 />

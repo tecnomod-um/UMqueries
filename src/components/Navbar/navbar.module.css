@@ -29,6 +29,7 @@ li {
     display: flex;
     gap: 1em;
     font-size: 18px;
+    z-index: 20;
 }
 
 .menu li:hover {
@@ -70,7 +71,7 @@ label[for="menuToggle"] {
 
     .menu li:hover {
         display: inline-block;
-        background-color: #4c9e9e;
+        background-color: #5f0d19;
         transition: 0.3s ease;
     }
 
