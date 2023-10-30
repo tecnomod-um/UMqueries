@@ -63,15 +63,29 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
-    // Populate on node selected
-    if (selectedNode != null && selectedNode.shape !== 'box') {
-        buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
-        buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
-        buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
+    const createUnionMenuItems = () => {
+        return null;
+    }
 
-        const edgesForSelectedNode = edgeData[selectedNode.type];
-        shownProperties = createGroupedMenuItems(edgesForSelectedNode, false);
-        shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
+    // Populate on node selected
+    if (selectedNode) {
+        if (selectedNode.shape === 'circle') {
+            buttonPropertyLabel = `Define '${selectedNode.label}' union...`;
+            buttonOptionalLabel = `Graph '${selectedNode.label}' currently selected`;
+            buttonInsideLabel = `Graph '${selectedNode.label}' currently selected`;
+
+            shownProperties = createUnionMenuItems();
+            shownOptionals = null;
+        }
+        else if (selectedNode.shape !== 'box') {
+            buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
+            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
+            buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
+
+            const edgesForSelectedNode = edgeData[selectedNode.type];
+            shownProperties = createGroupedMenuItems(edgesForSelectedNode, false);
+            shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
+        }
     } else {
         buttonPropertyLabel = "No node selected";
         buttonOptionalLabel = "No node selected";
