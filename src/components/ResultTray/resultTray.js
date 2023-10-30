@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
+function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -64,7 +64,13 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
     }
 
     const createUnionMenuItems = () => {
-        return null;
+        const graphNodes = nodes.filter(node => node.shape === 'circle' && node.id !== selectedNode.id);
+        const menuItems = graphNodes.map(node => (
+            <DropdownMenuItem onClick={() => addUnion(selectedNode.id, node.id)}>
+                {`Union with graph '${node.label}'`}
+            </DropdownMenuItem>
+        ));
+        return menuItems.length > 0 ? menuItems : [<DropdownMenuItem disabled={true}>No other graphs available</DropdownMenuItem>];
     }
 
     // Populate on node selected
@@ -75,7 +81,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
             buttonInsideLabel = `Graph '${selectedNode.label}' currently selected`;
 
             shownProperties = createUnionMenuItems();
-            shownOptionals = null;
+            shownOptionals = [];
         }
         else if (selectedNode.shape !== 'box') {
             buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;

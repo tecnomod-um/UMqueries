@@ -132,6 +132,46 @@ function Queries() {
         return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
     }
 
+    function addUnion(selectedNodeId, targetNodeId) {
+        setGraphs(prevGraphs => {
+            const newEdges = [...prevGraphs[activeGraphIndex].edges];
+            const maxId = newEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
+
+            const unionEdge = {
+                id: maxId,
+                dashes: false,
+                from: selectedNodeId,
+                to: targetNodeId,
+                label: 'UNION',
+                data: 'UNION',
+                isOptional: false,
+                isTransitive: false,
+                isFromInstance: false,
+                arrows: {
+                    to: { enabled: true, scaleFactor: 1, type: 'arrow' },
+                    from: { enabled: true, scaleFactor: 1, type: 'arrow' }
+                },
+                smooth: {
+                    enabled: true,
+                    type: 'curvedCW',
+                    roundness: 0.5
+                },
+                width: 2,
+                chosen: true,
+                color: {
+                    color: '#848484',
+                    highlight: '#848484',
+                    hover: '#848484',
+                    inherit: false
+                },
+            }
+            newEdges.push(unionEdge);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return true;
+    }
+
     function removeGraph(graphId) {
         if (graphs.length <= 1)
             return false;
@@ -322,7 +362,7 @@ function Queries() {
     function toggleIsTransitive(edge) {
         let propCanBeTransitive;
         setGraphs(prevGraphs => {
-            propCanBeTransitive = objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
+            propCanBeTransitive = edge.data === 'UNION' ? false : objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
             if (propCanBeTransitive) {
                 let label = edge.label;
                 edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
@@ -352,7 +392,7 @@ function Queries() {
                     <UnionTray graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} activeGraphId={activeGraphId} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal nodes={nodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
