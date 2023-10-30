@@ -38,8 +38,27 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+.queryText {
+    display: inline !important;
+}
+
+.queryIcon {
+    display: none !important;
+}
+
 @media (max-width: 768px) {
-    .big_button {
-        font-size: 2vw;
+    .big_button .queryText {
+        display: none !important;
     }
+
+    .big_button .queryIcon {
+        display: inline-block !important;
+        color: #ffffff;
+        font-size: 4vw;
+    }
+}
+
+.big_button.isLoading .queryText,
+.big_button.isLoading .queryIcon {
+    display: none !important;
 }

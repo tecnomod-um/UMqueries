@@ -118,6 +118,7 @@
 
 @media (max-width: 768px) {
     .queryContainer {
+        margin: auto;
         flex-direction: column;
         align-items: flex-start;
     }

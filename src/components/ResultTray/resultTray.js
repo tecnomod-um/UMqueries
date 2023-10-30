@@ -7,6 +7,7 @@ import ResultExporter from "../ResultExporter/resultExporter";
 import ValuesItem from "../ValuesItem/valuesItem";
 import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
+import TrashIcon from '@mui/icons-material/DeleteOutline';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -228,7 +229,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
         <span className={ResultTrayStyles.container}>
             <div className={ResultTrayStyles.controlColumn}>
                 <div className={ResultTrayStyles.buttonRow}>
-                    <button className={ResultTrayStyles.del_button} onClick={deleteSelected}>Delete</button>
+                    <button className={ResultTrayStyles.del_button} onClick={deleteSelected}>
+                        <span className={ResultTrayStyles.deleteText}>Delete</span>
+                        <TrashIcon className={ResultTrayStyles.deleteIcon} />
+                    </button>
                     <Dropdown
                         trigger={<button className={ResultTrayStyles.var_button}>{buttonPropertyLabel}</button>}
                         menu={shownProperties}

@@ -1,5 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import GraphToFileStyles from './graphExporter.module.css';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import DownloadIcon from '@mui/icons-material/Download';
 import { saveAs } from 'file-saver';
 
 // Exports current query graph to .json file
@@ -23,7 +25,11 @@ export function GraphToFile({ nodes, edges, bindings, startingVar }) {
     saveAs(blob, fileName);
   }, [nodes, edges, bindings, startingVar]);
 
-  return (<button className={GraphToFileStyles.file_button} onClick={exportQuery}>Export query</button>
+  return (
+    <button className={GraphToFileStyles.file_button} onClick={exportQuery}>
+      <span className={GraphToFileStyles.buttonText}>Export query</span>
+      <DownloadIcon className={GraphToFileStyles.buttonIcon} />
+    </button>
   );
 }
 
@@ -51,7 +57,8 @@ export function FileToGraph({ onFileSelect }) {
         ref={fileInputRef}
         onChange={handleFileSelect}
       />
-      Load query
+      <span className={GraphToFileStyles.buttonText}>Load query</span>
+      <UploadFileIcon className={GraphToFileStyles.buttonIcon} />
     </div>
   );
 }

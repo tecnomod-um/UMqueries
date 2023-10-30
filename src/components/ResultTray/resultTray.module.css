@@ -70,15 +70,6 @@
     width: 30%;
 }
 
-@media (max-width: 768px) {
-
-    .big_button,
-    .var_button,
-    .del_button {
-        font-size: 2vw;
-    }
-}
-
 .shownNode {
     display: flex;
     justify-content: space-between;
@@ -88,4 +79,42 @@
 .dropdownSeparator {
     height: 1px;
     background-color: lightgray;
+}
+
+.deleteText {
+    display: inline;
+}
+
+.deleteIcon {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .del_button,
+    .var_button,
+    .big_button {
+        font-size: 2vw;
+    }
+
+    .del_button .deleteText {
+        display: none;
+    }
+
+    .del_button .deleteIcon {
+        display: inline-block;
+        color: #ffffff;
+        font-size: 2rem;
+        font-size: 4vw;
+    }
+
+    .big_button .queryText {
+        display: none;
+    }
+
+    .big_button .queryIcon {
+        display: inline-block;
+        color: #ffffff;
+        font-size: 2rem;
+    }
 }
