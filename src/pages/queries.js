@@ -310,25 +310,30 @@ function Queries() {
 
     function loadQueryFile(importData) {
         const { graphs, bindings } = importData;
-        let newVarIDStructures = {};
 
-        graphs.forEach(graph => {
-            newVarIDStructures[graph.id] = {
-                id: graph.id,
-                varIdList: graph.nodes
-                    .filter(node => node.varID !== -1)
-                    .reduce((acc, node) => {
+        // Initialize the new structure for varIds.
+        const initialVarIDs = graphs.map(graph => ({
+            id: graph.id,
+            varIdList: Object.fromEntries(
+                Object.keys(graph.nodes.reduce((acc, node) => {
+                    if (node.varID !== -1) {
                         acc[node.type] = 0;
-                        return acc;
-                    }, {})
-            };
-        });
+                    }
+                    return acc;
+                }, {})).map(type => [type, 0])
+            )
+        }));
+
         const newGraphs = graphs.map((graph) => {
+            // Find the appropriate varIdList for the current graph.
+            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
             let nodeIdToIndexMapping = {};
+
             const newNodes = graph.nodes.map((node) => {
                 let varID = node.varID;
-                if (varID !== -1)
-                    varID = ++newVarIDStructures[graph.id].varIdList[node.type];
+                if (varID !== -1) {
+                    varID = currentVarIDObj.varIdList[node.type]++;
+                }
                 const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
                 const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
 
@@ -353,11 +358,13 @@ function Queries() {
                 edges: newEdges,
             };
         });
-        setVarIDs(newVarIDStructures);
+
         setGraphs(newGraphs);
+        setVarIDs(initialVarIDs);  // set the updated varIds
         setBindings(bindings);
         setActiveGraph(newGraphs[0]?.id || 0);
     }
+
 
     function getGraphData() {
         const result = {};
