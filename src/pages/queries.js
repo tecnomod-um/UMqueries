@@ -295,68 +295,38 @@ function Queries() {
         } return false;
     }
 
-    function loadGraph(graph) {
-        /*
-        TODO
+    function loadQueryFile(importData) {
+        const { graphs, bindings } = importData;
+        setGraphs(graphs);
+        setBindings(bindings);
 
-        setNodes([]);
-        setEdges([]);
-        setBindings([]);
-
-        const initialVarIDs = Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
-        setVarIDs(initialVarIDs);
-        let newVarIDs = { ...initialVarIDs };
-
-        let nodeIdToIndex = {};  // Map from node IDs to their index in the newNodes array
-
-        const newNodes = graph.nodes.map((node, index) => {
-            const varID = node.varID !== -1 ? newVarIDs[node.type] : -1;
-            const label = node.varID !== -1 ? `${node.label} ${varID}` : node.label;
-            const uri = node.varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
-            const shape = node.shape === 'box' ? 'box' : 'big ellipse';
-            const color = node.shape === 'box' ? '#D3D3D3' : colorList[node.type];
-            if (node.varID !== -1) newVarIDs[node.type] = varID + 1;
-
-            const newNode = {
-                id: node.id,  // Use the actual node id, not the index
-                data: uri,
-                label: label,
-                color: color,
-                type: node.type,
-                varID: varID,
-                graph: node.graph,
-                class: node.class,
-                shape: shape
-            };
-
-            nodeIdToIndex[node.id] = index;  // Store the index for later use in edges
-
-            if (node.properties) {
-                newNode.properties = node.properties;
-            }
-
-            return newNode;
+        let maxVarIDs = {};
+        graphs.forEach(graph => {
+            graph.nodes.forEach(node => {
+                if (node.isVar) {
+                    maxVarIDs[node.type] = Math.max(maxVarIDs[node.type] || 0, node.varID);
+                }
+            });
         });
-        setNodes(newNodes);
-        setVarIDs(newVarIDs);
-        const newEdges = graph.edges.map((edge, index) => {
+        Object.keys(maxVarIDs).forEach(type => {
+            maxVarIDs[type] += 1;
+        });
+        setVarIDs(maxVarIDs);
+        setActiveGraph(graphs[0]?.id || 0);
+    }
+
+    function getGraphData() {
+        const result = {};
+        result.graphs = graphs.map(graph => {
             return {
-                id: index,
-                dashes: edge.isOptional,
-                from: nodeIdToIndex[edge.from],  // Use the correct index from the map
-                to: nodeIdToIndex[edge.to],  // Use the correct index from the map
-                label: edge.label,
-                data: edge.data,
-                isOptional: edge.isOptional,
-                isTransitive: false
+                id: graph.id,
+                label: graph.label,
+                nodes: graph.nodes,
+                edges: graph.edges
             };
         });
-        setEdges(newEdges);
-
-        if (graph.bindings && Array.isArray(graph.bindings)) {
-            setBindings(graph.bindings);
-        }
-        */
+        result.bindings = bindings;
+        return result;
     }
 
     function toggleIsTransitive(edge) {
@@ -392,7 +362,7 @@ function Queries() {
                     <UnionTray graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} activeGraphId={activeGraphId} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadGraph={loadGraph} />
+                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal nodes={nodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />

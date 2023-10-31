@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
-import { GraphToFile, FileToGraph } from "../GraphExporter/graphExporter.js";
+import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
 import { getCategory } from "../../utils/typeChecker.js";
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadGraph }) {
+function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -83,7 +83,14 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
             shownProperties = createUnionMenuItems();
             shownOptionals = [];
         }
-        else if (selectedNode.shape !== 'box') {
+        else if (selectedNode.shape === 'box') {
+            buttonPropertyLabel = `Value list selected`;
+            buttonOptionalLabel = `Value list selected`;
+            buttonInsideLabel = `Value list selected`;
+            shownProperties = [];
+            shownOptionals = [];
+        }
+        else {
             buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
             buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
             buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
@@ -102,19 +109,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
 
     const numVarsSelected = Object.keys(startingVar).length;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
-    /*
-    const varsInGraph = nodes.filter(generalNode => generalNode && generalNode.varID >= 0).length;
-    if (!Object.keys(startingVar).length) buttonVarToShowLabel = 'No nodes shown';
-    else if (startingVar[Object.keys(startingVar)[0]].isMetric) {
-        const operator = startingVar[Object.keys(startingVar)[0]].isMax ? 'Max ' : 'Min ';
-        buttonVarToShowLabel = operator + ' ' + startingVar[Object.keys(startingVar)[0]].property_label + ' from ' + startingVar[Object.keys(startingVar)[0]].type + ' ' + startingVar[Object.keys(startingVar)[0]].varID + ' shown';
-    }
-    else if (Object.keys(startingVar).length !== varsInGraph) {
-        let varName = startingVar[Object.keys(startingVar)[0]].type
-        buttonVarToShowLabel = capitalizeFirst("" + varName) + " " + startingVar[Object.keys(startingVar)[0]].varID + " shown";
-    }
-    else buttonVarToShowLabel = 'All nodes shown';
-    */
 
     const nodeContents = (node) => {
         return {
@@ -214,11 +208,18 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
     }
 
     // Load graph from file
-    const onFileSelect = useCallback((queryData) => {
-        loadGraph(queryData);
-        if (queryData.startingVar)
-            setStartingVar(queryData.startingVar);
-    }, [loadGraph]);
+    const onFileSelect = useCallback((importData) => {
+        loadQueryFile(importData);
+        if (importData.startingVar)
+            setStartingVar(importData.startingVar);
+    }, [loadQueryFile]);
+
+    // Set data to export format
+    const getQueryData = useCallback(() => {
+        const queryData = getGraphData();
+        queryData.startingVar = startingVar;
+        return (queryData);
+    }, [getGraphData, startingVar])
 
     // Remove nodes
     const deleteSelected = useCallback(() => {
@@ -272,11 +273,10 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                         menu={
                             resultData ?
-                                [
-                                    <ResultExporter data={resultData} fileType="csv" />,
-                                    <ResultExporter data={resultData} fileType="tsv" />,
-                                    <ResultExporter data={resultData} fileType="txt" />,
-                                    <ResultExporter data={resultData} fileType="ods" />
+                                [<ResultExporter data={resultData} fileType="csv" />,
+                                <ResultExporter data={resultData} fileType="tsv" />,
+                                <ResultExporter data={resultData} fileType="txt" />,
+                                <ResultExporter data={resultData} fileType="ods" />
                                 ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
                     <QueryButton nodes={nodes} edges={edges} bindings={bindings} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
@@ -286,8 +286,8 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
                     menu={getShownTargets()}
                 />
                 <div className={ResultTrayStyles.buttonRow}>
-                    <GraphToFile nodes={nodes} edges={edges} bindings={bindings} startingVar={startingVar} />
-                    <FileToGraph onFileSelect={onFileSelect} />
+                    <QueryToFile getQueryData={getQueryData} />
+                    <FileToQuery onFileSelect={onFileSelect} />
                 </div>
             </div>
         </span >
