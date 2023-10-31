@@ -42,7 +42,7 @@ export const populateWithEndpointData = (setVarData, setVarIDs, setObjectPropert
     ])
         .then(([varData, propertiesData]) => {
             setVarData(varData);
-            setVarIDs(Object.fromEntries(Object.keys(varData).map(type => [type, 0])));
+            setVarIDs([{ id: 0, varIdList: Object.fromEntries(Object.keys(varData).map(type => [type, 0])) }]);
             setObjectProperties(propertiesData.objectProperties);
             setDataProperties(propertiesData.dataProperties);
         })

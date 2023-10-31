@@ -123,6 +123,7 @@ function Queries() {
         const newId = Math.max(...graphs.map(item => Number(item.id))) + 1;
         const newGraph = graph ? graph : { id: newId, label: label, nodes: [], edges: [] }
         setGraphs([...graphs, newGraph]);
+        setVarIDs([...varIDs, { id: newId, varIdList: Object.fromEntries(Object.keys(varData).map(type => [type, 0])) }]);
         return true;
     }
 
@@ -177,6 +178,8 @@ function Queries() {
             return false;
         setGraphs(prevGraphs => {
             const graphIndex = prevGraphs.findIndex(graph => graph.id === graphId);
+            const idIndex = varIDs.findIndex(set => set.id === graphId);
+            setVarIDs(prevIds => [...prevIds.slice(0, idIndex), ...prevIds.slice(idIndex + 1)]);
             if (graphId === activeGraphId) {
                 if (graphIndex > 0)
                     setActiveGraph(prevGraphs[graphIndex - 1].id);
@@ -195,10 +198,20 @@ function Queries() {
         setGraphs(prevGraphs => {
             const newNodes = [...prevGraphs[activeGraphIndex].nodes];
             const maxId = newNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
-            const varID = isVar ? varIDs[type] : -1;
+            const varID = isVar ? varIDs[varIDs.findIndex(set => set.id === activeGraphId)].varIdList[type] : -1;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : isGraph ? id : data;
             const label = isVar ? `${id} ${varID}` : isGraph ? data : id;
-            if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
+
+            // Update only the active graph varIds 
+            if (isVar) {
+                setVarIDs(prevVarIDs => {
+                    return prevVarIDs.map(set => {
+                        if (set.id === activeGraphId)
+                            return { ...set, varIdList: { ...set.varIdList, [type]: set.varIdList[type] + 1 } };
+                        return set;
+                    });
+                });
+            }
             const shape = uriOnly ? 'box' : isGraph ? 'circle' : 'big ellipse';
             const color = uriOnly ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
             const fontColor = isGraph ? 'white' : 'black';
@@ -297,22 +310,53 @@ function Queries() {
 
     function loadQueryFile(importData) {
         const { graphs, bindings } = importData;
-        setGraphs(graphs);
-        setBindings(bindings);
+        let newVarIDStructures = {};
 
-        let maxVarIDs = {};
         graphs.forEach(graph => {
-            graph.nodes.forEach(node => {
-                if (node.isVar) {
-                    maxVarIDs[node.type] = Math.max(maxVarIDs[node.type] || 0, node.varID);
-                }
+            newVarIDStructures[graph.id] = {
+                id: graph.id,
+                varIdList: graph.nodes
+                    .filter(node => node.varID !== -1)
+                    .reduce((acc, node) => {
+                        acc[node.type] = 0;
+                        return acc;
+                    }, {})
+            };
+        });
+        const newGraphs = graphs.map((graph) => {
+            let nodeIdToIndexMapping = {};
+            const newNodes = graph.nodes.map((node) => {
+                let varID = node.varID;
+                if (varID !== -1)
+                    varID = ++newVarIDStructures[graph.id].varIdList[node.type];
+                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
+                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
+
+                nodeIdToIndexMapping[node.id] = node.id;
+                return {
+                    ...node,
+                    varID,
+                    label,
+                    data: uri,
+                };
             });
+
+            const newEdges = graph.edges.map(edge => ({
+                ...edge,
+                from: nodeIdToIndexMapping[edge.from],
+                to: nodeIdToIndexMapping[edge.to],
+            }));
+
+            return {
+                ...graph,
+                nodes: newNodes,
+                edges: newEdges,
+            };
         });
-        Object.keys(maxVarIDs).forEach(type => {
-            maxVarIDs[type] += 1;
-        });
-        setVarIDs(maxVarIDs);
-        setActiveGraph(graphs[0]?.id || 0);
+        setVarIDs(newVarIDStructures);
+        setGraphs(newGraphs);
+        setBindings(bindings);
+        setActiveGraph(newGraphs[0]?.id || 0);
     }
 
     function getGraphData() {
