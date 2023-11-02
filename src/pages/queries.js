@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
 import SearchNodes from '../components/SearchNodes/searchNodes';
@@ -34,6 +34,19 @@ function Queries() {
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
+    // Nodes defined though all graphs
+    const allNodes = useMemo(() => {
+        const uniqueNodesMap = new Map();
+        graphs.forEach(graph => {
+            graph.nodes.forEach(node => {
+                const nodeKey = `${node.type}_${node.varID}`;
+                if (!uniqueNodesMap.has(nodeKey)) {
+                    uniqueNodesMap.set(nodeKey, node);
+                }
+            });
+        });
+        return Array.from(uniqueNodesMap.values());
+    }, [graphs]);
 
     // Loads endpoint data when first loaded
     useEffect(() => {
@@ -134,8 +147,10 @@ function Queries() {
     function addUnion(selectedNodeId, targetNodeId) {
         setGraphs(prevGraphs => {
             const newEdges = [...prevGraphs[activeGraphIndex].edges];
-            const maxId = newEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
-
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.edges.reduce((max, edge) => Math.max(max, edge.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
             const unionEdge = {
                 id: maxId,
                 dashes: false,
@@ -195,7 +210,10 @@ function Queries() {
         let newNode;
         setGraphs(prevGraphs => {
             const newNodes = [...prevGraphs[activeGraphIndex].nodes];
-            const maxId = newNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.nodes.reduce((max, node) => Math.max(max, node.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
             const varID = isVar ? varIDs[varIDs.findIndex(set => set.id === activeGraphId)].varIdList[type] : -1;
             const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : isGraph ? id : data;
             const label = isVar ? `${id} ${varID}` : isGraph ? data : id;
@@ -241,6 +259,7 @@ function Queries() {
             const updatedGraph = { ...prevGraphs[activeGraphIndex], nodes: newNodes };
             return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
+        console.log(newNode)
         return newNode;
     }
 
@@ -248,7 +267,10 @@ function Queries() {
         let newEdge;
         setGraphs((prevGraphs) => {
             const newEdges = [...prevGraphs[activeGraphIndex].edges];
-            const maxId = newEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.edges.reduce((max, edge) => Math.max(max, edge.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
             newEdge = {
                 id: maxId + 1,
                 dashes: isOptional,
@@ -363,7 +385,6 @@ function Queries() {
         setActiveGraph(newGraphs[0]?.id || 0);
     }
 
-
     function getGraphData() {
         const result = {};
         result.graphs = graphs.map(graph => {
@@ -411,10 +432,10 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray activeGraphId={activeGraphId} graphs={graphs} edgeData={objectProperties} insideData={dataProperties} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal activeGraphId={activeGraphId} graphs={graphs} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <BindingsModal allNodes={allNodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
         </div>
     );
 }

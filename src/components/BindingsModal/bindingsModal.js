@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
-function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
+function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
     const modalRef = useRef(null);
     const [operator, setOperator] = useState('+');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
@@ -24,14 +24,9 @@ function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBin
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
     const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<']), []);
 
-
-    const activeGraph = graphs.find(graph => graph.id === activeGraphId);
-    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
-    const nodes = activeGraph.nodes;
-    
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
-        const nodeNumericValues = (nodes ?? []).flatMap(node => {
+        const nodeNumericValues = (allNodes ?? []).flatMap(node => {
             return Object.entries(node.properties)
                 .filter(([key, property]) => property.type === "number")
                 .map(([key, property]) => ({
@@ -59,13 +54,13 @@ function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBin
                 })
             }));
         return [...nodeNumericValues, ...combinedBindingsValues];
-    }, [nodes, bindings, tempBindings]);
+    }, [allNodes, bindings, tempBindings]);
 
     // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
-        const numericProperties = getNumericProperties(nodes, tempBindings);
+        const numericProperties = getNumericProperties(allNodes, tempBindings);
         setSelectedValue(numericProperties[0]);
-    }, [nodes, tempBindings, getNumericProperties]);
+    }, [allNodes, tempBindings, getNumericProperties]);
 
     // Recursively removes a binding tree
     const removeBindingAndDependencies = useCallback((bindingId, bindingArray, tempBindingArray) => {
@@ -97,13 +92,13 @@ function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBin
     // Updates bindings on node removal
     useEffect(() => {
         const bindingsToRemove = bindings.filter(binding =>
-            (binding.firstValue.isFromNode && !nodes.some(node => node.id === binding.firstValue.nodeId)) ||
-            (binding.secondValue.isFromNode && !nodes.some(node => node.id === binding.secondValue.nodeId))
+            (binding.firstValue.isFromNode && !allNodes.some(node => node.id === binding.firstValue.nodeId)) ||
+            (binding.secondValue.isFromNode && !allNodes.some(node => node.id === binding.secondValue.nodeId))
         );
         bindingsToRemove.forEach(binding =>
             handleRemoveVariable(binding.id)
         );
-    }, [nodes, bindings, handleRemoveVariable]);
+    }, [allNodes, bindings, handleRemoveVariable]);
 
     // Sets up the builder visibility
     useEffect(() => {
@@ -227,7 +222,7 @@ function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBin
 
     // Binding builder interface definition
     function bindingBuilder() {
-        const numericProperties = getNumericProperties(nodes, tempBindings);
+        const numericProperties = getNumericProperties(allNodes, tempBindings);
         const hasOptions = numericProperties && numericProperties.length > 0;
         const optionSet = hasOptions
             ? [

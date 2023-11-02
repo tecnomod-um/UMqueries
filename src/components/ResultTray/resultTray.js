@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
 import { getCategory } from "../../utils/typeChecker.js";
@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ activeGraphId, graphs, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
+function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -168,6 +168,7 @@ function ResultTray({ activeGraphId, graphs, edgeData, insideData, bindings, sel
         const toggleNodeSelection = (nodeId, nodeContents) => {
             setStartingVar(prevStartingVar => {
                 const updatedStartingVar = { ...prevStartingVar };
+                const nodeKey = `${nodeContents.type}_${nodeContents.varID}`;
                 if (nodeId in prevStartingVar) {
                     delete updatedStartingVar[nodeId];
                 } else {
@@ -177,7 +178,7 @@ function ResultTray({ activeGraphId, graphs, edgeData, insideData, bindings, sel
             });
         };
 
-        let result = nodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
+        let result = allNodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
             .map(targetedNode => {
                 const label = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
                 return (
