@@ -68,3 +68,11 @@
     background-color: #f9f9f9;
     box-shadow: none;
 }
+
+.element.active {
+    background-color: #e0e0e0;
+}
+
+.element.active:hover {
+    background-color: #d0d0d0;
+}
