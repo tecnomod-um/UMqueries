@@ -11,6 +11,7 @@ function UnionList({ graphs, activeGraphId, changeActiveGraph, isGraphLoop, addG
                     id={graph.id}
                     label={graph.label}
                     removeDisabled={graphs.length <= 1}
+                    activeGraphId={activeGraphId}
                     changeActiveGraph={changeActiveGraph}
                     isGraphLoop={isGraphLoop(graph.id, activeGraphId, new Set())}
                     addGraphNode={addGraphNode}

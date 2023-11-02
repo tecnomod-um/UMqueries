@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
 import { getCategory } from "../../utils/typeChecker.js";
@@ -20,8 +20,6 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     const inputRefs = useRef({});
     // Current elements being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
-    const nodes = activeGraph.nodes;
-    const edges = activeGraph.edges;
     // Defined menus and labels
     let shownProperties;
     let shownOptionals;
@@ -52,7 +50,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
         const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
-        const result = nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
+        const result = activeGraph.nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
             .map(targetedNode => (
                 <DropdownMenuItem onClick={() => {
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
@@ -68,7 +66,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
 
     // Gets all graph nodes that could form a Union
     const createUnionMenuItems = () => {
-        const graphNodes = nodes.filter(node => node.shape === 'circle' && node.id !== selectedNode.id);
+        const graphNodes = activeGraph.nodes.filter(node => node.shape === 'circle' && node.id !== selectedNode.id);
         const menuItems = graphNodes.map(node => (
             <DropdownMenuItem onClick={() => addUnion(selectedNode.id, node.id)}>
                 {`Union with graph '${node.label}'`}
@@ -143,7 +141,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         if (isTotal) { }
         // Detects properties marked as shown in vars
         if (!isTotal) {
-            nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
+            activeGraph.nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
                 .forEach(targetedNode => {
                     if (targetedNode.properties)
                         Object.entries(targetedNode.properties).forEach(([key, value]) => {
@@ -284,7 +282,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                                 <ResultExporter data={resultData} fileType="ods" />
                                 ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
-                    <QueryButton nodes={nodes} edges={edges} bindings={bindings} startingVar={startingVar} setResultData={setResultData} ></QueryButton>
+                    <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} setResultData={setResultData} />
                 </div>
                 <Dropdown
                     trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}

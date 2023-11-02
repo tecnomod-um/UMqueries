@@ -68,3 +68,13 @@
     background-color: #f9f9f9;
     box-shadow: none;
 }
+
+.element.active {
+    background-color: #e0e0e0; /* A darker shade for the selected element */
+    /* Add more styling if needed to make it look sleek and professional */
+}
+
+/* Optionally, if you want the hover effect to be different for the active element */
+.element.active:hover {
+    background-color: #d0d0d0; /* Even darker on hover */
+}
