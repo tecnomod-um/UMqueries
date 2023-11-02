@@ -13,17 +13,16 @@ import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
-
+    // Data structures used through the app
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
     const [uriList, setUriList] = useState([]);
     const inputRefs = useRef({});
-
+    // Current elements being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
-    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
     const nodes = activeGraph.nodes;
     const edges = activeGraph.edges;
-
+    // Defined menus and labels
     let shownProperties;
     let shownOptionals;
     let buttonPropertyLabel;
@@ -67,6 +66,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
+    // Gets all graph nodes that could form a Union
     const createUnionMenuItems = () => {
         const graphNodes = nodes.filter(node => node.shape === 'circle' && node.id !== selectedNode.id);
         const menuItems = graphNodes.map(node => (
@@ -161,6 +161,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
 
+    // Gets all nodes that could be selected as a shown result
     function getShownTargets() {
         const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
 
@@ -168,7 +169,6 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         const toggleNodeSelection = (nodeId, nodeContents) => {
             setStartingVar(prevStartingVar => {
                 const updatedStartingVar = { ...prevStartingVar };
-                const nodeKey = `${nodeContents.type}_${nodeContents.varID}`;
                 if (nodeId in prevStartingVar) {
                     delete updatedStartingVar[nodeId];
                 } else {
