@@ -3,7 +3,7 @@ import { handleQuery } from "../../utils/petitionHandler.js";
 import QueryButtonStyles from "./queryButton.module.css";
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 
-const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => {
+const SparqlQuery = ({ graphs, activeGraphId, bindings, startingVar, setResultData }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     function inputValidator(startingVar) {
@@ -14,7 +14,7 @@ const SparqlQuery = ({ nodes, edges, bindings, startingVar, setResultData }) => 
 
     const sendQuery = () => {
         if (inputValidator(startingVar) || bindings.some(binding => binding.showInResults)) {
-            handleQuery(nodes, edges, bindings, startingVar, setIsLoading)
+            handleQuery(graphs, activeGraphId, bindings, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);
                 })

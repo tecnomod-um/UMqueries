@@ -259,7 +259,6 @@ function Queries() {
             const updatedGraph = { ...prevGraphs[activeGraphIndex], nodes: newNodes };
             return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
-        console.log(newNode)
         return newNode;
     }
 

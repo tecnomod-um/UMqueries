@@ -3,8 +3,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowLeft from '@mui/icons-material/ArrowLeft';
 import UnionListElementStyles from './unionListElement.module.css';
 
-function UnionListElement({ id, label, removeDisabled, changeActiveGraph, isGraphLoop, addGraphNode, removeGraph }) {
+function UnionListElement({ id, label, removeDisabled, activeGraphId, changeActiveGraph, isGraphLoop, addGraphNode, removeGraph }) {
 
+    const isActive = id === activeGraphId;
+    
     const handleClick = (event) => {
         event.preventDefault();
         changeActiveGraph(id);
@@ -23,7 +25,7 @@ function UnionListElement({ id, label, removeDisabled, changeActiveGraph, isGrap
     }
 
     return (
-        <li className={UnionListElementStyles.element} onClick={e => handleClick(e)}>
+        <li className={`${UnionListElementStyles.element} ${isActive ? UnionListElementStyles.active : ''}`} onClick={e => handleClick(e)}>
             <button className={UnionListElementStyles.arrowBtn} disabled={isGraphLoop} onClick={handleArrowClick}
                 title={isGraphLoop ? "Adding this graph to the active one would cause a loop." : ""}>
                 <ArrowLeft style={{ fontSize: '34px' }} />
