@@ -3,7 +3,10 @@ import VisGraph from "react-vis-graph-wrapper";
 import GraphStyles from "./graph.module.css";
 
 // Vis.js Graph component.
-function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setDataOpen, toggleIsTransitive }) {
+function Graph({ activeGraph, setSelectedNode, setSelectedEdge, setDataOpen, toggleIsTransitive }) {
+
+  const nodesInGraph = activeGraph.nodes;
+  const edgesInGraph = activeGraph.edges;
 
   const options = {
     autoResize: false,

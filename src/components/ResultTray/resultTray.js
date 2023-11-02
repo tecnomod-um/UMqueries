@@ -12,12 +12,17 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
+function ResultTray({ activeGraphId, graphs, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
 
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
     const [uriList, setUriList] = useState([]);
     const inputRefs = useRef({});
+
+    const activeGraph = graphs.find(graph => graph.id === activeGraphId);
+    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
+    const nodes = activeGraph.nodes;
+    const edges = activeGraph.edges;
 
     let shownProperties;
     let shownOptionals;
@@ -40,7 +45,6 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
         const separator = edgeGroups?.fromInstance.length && edgeGroups?.notFromInstance.length ? (
             <div className={ResultTrayStyles.dropdownSeparator} />
         ) : null;
-
         return [...(edgeGroups?.fromInstance || []), separator, ...(edgeGroups?.notFromInstance || [])].filter(Boolean);
     }
 
@@ -158,7 +162,7 @@ function ResultTray({ edgeData, insideData, nodes, edges, bindings, selectedNode
     }
 
     function getShownTargets() {
-        const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10))); // Convert keys to numbers and then to a set for O(1) lookups
+        const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
 
         // Toggle selected state for a given node
         const toggleNodeSelection = (nodeId, nodeContents) => {

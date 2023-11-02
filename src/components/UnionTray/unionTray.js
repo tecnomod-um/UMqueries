@@ -6,7 +6,7 @@ import UnionList from '../UnionList/unionList';
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from '@mui/icons-material/Add';
 
-function UnionTray({ graphs, isGraphLoop, addGraph, removeGraph, activeGraphId, changeActiveGraph, addGraphNode, isUnionTrayOpen, toggleUnionTray }) {
+function UnionTray({ activeGraphId, graphs, isGraphLoop, addGraph, removeGraph, changeActiveGraph, addGraphNode, isUnionTrayOpen, toggleUnionTray }) {
     const [graphLabel, setGraphLabel] = useState('');
     const [error, showError] = useState(false);
 

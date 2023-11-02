@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
-function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
+function BindingsModal({ activeGraphId, graphs, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
     const modalRef = useRef(null);
     const [operator, setOperator] = useState('+');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
@@ -24,6 +24,11 @@ function BindingsModal({ nodes, bindings, isBindingsOpen, setBindingsOpen, setBi
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
     const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<']), []);
 
+
+    const activeGraph = graphs.find(graph => graph.id === activeGraphId);
+    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
+    const nodes = activeGraph.nodes;
+    
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
         const nodeNumericValues = (nodes ?? []).flatMap(node => {
