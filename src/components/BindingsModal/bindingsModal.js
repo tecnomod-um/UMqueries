@@ -333,14 +333,18 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     checked={binding.showInResults}
                     onChange={() => {
                         const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
+                        const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
                         const updatedBindings = [...sourceList];
-                        updatedBindings[index].showInResults = !updatedBindings[index].showInResults;
-                        if (binding.source === 'bindings') {
+                        updatedBindings[sourceIndex] = {
+                            ...updatedBindings[sourceIndex],
+                            showInResults: !updatedBindings[sourceIndex].showInResults
+                        };
+                        if (binding.source === 'bindings')
                             setBindings(updatedBindings);
-                        } else {
+                        else
                             setTempBindings(updatedBindings);
-                        }
-                    }} />
+                    }}
+                />
                 <button className={BindingModalStyles.bindingRemove} onClick={() => handleRemoveVariable(binding.id, binding.source)}>
                     <DeleteIcon />
                 </button>
