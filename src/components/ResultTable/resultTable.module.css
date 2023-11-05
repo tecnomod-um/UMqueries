@@ -12,6 +12,13 @@
   display: contents;
 }
 
+/* Add this to your CSS */
+.resThead th {
+  max-height: 20px;
+  border-bottom: 2px solid #ccc;
+}
+
+
 .resTh {
   position: relative;
   font-size: 18px;

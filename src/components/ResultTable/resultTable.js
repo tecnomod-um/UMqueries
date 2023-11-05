@@ -37,6 +37,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
   const [columns, setColumns] = useState(createHeaders(["."]));
   const tableElement = useRef(null);
   const gridTemplateColumns = columns.map(() => 'minmax(100px, 1fr)').join(' ');
+  const resizeObserver = useRef(null);
 
   function createHeaders(headers) {
     if (headers.length === 0) {
@@ -54,8 +55,25 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
     setColumns(createHeaders(tableHeaders));
   }, [filteredLists]);
 
+  const updateTableHeight = () => {
+    if (tableElement.current) {
+      const scrollHeight = tableElement.current.scrollHeight;
+      setTableHeight(`${scrollHeight}px`);
+    }
+  };
+
   useEffect(() => {
-    setTableHeight(tableElement.current.offsetHeight);
+    updateTableHeight();
+    resizeObserver.current = new ResizeObserver(updateTableHeight);
+    if (tableElement.current) {
+      resizeObserver.current.observe(tableElement.current);
+    }
+
+    return () => {
+      if (resizeObserver.current) {
+        resizeObserver.current.disconnect();
+      }
+    };
   }, []);
 
   const mouseDown = useCallback((index) => {
@@ -106,8 +124,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
               <div
                 style={{ height: tableHeight }}
                 onMouseDown={() => mouseDown(i)}
-                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"
-                  }`}
+                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"}`}
               />
             </th>
           ))}

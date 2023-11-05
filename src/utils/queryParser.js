@@ -7,7 +7,7 @@ const getOperatorString = (operator, type, value, varNodeData) => {
         '<': `?${varNodeData} < ${valueString}`,
         '<=': `?${varNodeData} <= ${valueString}`,
         '>=': `?${varNodeData} >= ${valueString}`,
-        '⊆': `CONTAINS(?${varNodeData}, ${valueString})`,
+        '⊆': `REGEX(?${varNodeData}, ${valueString})`,
         '=': `?${varNodeData} = ${valueString}`,
     }
     return operators[operator] || operators['='];

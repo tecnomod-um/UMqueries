@@ -22,7 +22,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const [showInResults, setShowInResults] = useState(false);
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
-    const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<']), []);
+    const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
 
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
@@ -138,6 +138,10 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                 return 'greater than';
             case '<':
                 return 'less than';
+            case '>=':
+                return 'TODO';
+            case '<=':
+                return 'TODO';
             default:
                 return '';
         }
