@@ -112,13 +112,15 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     const numVarsSelected = Object.keys(startingVar).length;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
 
-    const nodeContents = (node) => {
+    const nodeContents = (node, isInstance, isClass) => {
         return {
             "isMetric": false,
             "varID": node.varID,
             "type": node.type,
             "label": node.label,
-            "uri_graph": node.graph
+            "uri_graph": node.graph,
+            "instance": isInstance,
+            "class": isClass
         };
     }
 
@@ -164,32 +166,59 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
 
         // Toggle selected state for a given node
-        const toggleNodeSelection = (nodeId, nodeContents) => {
+        const toggleNodeSelection = (nodeId, nodeInfo, isInstance, isClass) => {
             setStartingVar(prevStartingVar => {
                 const updatedStartingVar = { ...prevStartingVar };
-                if (nodeId in prevStartingVar) {
-                    delete updatedStartingVar[nodeId];
+                if (nodeId in updatedStartingVar) {
+                    if (isInstance)
+                        updatedStartingVar[nodeId].instance = !updatedStartingVar[nodeId].instance;
+                    if (isClass)
+                        updatedStartingVar[nodeId].class = !updatedStartingVar[nodeId].class;
+                    if (!updatedStartingVar[nodeId].instance && !updatedStartingVar[nodeId].class)
+                        delete updatedStartingVar[nodeId];
                 } else {
-                    updatedStartingVar[nodeId] = nodeContents;
+                    updatedStartingVar[nodeId] = {
+                        ...nodeInfo,
+                        instance: isInstance,
+                        class: isClass
+                    };
                 }
                 return updatedStartingVar;
             });
         };
 
-        let result = allNodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
-            .map(targetedNode => {
-                const label = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
-                return (
-                    <DropdownMenuItem preventCloseOnClick={true} disableRipple={true} onClick={event => {
-                        event.stopPropagation();
-                        toggleNodeSelection(targetedNode.id, nodeContents(targetedNode));
-                    }}>
-                        <span className={ResultTrayStyles.shownNode}>
-                            {label}
-                            {selectedNodesSet.has(targetedNode.id) ? <DeleteIcon sx={{ color: 'darkgray' }} /> : <AddIcon sx={{ color: 'darkgray' }} />}
-                        </span>
-                    </DropdownMenuItem>
-                );
+        function createDropdownItem(targetedNode, label, isInstance, isClass) {
+            return (
+                <DropdownMenuItem preventCloseOnClick={true} disableRipple={true} onClick={event => {
+                    event.stopPropagation();
+                    toggleNodeSelection(targetedNode.id, nodeContents(targetedNode, isInstance, isClass), isInstance, isClass);
+                }}>
+                    <span className={ResultTrayStyles.shownNode}>
+                        {label}
+                        {(selectedNodesSet.has(targetedNode.id) &&
+                            ((isInstance && startingVar[targetedNode.id]?.instance) ||
+                                (isClass && startingVar[targetedNode.id]?.class))) ?
+                            <DeleteIcon sx={{ color: 'darkgray' }} /> :
+                            <AddIcon sx={{ color: 'darkgray' }} />}
+                    </span>
+                </DropdownMenuItem>
+            );
+        }
+        const result = [];
+        allNodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
+            .forEach(targetedNode => {
+                const baseLabel = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
+                let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && edge.from === targetedNode.id);
+                let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && edge.from === targetedNode.id) ||
+                    !activeGraph.edges.some(edge => edge.from === targetedNode.id);
+                if (isInstance || isClass) {
+                    let instanceLabel = baseLabel + (isInstance ? ' (instance)' : '');
+                    let classLabel = baseLabel + (isClass ? ' (class)' : '');
+                    if (isInstance)
+                        result.push(createDropdownItem(targetedNode, instanceLabel, true, false));
+                    if (isClass)
+                        result.push(createDropdownItem(targetedNode, classLabel, false, true));
+                }
             });
         let countMenu = [
             (<DropdownNestedMenuItem
@@ -207,6 +236,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             event.stopPropagation();
             setBindingsOpen(true);
         }} >Bindings...</DropdownMenuItem>);
+        console.log(startingVar)
         return result;
     }
 

@@ -18,7 +18,6 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
 
     // Starting point of the query
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
-    const allEdges = graphs.flatMap(graph => graph.edges);
 
     // Query definition
     let select = 'SELECT DISTINCT';
@@ -33,24 +32,12 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
             nodesRepresentedByVar.push(...matchingNodes);
         });
         // Add both general and instance variables
-        let hasClassVariable = false;
-        let hasInstanceVariable = false;
-        nodesRepresentedByVar.forEach(representedNode => {
-            // node will define instance variables if it has instance properties
-            if (allEdges.some(edge => edge.from === representedNode.id && edge.isFromInstance))
-                hasInstanceVariable = true;
-            // node will define class variables if it either has no properties or has a class property
-            if (!allEdges.some(edge => (edge.from === representedNode.id || edge.to === representedNode.id)))
-                hasClassVariable = true;
-            else if (allEdges.some(edge => (edge.from === representedNode.id && !edge.isFromInstance) || (edge.to === representedNode.id)))
-                hasClassVariable = true;
-        });
-        if (hasClassVariable) {
+        if (startingVar[nodeId].class) {
             const varUri = startingVar[nodeId].varID >= 0 ?
                 capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI' : `List___${nodeId}___URI`;
             select += ` ?${varUri}`;
         }
-        if (hasInstanceVariable) {
+        if (startingVar[nodeId].instance) {
             const varInstanceUri = startingVar[nodeId].varID >= 0 ?
                 capitalizeFirst(startingVar[nodeId].type) + '___' + startingVar[nodeId].varID + '___URI___instance' : `List___${nodeId}___URI___instance`;
             select += ` ?${varInstanceUri}`;
@@ -98,7 +85,6 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
             }
             // Apply instance restrictions
             if (hasInstanceVariable) {
-                console.log("HAS INSTANCE")
                 if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
                     body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode} .\n${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`
                 else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
