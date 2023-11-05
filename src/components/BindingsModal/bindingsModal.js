@@ -19,6 +19,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
     const [tempBindings, setTempBindings] = useState([]);
     const [bindingName, setBindingName] = useState("");
+    const [isAbsolute, setIsAbsolute] = useState(false);
     const [showInResults, setShowInResults] = useState(false);
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
@@ -187,7 +188,8 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
             operator: operator,
             firstValue: firstValueInfo,
             secondValue: secondValueInfo,
-            showInResults: showInResults
+            showInResults: showInResults,
+            isAbsolute: isAbsolute
         }
         setTempBindings(prev => [...prev, newBinding]);
     }
@@ -228,22 +230,19 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     function bindingBuilder() {
         const numericProperties = getNumericProperties(allNodes, tempBindings);
         const hasOptions = numericProperties && numericProperties.length > 0;
-        const optionSet = hasOptions
-            ? [
-                ...numericProperties.map((item) => makeItem(item)),
-                <option key="custom-value" value={JSON.stringify({ custom: true })}>
-                    Custom value
-                </option>
-            ]
-            : [<option key="no-options" value="">{`No options available`}</option>];
-        let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr";
-        if (showFirstCustomInput && showSecondCustomInput) {
-            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 105px 35px 1fr 20px 1fr";
-        } else if (showFirstCustomInput) {
-            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 150px 1fr 20px 1fr";
-        } else if (showSecondCustomInput) {
-            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr";
-        }
+        const optionSet = hasOptions ? [
+            ...numericProperties.map((item) => makeItem(item)),
+            <option key="custom-value" value={JSON.stringify({ custom: true })}>
+                Custom value
+            </option>
+        ] : [<option key="no-options" value="">{`No options available`}</option>];
+        let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr 20px 1fr";
+        if (showFirstCustomInput && showSecondCustomInput)
+            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 105px 35px 1fr 20px 1fr 20px 1fr";
+        else if (showFirstCustomInput)
+            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 150px 1fr 20px 1fr 20px 1fr";
+        else if (showSecondCustomInput)
+            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr 20px 1fr";
         return (
             <div className={BindingModalStyles.bindingBuilder}>
                 <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
@@ -296,7 +295,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                             className={BindingModalStyles.input}
                         />
                     )}
-                    <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
+                    <label className={BindingModalStyles.labelCheckbox}>Show in results</label>
                     <input
                         className={BindingModalStyles.checkbox}
                         type="checkbox"
@@ -304,6 +303,15 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         checked={showInResults}
                         disabled={!hasOptions}
                         onChange={e => setShowInResults(e.target.checked)} />
+                    <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
+                    <input
+                        type="checkbox"
+                        style={{ display: 'inline-block' }}
+                        checked={isAbsolute}
+                        disabled={!hasOptions}
+                        onChange={(e) => setIsAbsolute(e.target.checked)}
+                        className={BindingModalStyles.checkbox}
+                    />
                     <button className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>Add binding</button>
                 </div>
             </div>
@@ -338,6 +346,26 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         updatedBindings[sourceIndex] = {
                             ...updatedBindings[sourceIndex],
                             showInResults: !updatedBindings[sourceIndex].showInResults
+                        };
+                        if (binding.source === 'bindings')
+                            setBindings(updatedBindings);
+                        else
+                            setTempBindings(updatedBindings);
+                    }}
+                />
+                <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
+                <input
+                    className={BindingModalStyles.checkbox}
+                    type="checkbox"
+                    style={{ display: 'inline-block' }}
+                    checked={binding.isAbsolute}
+                    onChange={() => {
+                        const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
+                        const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
+                        const updatedBindings = [...sourceList];
+                        updatedBindings[sourceIndex] = {
+                            ...updatedBindings[sourceIndex],
+                            isAbsolute: !updatedBindings[sourceIndex].isAbsolute
                         };
                         if (binding.source === 'bindings')
                             setBindings(updatedBindings);

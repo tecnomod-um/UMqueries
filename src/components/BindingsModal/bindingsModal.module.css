@@ -44,7 +44,7 @@
 .modal {
     background: white;
     width: 80vw;
-    max-width: 1000px;
+    max-width: 1200px;
     border-radius: 16px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
     position: relative;
@@ -237,7 +237,7 @@
 
 .bindingRow {
     display: grid;
-    grid-template-columns: 1.5fr 4fr 1fr 0.4fr 0.1fr;
+    grid-template-columns: 1.5fr 4fr 1fr 0.4fr 1fr 0.4fr 0.1fr;
     align-items: center;
     grid-gap: 10px;
     border-bottom: none;

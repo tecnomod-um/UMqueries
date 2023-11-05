@@ -153,12 +153,16 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
     bindings.forEach(binding => {
         const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
         const operator = binding.operator;
-        const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
-        const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
+        let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
+        let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
+        let expression = `${firstValue} ${operator} ${secondValue}`;
+        if (binding.isAbsolute)
+            expression = `ABS(${expression})`;
         if (binding.showInResults)
             select += ' ?' + bindingName;
-        body += `BIND (${firstValue} ${operator} ${secondValue} AS ?${bindingName})\n`;
+        body += `BIND (${expression} AS ?${bindingName})\n`;
     });
+
     // Add metric aggregations
     Object.keys(startingVar).forEach(nodeId => {
         const metricNode = startingVar[nodeId];
