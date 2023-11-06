@@ -329,33 +329,24 @@ function Queries() {
 
     function loadQueryFile(importData) {
         const { graphs, bindings } = importData;
-
-        // Initialize the new structure for varIds.
         const initialVarIDs = graphs.map(graph => ({
             id: graph.id,
             varIdList: Object.fromEntries(
                 Object.keys(graph.nodes.reduce((acc, node) => {
-                    if (node.varID !== -1) {
-                        acc[node.type] = 0;
-                    }
+                    acc[node.type] = 0;
                     return acc;
                 }, {})).map(type => [type, 0])
             )
         }));
-
         const newGraphs = graphs.map((graph) => {
-            // Find the appropriate varIdList for the current graph.
             const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
             let nodeIdToIndexMapping = {};
-
             const newNodes = graph.nodes.map((node) => {
                 let varID = node.varID;
-                if (varID !== -1) {
+                if (varID !== -1)
                     varID = currentVarIDObj.varIdList[node.type]++;
-                }
                 const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
                 const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
-
                 nodeIdToIndexMapping[node.id] = node.id;
                 return {
                     ...node,
@@ -364,7 +355,6 @@ function Queries() {
                     data: uri,
                 };
             });
-
             const newEdges = graph.edges.map(edge => ({
                 ...edge,
                 from: nodeIdToIndexMapping[edge.from],
@@ -377,13 +367,18 @@ function Queries() {
                 edges: newEdges,
             };
         });
-
+        const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
+        const updatedVarIDs = initialVarIDs.map(varID => ({
+            ...varID,
+            varIdList: Object.fromEntries(
+                Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
+            )
+        }));
         setGraphs(newGraphs);
-        setVarIDs(initialVarIDs);  // set the updated varIds
+        setVarIDs(updatedVarIDs);
         setBindings(bindings);
         setActiveGraph(newGraphs[0]?.id || 0);
     }
-
     function getGraphData() {
         const result = {};
         result.graphs = graphs.map(graph => {

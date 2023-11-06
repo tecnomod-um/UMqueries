@@ -236,7 +236,6 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             event.stopPropagation();
             setBindingsOpen(true);
         }} >Bindings...</DropdownMenuItem>);
-        console.log(startingVar)
         return result;
     }
 
