@@ -6,8 +6,11 @@ import { getCategory } from "../../utils/typeChecker.js";
 
 // Used to define a node's data properties
 function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode }) {
-    const [operators, setOperators] = useState({});
+    // Modal behavior
     const modalRef = useRef(null);
+    const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
+    // Data builder inputs
+    const [operators, setOperators] = useState({});
     const inputRefs = {};
     const operatorLists = useMemo(() => ({
         number: ['=', '>', '<', '<=', '>='],
@@ -172,6 +175,16 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
         </div>);
     }
 
+    const handleBackdropMouseDown = () => {
+        setMouseDownOnBackdrop(true);
+    }
+
+    const handleBackdropMouseUp = () => {
+        if (mouseDownOnBackdrop)
+            handleClose();
+        setMouseDownOnBackdrop(false);
+    }
+
     const handleClose = () => {
         setDataOpen(false);
     }
@@ -217,19 +230,20 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
             nodeRef={modalRef}
             unmountOnExit
         >
-            <div className={DataModalStyles.darkBG} onClick={handleClose}>
+            <div className={DataModalStyles.darkBG} onMouseDown={handleBackdropMouseDown} onMouseUp={handleBackdropMouseUp}>
                 <div
                     className={DataModalStyles.centered}
                     ref={modalRef}
                     onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onMouseUp={(e) => e.stopPropagation()}
                 >
                     <div className={DataModalStyles.modal}>
-                        <div
-                            className={DataModalStyles.modalHeader}
-                            style={{ background: selectedNode.color }} // Set the background color
-                        >
+                        <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
                             <h2
-                                title={insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                                title={insideData[selectedNode.type] ?
+                                    `Node '${selectedNode.label}' data properties` :
+                                    `${selectedNode.label} has no data properties`}
                             >
                                 {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
                             </h2>

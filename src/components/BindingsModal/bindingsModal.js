@@ -8,21 +8,26 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
 function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
+    // Modal behavior
     const modalRef = useRef(null);
+    const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
+    // Binding collections
+    const [tempBindings, setTempBindings] = useState([]);
+    const [activeBindings, setActiveBindings] = useState([]);
+    // Binding builder inputs
     const [operator, setOperator] = useState('+');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
     const [secondCustomValue, setSecondCustomValue] = useState(0);
     const [showFirstCustomInput, setFirstCustomInput] = useState(false);
     const [showSecondCustomInput, setSecondCustomInput] = useState(false);
-    const [activeBindings, setActiveBindings] = useState([]);
     const [firstBuilderValue, setFirstBuilderValue] = useState("");
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
-    const [tempBindings, setTempBindings] = useState([]);
     const [bindingName, setBindingName] = useState("");
     const [isAbsolute, setIsAbsolute] = useState(false);
     const [showInResults, setShowInResults] = useState(false);
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
+
     const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
 
     // Gets all elements that could be useful for a binding definition, including other bindings
@@ -196,6 +201,16 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
 
     const isValueInTempBindings = (value) => {
         return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
+    }
+
+    const handleBackdropMouseDown = () => {
+        setMouseDownOnBackdrop(true);
+    }
+
+    const handleBackdropMouseUp = () => {
+        if (mouseDownOnBackdrop)
+            handleClose();
+        setMouseDownOnBackdrop(false);
     }
 
     const handleClose = () => {
@@ -393,11 +408,11 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
             nodeRef={modalRef}
             unmountOnExit
         >
-            <div className={BindingModalStyles.darkBG} onClick={handleClose}>
-                <div
-                    className={BindingModalStyles.centered}
-                    ref={modalRef}
+            <div className={BindingModalStyles.darkBG} onMouseDown={handleBackdropMouseDown} onMouseUp={handleBackdropMouseUp}>
+                <div className={BindingModalStyles.centered} ref={modalRef}
                     onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onMouseUp={(e) => e.stopPropagation()}
                 >
                     <div className={BindingModalStyles.modal}>
                         <div className={BindingModalStyles.modalHeader}>

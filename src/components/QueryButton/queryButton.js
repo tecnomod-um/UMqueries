@@ -23,7 +23,7 @@ const SparqlQuery = ({ graphs, activeGraphId, bindings, startingVar, setResultDa
                     setResultData(null);
                 });
         }
-    };
+    }
 
     return (
         <button className={QueryButtonStyles.big_button} onClick={() => sendQuery()} disabled={isLoading}>
