@@ -7,7 +7,7 @@ const SparqlQuery = ({ graphs, activeGraphId, bindings, startingVar, setResultDa
     const [isLoading, setIsLoading] = useState(false);
 
     function inputValidator(startingVar) {
-        if (!Object.keys(startingVar).length)
+        if (!Object.keys(startingVar).length || bindings.some(binding => binding.showInResults))
             return false;
         return true;
     }
