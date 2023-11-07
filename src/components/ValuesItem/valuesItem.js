@@ -44,7 +44,8 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                         inputRef.current.value = '';
                     }
                 }}>
-                    <span className={ValuesItemStyles.space}>&nbsp;</span><AddIcon sx={{ color: 'darkgray' }} />
+                    <span className={ValuesItemStyles.space}>&nbsp;</span>
+                    <AddIcon sx={{ color: 'darkgray' }} />
                 </div>
                 <input
                     className={ValuesItemStyles.uriTextBox}

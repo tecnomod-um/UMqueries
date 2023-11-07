@@ -34,6 +34,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             acc[edge.fromInstance ? 'fromInstance' : 'notFromInstance'].push(
                 <DropdownNestedMenuItem
                     label={edge.label}
+                    disableRipple={true}
+                    preventCloseOnClick={true}
                     menu={getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance)}
                 />
             );

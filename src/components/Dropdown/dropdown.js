@@ -70,13 +70,39 @@ export function Dropdown({ trigger, menu, keepopen: keepOpenGlobal, isOpen: cont
 
 export const DropdownMenuItem = (props) => {
     const { disableRipple, preventCloseOnClick, ...otherProps } = props;
+
+    const handleClick = (event) => {
+        if (preventCloseOnClick)
+            event.stopPropagation();
+        if (props.onClick)
+            props.onClick(event);
+    }
+
     return (
         <MenuItem
             {...otherProps}
             disableRipple={disableRipple}
+            onClick={handleClick}
             className={styles.dropdown}
         />
     );
 }
 
-export const DropdownNestedMenuItem = (props) => <NestedMenuItem {...props} className={styles.dropdown} />;
+export const DropdownNestedMenuItem = (props) => {
+    const { preventCloseOnClick, ...otherProps } = props;
+
+    const handleClick = (event) => {
+        if (preventCloseOnClick)
+            event.stopPropagation();
+        if (props.onClick)
+            props.onClick(event);
+    }
+
+    return (
+        <NestedMenuItem
+            {...otherProps}
+            onClick={handleClick}
+            className={styles.dropdown}
+        />
+    );
+}
