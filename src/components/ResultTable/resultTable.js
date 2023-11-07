@@ -55,28 +55,29 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
 
   const mouseDown = useCallback((index) => {
     setActiveIndex(index);
+    toggleTextSelection(false);
   }, []);
 
-  const mouseMove = useCallback(
-    (e) => {
-      const scrollLeft = tableElement.current.scrollLeft;
-      const gridColumns = columns.map((col, i) => {
-        if (i === activeIndex) {
-          const width = e.clientX - (col.ref.current.offsetLeft - scrollLeft);
-          if (width >= minCellWidth) {
-            return `${width}px`;
-          }
+  const mouseMove = useCallback((e) => {
+    const tableRect = tableElement.current.getBoundingClientRect();
+    const gridColumns = columns.map((col, i) => {
+      if (i === activeIndex) {
+        const colOffsetLeft = col.ref.current.offsetLeft;
+        const width = e.clientX - tableRect.left - colOffsetLeft + tableElement.current.scrollLeft;
+        if (width >= minCellWidth) {
+          return `${width}px`;
         }
-        return `${col.ref.current.offsetWidth}px`;
-      });
-      tableElement.current.style.gridTemplateColumns = gridColumns.join(" ");
-    },
+      }
+      return `${col.ref.current.offsetWidth}px`;
+    });
+    tableElement.current.style.gridTemplateColumns = gridColumns.join(" ");
+  },
     [activeIndex, columns, minCellWidth]
   );
 
-
   const mouseUp = useCallback(() => {
     setActiveIndex(null);
+    toggleTextSelection(true);
   }, []);
 
   useEffect(() => {
@@ -90,6 +91,10 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
       window.removeEventListener("mouseup", mouseUp);
     };
   }, [activeIndex, mouseMove, mouseUp]);
+
+  const toggleTextSelection = (enabled) => {
+    document.body.style.userSelect = enabled ? '' : 'none';
+  }
 
   return (
     <table className={ResultTableStyles.resTable} style={{ gridTemplateColumns }} ref={tableElement}>
