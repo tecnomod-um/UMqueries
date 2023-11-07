@@ -101,8 +101,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
               <div
                 style={{ height: tableHeight }}
                 onMouseDown={() => mouseDown(i)}
-                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"
-                  }`}
+                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"}`}
               />
             </th>
           ))}

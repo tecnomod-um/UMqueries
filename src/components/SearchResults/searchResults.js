@@ -33,6 +33,9 @@ function SearchResults({ resultData }) {
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
+            <span className={`${SearchStyles.resultCount} ${Object.values(filteredResult)[0]?.length > 0 ? SearchStyles.shown : ""}`}>
+                <span className={SearchStyles.resultLabel}>Rows: </span>{Object.values(filteredResult)[0]?.length}
+            </span>
             <div className={SearchStyles.dataContainer}>
                 <ResultTable filteredLists={filteredResult} minCellWidth={120} />
             </div>
