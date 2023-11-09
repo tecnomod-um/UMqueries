@@ -1,9 +1,21 @@
 import React, { useState, useMemo } from "react";
 import ResultTable from "../ResultTable/resultTable";
+import ResultWindow from "../ResultWindow/resultWindow";
 import SearchStyles from "./searchResults.module.css";
+import OpenNewIcon from "@mui/icons-material/OpenInNew";
 
 function SearchResults({ resultData }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [showResultsWindow, setShowResultWindow] = useState(false);
+
+    const handleOpenNewWindow = () => {
+        setShowResultWindow(true);
+    };
+
+    const handleCloseNewWindow = () => {
+        setShowResultWindow(false);
+    };
+
     const handleChange = e => setSearchTerm(e.target.value.toLowerCase());
 
     const filteredResult = useMemo(() => {
@@ -34,8 +46,14 @@ function SearchResults({ resultData }) {
                 onChange={handleChange}
             />
             <span className={`${SearchStyles.resultCount} ${Object.values(filteredResult)[0]?.length > 0 ? SearchStyles.shown : ""}`}>
-                <span className={SearchStyles.resultLabel}>Rows: </span>{Object.values(filteredResult)[0]?.length}
+                {Object.values(filteredResult)[0]?.length}
             </span>
+            {Object.values(filteredResult).some(array => array.length > 0) && (
+                <button className={SearchStyles.openButton} onClick={handleOpenNewWindow}>
+                    <OpenNewIcon />
+                </button>
+            )}
+            {showResultsWindow && <ResultWindow results={filteredResult} onClose={handleCloseNewWindow} />}
             <div className={SearchStyles.dataContainer}>
                 <ResultTable filteredLists={filteredResult} minCellWidth={120} />
             </div>
