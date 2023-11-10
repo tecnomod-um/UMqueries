@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import InputCounter from '../InputCounter/inputCounter';
 import ResultView from '../ResultView/resultView';
 
 function ResultWindow({ results, onClose }) {
-    const [win, setWin] = useState(null);
 
     useEffect(() => {
         // Estimate the table size without renders
@@ -24,7 +23,6 @@ function ResultWindow({ results, onClose }) {
         // Open the window at the calculated position and size
         const newWin = window.open("", "_blank", `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left=${initialLeft},top=${initialTop},width=${estimatedWidth},height=${estimatedHeight}`);
         if (!newWin) return;
-        setWin(newWin);
 
         const style = newWin.document.createElement("style");
         style.textContent = `body { margin: 0; font-family: sans-serif; }`;
