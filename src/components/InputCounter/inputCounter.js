@@ -1,6 +1,17 @@
 import React, { useState } from "react";
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import SvgIcon from '@mui/material/SvgIcon';
+
+const CustomChevronRightIcon = () => (
+    <SvgIcon>
+        <path fill="white" d="M9.29 6.71a1 1 0 000 1.41L13.17 12l-3.88 3.88a1 1 0 101.41 1.41l4.59-4.59a1 1 0 000-1.41l-4.59-4.59a1 1 0 00-1.41 0z" />
+    </SvgIcon>
+);
+
+const CustomChevronLeftIcon = () => (
+    <SvgIcon>
+        <path fill="white" d="M14.71 6.71a1 1 0 010 1.41L10.83 12l3.88 3.88a1 1 0 01-1.41 1.41l-4.59-4.59a1 1 0 010-1.41l4.59-4.59a1 1 0 011.41 0z" />
+    </SvgIcon>
+);
 
 function InputCounter({ results }) {
     const [isCountTrayOpen, setIsCountTrayOpen] = useState(false);
@@ -30,10 +41,10 @@ function InputCounter({ results }) {
             position: 'fixed',
             top: 0,
             right: 0,
-            width: isCountTrayOpen ? '600px' : '30px',
+            width: isCountTrayOpen ? '650px' : '30px',
             maxWidth: '90%',
             height: '40px',
-            backgroundColor: '#f1f1f1',
+            backgroundColor: '#e9e9e9',
             transition: 'width 0.3s ease-in-out',
             boxShadow: '-2px 0 5px rgba(0, 0, 0, 0.1)',
             zIndex: 1000,
@@ -75,12 +86,35 @@ function InputCounter({ results }) {
             display: 'flex',
             alignItems: 'center',
             margin: '0 5px',
+            textAlign: 'center',
+            padding: '0.4em 0.5em',
+            backgroundColor: '#f3f3f3',
+            borderRadius: '5px',
+            boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.3s ease',
         },
         checkbox: {
-            marginRight: '5px',
+            margin: '-2px 5px -2px -2px',
+            height: '20px',
+            width: '20px',
+            backgroundColor: '#fff',
         },
         countDisplay: {
             margin: '0 5px',
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            padding: '0.4em 0.5em',
+            backgroundColor: '#f3f3f3',
+            borderRadius: '5px',
+            boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.3s ease',
         }
     };
 
@@ -92,7 +126,10 @@ function InputCounter({ results }) {
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
             >
-                {isCountTrayOpen ? <ChevronRightIcon sx={styles.iconStyle} /> : <ChevronLeftIcon sx={styles.iconStyle} />}
+                {isCountTrayOpen
+                    ? <CustomChevronRightIcon />
+                    : <CustomChevronLeftIcon />
+                }
             </div>
             <div style={styles.inputRow}>
                 <input
@@ -100,6 +137,7 @@ function InputCounter({ results }) {
                     placeholder="Search..."
                     onChange={e => setSearchTerm(e.target.value)}
                 />
+                <span style={styles.countDisplay}>Count: {countResults()}</span>
                 <label style={styles.checkboxLabel}>
                     <input
                         style={styles.checkbox}
@@ -118,7 +156,6 @@ function InputCounter({ results }) {
                     />
                     Exact Match
                 </label>
-                <span style={styles.countDisplay}>Count: {countResults()}</span>
             </div>
         </div>
     );

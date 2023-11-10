@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import ResultTable from "../ResultTable/resultTable";
 import ResultWindow from "../ResultWindow/resultWindow";
 import SearchStyles from "./searchResults.module.css";
@@ -8,15 +8,15 @@ function SearchResults({ resultData }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [showResultsWindow, setShowResultWindow] = useState(false);
 
+    const handleChange = e => setSearchTerm(e.target.value.toLowerCase());
+
     const handleOpenNewWindow = () => {
         setShowResultWindow(true);
     };
 
-    const handleCloseNewWindow = () => {
+    const handleCloseNewWindow = useCallback(() => {
         setShowResultWindow(false);
-    };
-
-    const handleChange = e => setSearchTerm(e.target.value.toLowerCase());
+    }, []);
 
     const filteredResult = useMemo(() => {
         let filteredResult = {};
