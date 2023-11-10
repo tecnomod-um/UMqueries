@@ -1,5 +1,24 @@
-function ResultView({ results }) {
+import React, { useEffect } from 'react';
+
+function ResultView({ results, win }) {
     const headers = Object.keys(results);
+
+    useEffect(() => {
+        if (win) {
+            setTimeout(() => {
+                const table = win.document.querySelector('table');
+                if (table) {
+                    const tableRect = table.getBoundingClientRect();
+                    const extraSpace = 55;
+                    const width = Math.min(tableRect.width + extraSpace, window.screen.availWidth);
+                    const height = Math.min(tableRect.height + extraSpace, window.screen.availHeight);
+
+                    win.resizeTo(width, height);
+                    win.moveTo((window.screen.availWidth - width) / 2, (window.screen.availHeight - height) / 2);
+                }
+            }, 0);
+        }
+    }, [win]);
 
     const inlineStyles = {
         resultBody: {
