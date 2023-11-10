@@ -17,7 +17,6 @@
     outline: 2px solid darkgray;
 }
 
-
 .errorIcon {
     position: absolute;
     margin-right: 5px;
@@ -100,7 +99,6 @@
     width: calc(100% - 50px);
     margin-right: 10px;
 }
-
 
 .addButton {
     padding: 7px 12px;

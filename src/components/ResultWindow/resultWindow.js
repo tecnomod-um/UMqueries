@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import InputCounter from '../InputCounter/inputCounter';
 import ResultView from '../ResultView/resultView';
 
@@ -16,19 +16,18 @@ function ResultWindow({ results, onClose }) {
         style.textContent = `
             body { margin: 0; font-family: sans-serif; }
         `;
+
         win.document.head.appendChild(style);
-
         win.document.title = "Search Results";
-
         const container = win.document.createElement("div");
         win.document.body.appendChild(container);
 
-        ReactDOM.render(
+        const root = createRoot(container);
+        root.render(
             <React.StrictMode>
                 <InputCounter results={results} />
                 <ResultView results={results} />
-            </React.StrictMode>,
-            container
+            </React.StrictMode>
         );
 
         const handleCloseNewWindow = () => {

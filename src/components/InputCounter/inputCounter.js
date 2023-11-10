@@ -3,13 +3,16 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 function InputCounter({ results }) {
-    const [isTrayOpen, setIsTrayOpen] = useState(false);
+    const [isCountTrayOpen, setIsCountTrayOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [caseSensitive, setCaseSensitive] = useState(false);
     const [exactMatch, setExactMatch] = useState(false);
+    // css styles need to be defined MANUALLY when opening in a new window with inlines
+    const [hover, setHover] = useState(false);
 
     const countResults = () => {
         let count = 0;
+        if (!searchTerm) return 0;
         Object.values(results).forEach(arr => {
             arr.forEach(item => {
                 let itemToCheck = caseSensitive ? item : item.toLowerCase();
@@ -27,7 +30,9 @@ function InputCounter({ results }) {
             position: 'fixed',
             top: 0,
             right: 0,
-            width: isTrayOpen ? '600px' : '30px',
+            width: isCountTrayOpen ? '600px' : '30px',
+            maxWidth: '90%',
+            height: '40px',
             backgroundColor: '#f1f1f1',
             transition: 'width 0.3s ease-in-out',
             boxShadow: '-2px 0 5px rgba(0, 0, 0, 0.1)',
@@ -40,12 +45,17 @@ function InputCounter({ results }) {
         },
         tab: {
             minWidth: '30px',
-            height: '30px',
+            height: '100%',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            borderRadius: '5px',
+            borderRadius: '10px 0 0 10px',
             cursor: 'pointer',
+            backgroundColor: hover ? '#e63946' : '#c22535',
+            borderRight: '3px solid #c22535',
+            boxShadow: hover ? '0 4px 8px rgba(0, 0, 0, 0.3)' : 'none',
+        },
+        iconStyle: {
             color: 'white',
         },
         inputRow: {
@@ -53,7 +63,7 @@ function InputCounter({ results }) {
             alignItems: 'center',
             padding: '5px',
             transition: 'opacity 0.3s ease',
-            opacity: isTrayOpen ? 1 : 0,
+            opacity: isCountTrayOpen ? 1 : 0,
         },
         input: {
             padding: '5px 10px',
@@ -76,8 +86,13 @@ function InputCounter({ results }) {
 
     return (
         <div style={styles.tray}>
-            <div style={styles.tab} onClick={() => setIsTrayOpen(!isTrayOpen)}>
-                {isTrayOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            <div
+                style={styles.tab}
+                onClick={() => setIsCountTrayOpen(!isCountTrayOpen)}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+            >
+                {isCountTrayOpen ? <ChevronRightIcon sx={styles.iconStyle} /> : <ChevronLeftIcon sx={styles.iconStyle} />}
             </div>
             <div style={styles.inputRow}>
                 <input
