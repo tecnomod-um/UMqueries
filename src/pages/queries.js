@@ -279,7 +279,22 @@ function Queries() {
                 data: data,
                 isOptional: isOptional,
                 isTransitive: false,
-                isFromInstance: isFromInstance
+                isFromInstance: isFromInstance,
+                arrows: {
+                    to: { enabled: true, scaleFactor: 1, type: 'arrow' },
+                    from: { enabled: false }
+                },
+                smooth: {
+                    enabled: false,
+                },
+                width: 1,
+                chosen: true,
+                color: {
+                    color: '#000000',
+                    highlight: '#000000',
+                    hover: '#000000',
+                    inherit: false
+                },
             };
             newEdges.push(newEdge);
             const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
