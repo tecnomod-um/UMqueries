@@ -1,30 +1,39 @@
 function ResultView({ results }) {
     const headers = Object.keys(results);
 
-    // Css styles need to be injected manually in new windows
     const inlineStyles = {
         resultBody: {
             margin: 0,
             padding: 0,
             fontSize: '16px',
-            fontFamily: 'Inter, sans-serif'
+            fontFamily: 'Inter, sans-serif',
+            height: '100vh',
+            overflowX: 'auto',
         },
         resultTable: {
             width: '100%',
-            height: '100%',
             borderCollapse: 'collapse'
         },
         resultThTd: {
             border: '1px solid #ddd',
             padding: '8px',
-            textAlign: 'left'
+            textAlign: 'left',
+            minWidth: '120px',
         },
         resultTrEven: {
             backgroundColor: '#f2f2f2'
         },
         resultTh: {
             backgroundColor: '#e0e0e0',
-            color: '#333'
+            color: '#333',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+            maxWidth: '200px',
+            border: '1px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
         }
     };
 
