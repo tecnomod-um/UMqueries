@@ -1,0 +1,57 @@
+.modalHeader {
+    background-color: #c22535;
+    color: #ffffff;
+    border-radius: 16px 16px 0 0;
+    font-size: 24px;
+    padding: 35px;
+    text-align: center;
+    border-bottom: 1px solid #e1e1e1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 20px;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+.heading {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+.closeBtn {
+    align-self: flex-end;
+    border: none;
+    background: transparent;
+    border-radius: 20px;
+    color: black;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    margin-right: 2px;
+    margin-top: 2px;
+    padding: 4px 4px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.closeBtn:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+}

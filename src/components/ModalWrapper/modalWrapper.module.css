@@ -1,0 +1,53 @@
+.fadeEnter {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+}
+
+.fadeEnterActive {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.fadeExit {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.fadeExitActive {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+}
+
+.darkBG {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal {
+    background: white;
+    width: 80vw;
+    max-width: 700px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 1000;
+    text-align: center;
+}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
-import { CSSTransition } from "react-transition-group";
+import ModalWrapper from '../ModalWrapper/modalWrapper';
 import BindingModalStyles from "./bindingsModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -8,10 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
 function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
-    // Modal behavior
-    const modalRef = useRef(null);
-    const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
-    // Binding collections
+    // Binding definitions
     const [tempBindings, setTempBindings] = useState([]);
     const [activeBindings, setActiveBindings] = useState([]);
     // Binding builder inputs
@@ -203,16 +200,6 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         return tempBindings.some(binding => binding.id === (value?.bindingId || -1));
     }
 
-    const handleBackdropMouseDown = () => {
-        setMouseDownOnBackdrop(true);
-    }
-
-    const handleBackdropMouseUp = () => {
-        if (mouseDownOnBackdrop)
-            handleClose();
-        setMouseDownOnBackdrop(false);
-    }
-
     const handleClose = () => {
         if (isValueInTempBindings(firstBuilderValue))
             setDefaultValuesToFirstOption(setFirstBuilderValue);
@@ -396,60 +383,39 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     }
 
     return (
-        <CSSTransition
-            in={isBindingsOpen}
-            timeout={{ enter: 150, exit: 0 }}
-            classNames={{
-                enter: BindingModalStyles.fadeEnter,
-                enterActive: BindingModalStyles.fadeEnterActive,
-                exit: BindingModalStyles.fadeExit,
-                exitActive: BindingModalStyles.fadeExitActive,
-            }}
-            nodeRef={modalRef}
-            unmountOnExit
-        >
-            <div className={BindingModalStyles.darkBG} onMouseDown={handleBackdropMouseDown} onMouseUp={handleBackdropMouseUp}>
-                <div className={BindingModalStyles.centered} ref={modalRef}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onMouseUp={(e) => e.stopPropagation()}
-                >
-                    <div className={BindingModalStyles.modal}>
-                        <div className={BindingModalStyles.modalHeader}>
-                            <h2 title={"Bindings and variables"}>Bindings and variables</h2>
-                        </div>
-                        <div className={`${BindingModalStyles.modalContent} ${showBindingBuilder ? BindingModalStyles.showBindingBuilder : ""}`}>
-                            {renderBindings()}
-                            {bindingBuilder()}
-                        </div>
-                        <button className={BindingModalStyles.closeBtn} onClick={handleClose}>
-                            <CloseIcon style={{ color: 'white', marginBottom: "-7px" }} />
-                        </button>
-                        <div className={BindingModalStyles.modalActions}>
-                            <div className={BindingModalStyles.actionsContainer}>
-                                <button
-                                    className={BindingModalStyles.setBtn}
-                                    onClick={handleSubmit}>
-                                    Set bindings
-                                </button>
-                                <button
-                                    onClick={() => toggleBindingBuilderVisibility()}
-                                    className={BindingModalStyles.toggleButton}
-                                >
-                                    <ExpandMoreIcon
-                                        style={{ transform: showBindingBuilder ? 'rotate(180deg)' : 'rotate(0)' }}
-                                    />
-                                </button>
-                                <button className={BindingModalStyles.cancelBtn} onClick={handleClose}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <ModalWrapper isOpen={isBindingsOpen} closeModal={handleClose}>
+            <div className={BindingModalStyles.modalHeader}>
+                <h2 title={"Bindings and variables"}>Bindings and variables</h2>
+            </div>
+            <div className={`${BindingModalStyles.modalContent} ${showBindingBuilder ? BindingModalStyles.showBindingBuilder : ""}`}>
+                {renderBindings()}
+                {bindingBuilder()}
+            </div>
+            <button className={BindingModalStyles.closeBtn} onClick={handleClose}>
+                <CloseIcon style={{ color: 'white', marginBottom: "-7px" }} />
+            </button>
+            <div className={BindingModalStyles.modalActions}>
+                <div className={BindingModalStyles.actionsContainer}>
+                    <button
+                        className={BindingModalStyles.setBtn}
+                        onClick={handleSubmit}>
+                        Set bindings
+                    </button>
+                    <button
+                        onClick={() => toggleBindingBuilderVisibility()}
+                        className={BindingModalStyles.toggleButton}
+                    >
+                        <ExpandMoreIcon
+                            style={{ transform: showBindingBuilder ? 'rotate(180deg)' : 'rotate(0)' }}
+                        />
+                    </button>
+                    <button className={BindingModalStyles.cancelBtn} onClick={handleClose}>
+                        Cancel
+                    </button>
                 </div>
             </div>
-        </CSSTransition>
-    )
+        </ModalWrapper>
+    );
 }
 
 export default BindingsModal;

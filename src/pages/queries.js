@@ -8,6 +8,7 @@ import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
+import FiltersModal from "../components/FiltersModal/filtersModal";
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
@@ -22,13 +23,16 @@ function Queries() {
     const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [] }]);
     const [activeGraphId, setActiveGraph] = useState(0);
     const [bindings, setBindings] = useState([]);
+    const [filters, setFilters] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
-    // Flags used in the UI
+    // Modal-related hooks
     const [isDataOpen, setDataOpen] = useState(false);
     const [isBindingsOpen, setBindingsOpen] = useState(false);
     const [isUnionTrayOpen, setUnionTrayOpen] = useState(false);
+    const [isFiltersOpen, setFiltersOpen] = useState(false);
+    // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     // Graph currently being displayed
@@ -441,10 +445,11 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal allNodes={allNodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <FiltersModal allNodes={allNodes} bindings={bindings} filters={filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div>
     );
 }

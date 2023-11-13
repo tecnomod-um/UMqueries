@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, loadQueryFile, getGraphData }) {
+function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
     // Data structures used through the app
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -58,10 +58,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                 <DropdownMenuItem onClick={() => {
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
                 }}>{targetedNode.label} </DropdownMenuItem>))
-
-        if (!inputRefs.current[label]) {
+        if (!inputRefs.current[label])
             inputRefs.current[label] = React.createRef();
-        }
         result.unshift(
             <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
@@ -243,11 +241,6 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         return result;
     }
 
-    // Gets all items that could be used to set filters
-    function getFilterTargets() {
-
-    }
-
     // Load graph from file
     const onFileSelect = useCallback((importData) => {
         loadQueryFile(importData);
@@ -327,10 +320,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                         trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
                         menu={getShownTargets()}
                     />
-                    <Dropdown
-                        trigger={<button className={ResultTrayStyles.big_button}>{buttonFilterLabel}</button>}
-                        menu={getShownTargets()}
-                    />
+                    <button className={ResultTrayStyles.big_button} onClick={() => setFiltersOpen(true)}>{buttonFilterLabel}</button>
                 </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <QueryToFile getQueryData={getQueryData} />

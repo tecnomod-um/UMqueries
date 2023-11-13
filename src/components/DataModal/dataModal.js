@@ -1,14 +1,11 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import { CSSTransition } from "react-transition-group";
+import React, { useEffect, useState, useMemo } from "react";
+import { getCategory } from "../../utils/typeChecker.js";
+import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
-import { getCategory } from "../../utils/typeChecker.js";
 
 // Used to define a node's data properties
 function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode }) {
-    // Modal behavior
-    const modalRef = useRef(null);
-    const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
     // Data builder inputs
     const [operators, setOperators] = useState({});
     const inputRefs = {};
@@ -175,16 +172,6 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
         </div>);
     }
 
-    const handleBackdropMouseDown = () => {
-        setMouseDownOnBackdrop(true);
-    }
-
-    const handleBackdropMouseUp = () => {
-        if (mouseDownOnBackdrop)
-            handleClose();
-        setMouseDownOnBackdrop(false);
-    }
-
     const handleClose = () => {
         setDataOpen(false);
     }
@@ -218,58 +205,35 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     }
 
     return (
-        <CSSTransition
-            in={isDataOpen}
-            timeout={{ enter: 150, exit: 0 }}
-            classNames={{
-                enter: DataModalStyles.fadeEnter,
-                enterActive: DataModalStyles.fadeEnterActive,
-                exit: DataModalStyles.fadeExit,
-                exitActive: DataModalStyles.fadeExitActive,
-            }}
-            nodeRef={modalRef}
-            unmountOnExit
-        >
-            <div className={DataModalStyles.darkBG} onMouseDown={handleBackdropMouseDown} onMouseUp={handleBackdropMouseUp}>
-                <div
-                    className={DataModalStyles.centered}
-                    ref={modalRef}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onMouseUp={(e) => e.stopPropagation()}
+        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose}>
+            <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
+                <h2
+                    title={insideData[selectedNode.type] ?
+                        `Node '${selectedNode.label}' data properties` :
+                        `${selectedNode.label} has no data properties`}
                 >
-                    <div className={DataModalStyles.modal}>
-                        <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
-                            <h2
-                                title={insideData[selectedNode.type] ?
-                                    `Node '${selectedNode.label}' data properties` :
-                                    `${selectedNode.label} has no data properties`}
-                            >
-                                {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
-                            </h2>
-                        </div>
-                        <button className={DataModalStyles.closeBtn} onClick={handleClose}>
-                            <CloseIcon style={{ marginBottom: "-7px" }} />
-                        </button>
-                        {getInsideDataFields()}
-                        <div className={DataModalStyles.modalActions}>
-                            <div className={DataModalStyles.actionsContainer}>
-                                <button
-                                    style={{ background: selectedNode.color, }}
-                                    className={DataModalStyles.setBtn}
-                                    onClick={handleSubmit}
-                                >
-                                    Set properties
-                                </button>
-                                <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                </h2>
+            </div>
+            <button className={DataModalStyles.closeBtn} onClick={handleClose}>
+                <CloseIcon style={{ marginBottom: "-7px" }} />
+            </button>
+            {getInsideDataFields()}
+            <div className={DataModalStyles.modalActions}>
+                <div className={DataModalStyles.actionsContainer}>
+                    <button
+                        style={{ background: selectedNode.color, }}
+                        className={DataModalStyles.setBtn}
+                        onClick={handleSubmit}
+                    >
+                        Set properties
+                    </button>
+                    <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
+                        Cancel
+                    </button>
                 </div>
             </div>
-        </CSSTransition>
+        </ModalWrapper>
     );
 }
 
