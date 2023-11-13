@@ -30,7 +30,7 @@
     "vis-data": "^7.1.6",
     "vis-network": "^9.1.6",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz"
   },
   "scripts": {
     "start": "react-scripts --max_old_space_size=4096 start",
