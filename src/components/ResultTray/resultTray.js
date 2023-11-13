@@ -27,6 +27,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     let buttonOptionalLabel;
     let buttonInsideLabel;
     let buttonVarToShowLabel;
+    let buttonFilterLabel;
 
     // Creates both property dropdown menus
     const createGroupedMenuItems = (edges, isOptional) => {
@@ -113,6 +114,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
 
     const numVarsSelected = Object.keys(startingVar).length;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
+    buttonFilterLabel = startingVar.filter ? "Filters set" : "No filters set";
 
     const nodeContents = (node, isInstance, isClass) => {
         return {
@@ -241,6 +243,11 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         return result;
     }
 
+    // Gets all items that could be used to set filters
+    function getFilterTargets() {
+
+    }
+
     // Load graph from file
     const onFileSelect = useCallback((importData) => {
         loadQueryFile(importData);
@@ -315,10 +322,16 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                     />
                     <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} setResultData={setResultData} />
                 </div>
-                <Dropdown
-                    trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
-                    menu={getShownTargets()}
-                />
+                <div className={ResultTrayStyles.buttonRow}>
+                    <Dropdown
+                        trigger={<button className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>}
+                        menu={getShownTargets()}
+                    />
+                    <Dropdown
+                        trigger={<button className={ResultTrayStyles.big_button}>{buttonFilterLabel}</button>}
+                        menu={getShownTargets()}
+                    />
+                </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <QueryToFile getQueryData={getQueryData} />
                     <FileToQuery onFileSelect={onFileSelect} />

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import ResultTableStyles from "./resultTable.module.css";
 
 function getTableHeaders(filteredLists) {
@@ -6,12 +6,12 @@ function getTableHeaders(filteredLists) {
   return Object.keys(filteredLists);
 }
 
-function getTableContent(filteredLists) {
+function getTableContent(filteredLists, tbodyElement) {
   if (!filteredLists || Object.keys(filteredLists).length === 0) return null;
   const rowCount = Object.values(filteredLists)[0].length;
 
   return (
-    <tbody className={ResultTableStyles.resTbody}>
+    <tbody className={ResultTableStyles.resTbody} ref={tbodyElement}>
       {[...Array(rowCount)].map((_, rowIndex) => (
         <tr key={`row-${rowIndex}`} className={ResultTableStyles.resTr}>
           {Object.keys(filteredLists).map((key) => (
@@ -31,6 +31,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [columns, setColumns] = useState(createHeaders(["."]));
   const tableElement = useRef(null);
+  const tbodyElement = useRef(null);
   const gridTemplateColumns = columns.map(() => 'minmax(100px, 1fr)').join(' ');
 
   function createHeaders(headers) {
@@ -49,9 +50,24 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
     setColumns(createHeaders(tableHeaders));
   }, [filteredLists]);
 
-  useEffect(() => {
-    setTableHeight(tableElement.current.offsetHeight);
-  }, []);
+  useLayoutEffect(() => {
+    if (tbodyElement.current) {
+      requestAnimationFrame(() => {
+        let totalHeight = 0;
+        const rows = tbodyElement.current.children;
+        totalHeight += rows[0].children[0].getBoundingClientRect().height;
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].children;
+          let maxHeight = 0;
+          for (let j = 0; j < cells.length; j++) {
+            maxHeight = Math.max(maxHeight, cells[j].getBoundingClientRect().height);
+          }
+          totalHeight += maxHeight;
+        }
+        setTableHeight(`${totalHeight}px`);
+      });
+    }
+  }, [filteredLists]);
 
   const mouseDown = useCallback((index) => {
     setActiveIndex(index);
@@ -112,7 +128,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
           ))}
         </tr>
       </thead>
-      {getTableContent(filteredLists)}
+      {getTableContent(filteredLists, tbodyElement)}
     </table>
   );
 };
