@@ -19,7 +19,7 @@ function FiltersModal({ allNodes, bindings, filters, isFiltersOpen, setFiltersOp
     }
     */
     return (
-        <ModalWrapper isOpen={isFiltersOpen} closeModal={handleClose}>
+        <ModalWrapper isOpen={isFiltersOpen} closeModal={handleClose} maxWidth={1500}>
             <div className={FilterModalStyles.modalHeader}>
                 <h2 title={"Bindings and variables"}>Filters</h2>
             </div>

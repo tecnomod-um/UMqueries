@@ -383,7 +383,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     }
 
     return (
-        <ModalWrapper isOpen={isBindingsOpen} closeModal={handleClose}>
+        <ModalWrapper isOpen={isBindingsOpen} closeModal={handleClose} maxWidth={1500}>
             <div className={BindingModalStyles.modalHeader}>
                 <h2 title={"Bindings and variables"}>Bindings and variables</h2>
             </div>

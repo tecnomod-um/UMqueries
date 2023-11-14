@@ -205,7 +205,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     }
 
     return (
-        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose}>
+        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={700}>
             <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
                 <h2
                     title={insideData[selectedNode.type] ?

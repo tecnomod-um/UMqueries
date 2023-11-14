@@ -3,7 +3,7 @@ import { CSSTransition } from 'react-transition-group';
 import ModalWrapperStyles from "./modalWrapper.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 
-const ModalWrapper = ({ isOpen, children, closeModal }) => {
+const ModalWrapper = ({ isOpen, children, closeModal, maxWidth }) => {
     // Modal behavior
     const modalRef = useRef(null);
     const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
@@ -39,7 +39,7 @@ const ModalWrapper = ({ isOpen, children, closeModal }) => {
                     onMouseDown={(e) => e.stopPropagation()}
                     onMouseUp={(e) => e.stopPropagation()}
                 >
-                    <div className={ModalWrapperStyles.modal}>
+                    <div className={ModalWrapperStyles.modal} style={{ maxWidth: maxWidth }} >
                         {children}
                     </div>
                 </div>
