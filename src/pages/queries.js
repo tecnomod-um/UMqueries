@@ -20,10 +20,9 @@ function Queries() {
     const [dataProperties, setDataProperties] = useState(null);
     const [objectProperties, setObjectProperties] = useState(null);
     // Data structures used through the app
-    const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [] }]);
+    const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [], bindings: [], filters: [] }]);
     const [activeGraphId, setActiveGraph] = useState(0);
     const [bindings, setBindings] = useState([]);
-    const [filters, setFilters] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
@@ -136,7 +135,7 @@ function Queries() {
 
     function addGraph(label, graph) {
         const newId = Math.max(...graphs.map(item => Number(item.id))) + 1;
-        const newGraph = graph ? graph : { id: newId, label: label, nodes: [], edges: [] }
+        const newGraph = graph ? graph : { id: newId, label: label, nodes: [], edges: [], bindings: [], filters: [] }
         setGraphs([...graphs, newGraph]);
         setVarIDs([...varIDs, { id: newId, varIdList: Object.fromEntries(Object.keys(varData).map(type => [type, 0])) }]);
         return true;
@@ -398,6 +397,7 @@ function Queries() {
         setBindings(bindings);
         setActiveGraph(newGraphs[0]?.id || 0);
     }
+
     function getGraphData() {
         const result = {};
         result.graphs = graphs.map(graph => {
@@ -410,6 +410,14 @@ function Queries() {
         });
         result.bindings = bindings;
         return result;
+    }
+
+    function setFilters(newFilters) {
+        setGraphs(prevGraphs => {
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], filters: newFilters };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return activeGraph.filters;
     }
 
     function toggleIsTransitive(edge) {
@@ -449,7 +457,7 @@ function Queries() {
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal allNodes={allNodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
-            <FiltersModal allNodes={allNodes} bindings={bindings} filters={filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+            <FiltersModal nodes={activeGraph.nodes} bindings={bindings} filters={activeGraph.filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div>
     );
 }
