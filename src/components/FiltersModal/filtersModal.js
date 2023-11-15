@@ -1,17 +1,21 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import FilterModalStyles from './filtersModal.module.css';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilters }) {
+    // Filter definitions
     const [tempFilters, setTempFilters] = useState([]);
-    const [firstSelectedElement, setFirstSelectedElement] = useState('');
-    const [secondSelectedElement, setSecondSelectedElement] = useState('');
+    // Filter inputs
+    const [firstFilterValue, setFirstFilterValue] = useState('');
+    const [secondFilterValue, setSecondFilterValue] = useState('');
     const [isCustomValueSelected, setIsCustomValueSelected] = useState(false);
-    const [comparator, setComparator] = useState('=');
-    const [filterValue, setFilterValue] = useState('');
+    const [operator, setComparator] = useState('=');
+    const [customFilterValue, setCustomFilterValue] = useState('');
 
-    const comparatorOptions = useMemo(() => ({
+    const operatorLists = useMemo(() => ({
         number: ['<', '<=', '=', '>=', '>'],
         decimal: ['<', '<=', '=', '>=', '>'],
         text: ['=', '⊆'],
@@ -22,47 +26,66 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         select: ['=']
     }), []);
 
+    // Gets all elements that could be useful for a filter definition
     const getFilterableElements = useCallback(() => {
-        const filterableElement = [];
+        const filterableElements = [];
         nodes.forEach(node => {
             if (node.properties) {
                 Object.entries(node.properties).forEach(([propName, prop]) => {
-                    if (prop.data || prop.show)
-                        filterableElement.push({ key: prop.uri, category: prop.type, label: propName });
+                    if (prop.data || prop.show) {
+                        filterableElements.push({
+                            label: propName,
+                            value: JSON.stringify({
+                                key: prop.uri,
+                                category: prop.type,
+                                label: propName
+                            })
+                        });
+                    }
                 });
             }
         });
         bindings.forEach(binding => {
             const category = getBindingCategory(binding);
-            filterableElement.push({ key: binding.id, category, label: binding.label });
+            filterableElements.push({
+                label: binding.label,
+                value: JSON.stringify({
+                    key: binding.id,
+                    category,
+                    label: binding.label
+                })
+            });
         });
-        return filterableElement;
+        return filterableElements;
     }, [nodes, bindings]);
 
-    const updateComparator = useCallback((category) => {
-        setComparator(comparatorOptions[category][0]);
-    }, [comparatorOptions]);
-
-    useEffect(() => {
+    // Resets select values
+    const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
         const filterableElements = getFilterableElements();
-        if (filterableElements.length > 0)
-            setFirstSelectedElement(filterableElements[0].key);
+        setSelectedValue(filterableElements[0]);
     }, [getFilterableElements]);
 
+    // Sets up the selects' default option so thats visually coherent
     useEffect(() => {
-        const currentElement = getFilterableElements().find(prop => prop.key === firstSelectedElement);
-        const currentCategory = currentElement?.category || 'text';
-        updateComparator(currentCategory);
-    }, [firstSelectedElement, getFilterableElements, updateComparator]);
+        if (!firstFilterValue) setDefaultValuesToFirstOption(setFirstFilterValue);
+        if (!secondFilterValue) setDefaultValuesToFirstOption(setSecondFilterValue);
+    }, [firstFilterValue, secondFilterValue, setDefaultValuesToFirstOption]);
 
-    const handleClose = () => {
-        setTempFilters([]);
-        setFiltersOpen(false);
-    }
+    // Updates the comparator to the selected element's type
+    useEffect(() => {
+        const currentElement = getFilterableElements().find(prop => prop.key === firstFilterValue);
+        const currentCategory = currentElement?.category || 'text';
+        setComparator(operatorLists[currentCategory][0]);
+    }, [firstFilterValue, getFilterableElements, operatorLists]);
 
     const handleSubmit = () => {
         setFilters(tempFilters);
         handleClose();
+    }
+
+    const handleClose = () => {
+        setTempFilters([]);
+        setFiltersOpen(false);
     }
 
     const getBindingCategory = (binding) => {
@@ -72,78 +95,107 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
     }
 
     const addFilter = () => {
-        setTempFilters([...tempFilters, { property: firstSelectedElement, comparator, value: filterValue }]);
+        setTempFilters([...tempFilters, { property: firstFilterValue, comparator: operator, value: isCustomValueSelected ? customFilterValue : secondFilterValue }]);
+        setFirstFilterValue();
+        setSecondFilterValue();
         setComparator('=');
-        setFilterValue('');
+        setCustomFilterValue('');
+    }
+
+    const deleteFilter = (index) => {
+        setTempFilters(currentFilters => currentFilters.filter((_, i) => i !== index));
+    };
+
+    const makeItem = (element) => {
+        return <option key={element.label} value={element.value}>{element.label}</option>;
+    }
+
+    const handleOptionChange = (event, setValue, setCustomInput) => {
+        const selectedOptionValue = event.target.value;
+        const parsedValue = JSON.parse(selectedOptionValue);
+        const isCustomValue = parsedValue.custom;
+
+        setCustomInput && setCustomInput(isCustomValue);
+
+        // Update secondFilterValue to reflect 'Custom Value' selection
+        if (isCustomValue) {
+            setValue({ label: "Custom Value", custom: true });
+        } else {
+            setValue(parsedValue);
+        }
+    }
+
+    console.log(secondFilterValue)
+    const updateCustomValueSelection = (isCustomValue) => {
+        setIsCustomValueSelected(isCustomValue);
+
+        if (isCustomValue) {
+            setSecondFilterValue({ label: "Custom Value", custom: true });
+        }
     }
 
     const filterBuilder = () => {
-        const properties = getFilterableElements();
-        const currentFirstElement = properties.find(prop => prop.key === firstSelectedElement);
-        const currentSecondElement = properties.find(prop => prop.key === secondSelectedElement);
-        const currentCategory = currentFirstElement?.category || 'text';
+        const filterableElements = getFilterableElements();
+        const hasOptions = filterableElements && filterableElements.length > 0;
+        const optionSet = hasOptions ? [
+            ...filterableElements.map((item) => makeItem(item))
+        ] : [<option key="no-options" value="">{`No options available`}</option>];
+
+        const currentCategory = firstFilterValue?.category || 'text';
         const isNumeric = currentCategory === 'number' || currentCategory === 'decimal';
-
-        const relatedProperties = properties.filter(prop => prop.category === currentCategory);
+        const relatedProperties = filterableElements.filter(element => element.category === currentCategory);
         const hasRelatedProperties = relatedProperties.length > 0;
-        const customValueOption = "Enter custom value";
 
-        const handleValueChange = (e) => {
-            setIsCustomValueSelected(e.target.value === customValueOption);
-            setFilterValue(e.target.value);
-        };
-
-        const handleFirstSelectChange = (e) => {
-            const selectedKey = e.target.value;
-            setFirstSelectedElement(selectedKey);
-            const selectedElement = properties.find(prop => prop.key === selectedKey);
-            updateComparator(selectedElement?.category || 'text');
-        };
+        const gridTemplate = isCustomValueSelected ?
+            "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr 20px 1fr" :
+            "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr 20px 1fr";
 
         return (
-            <div className={FilterModalStyles.filterCreator}>
-                <select
-                    className={FilterModalStyles.propertySelector}
-                    value={firstSelectedElement}
-                    onChange={handleFirstSelectChange}
-                    disabled={properties.length === 0}>
-                    {properties.map(prop => (
-                        <option key={prop.key} value={prop.key}>{prop.label}</option>
-                    ))}
-                </select>
-                <select
-                    className={FilterModalStyles.comparatorSelector}
-                    value={comparator}
-                    onChange={(e) => setComparator(e.target.value)}
-                    disabled={!hasRelatedProperties}>
-                    {comparatorOptions[currentCategory].map(option => (
-                        <option key={option} value={option}>{option}</option>
-                    ))}
-                </select>
-                <select
-                    className={FilterModalStyles.valueInput}
-                    value={filterValue}
-                    onChange={handleValueChange}
-                    disabled={!hasRelatedProperties}>
-                    {relatedProperties.map(prop => (
-                        <option key={prop.key} value={prop.key}>{prop.label}</option>
-                    ))}
-                    <option value={customValueOption}>{customValueOption}</option>
-                </select>
-                {isCustomValueSelected && (
-                    <input
-                        className={FilterModalStyles.customValueInput}
-                        type={isNumeric ? 'number' : 'text'}
-                        value={filterValue}
-                        onChange={(e) => setFilterValue(e.target.value)}
-                    />
-                )}
-                <button
-                    className={FilterModalStyles.addFilterBtn}
-                    onClick={addFilter}
-                    disabled={!hasRelatedProperties || (isCustomValueSelected && filterValue.trim() === '')}>
-                    Add Filter
-                </button>
+            <div className={FilterModalStyles.filterBuilder}>
+                <div className={FilterModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
+                    <label className={FilterModalStyles.labelFilter}>Filter</label>
+                    <select
+                        className={FilterModalStyles.input}
+                        value={JSON.stringify(firstFilterValue)}
+                        onChange={(e) => handleOptionChange(e, setFirstFilterValue, null)}
+                        disabled={!hasOptions}>
+                        {optionSet}
+                    </select>
+                    <select
+                        title={getOperatorTooltip(operator)}
+                        className={FilterModalStyles.operatorSelector}
+                        value={operator}
+                        onChange={(e) => setComparator(e.target.value)}
+                        disabled={!hasOptions}>
+                        {operatorLists[currentCategory].map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    <select
+                        className={FilterModalStyles.input}
+                        value={JSON.stringify(secondFilterValue)}
+                        onChange={(e) => handleOptionChange(e, setSecondFilterValue, updateCustomValueSelection)}
+                        disabled={!hasOptions}>
+                        {optionSet}
+                        <option key="custom-value" value={JSON.stringify({ label: "Custom Value", custom: true })}>
+                            Custom value
+                        </option>
+                    </select>
+                    {isCustomValueSelected && (
+                        <input
+                            className={FilterModalStyles.customValueInput}
+                            type={isNumeric ? 'number' : 'text'}
+                            value={customFilterValue}
+                            onChange={(e) => e.target.value ? setCustomFilterValue(e.target.value) : setCustomFilterValue(0)}
+                        />
+                    )}
+                    <button
+                        className={FilterModalStyles.addButton}
+                        onClick={() => addFilter()}
+                        disabled={!hasOptions}>
+                        Add Filter
+                    </button>
+                </div>
             </div>
         );
     }
@@ -152,10 +204,16 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         return (
             <div className={FilterModalStyles.filtersList}>
                 {tempFilters.map((filter, index) => {
-                    const propertyLabel = getFilterableElements().find(prop => prop.key === filter.property)?.label || filter.property;
+                    const firstElement = getFilterableElements().find(prop => prop.key === filter.property)?.label || filter.property;
+                    const secondElement = isCustomValueSelected ? filter.value : getFilterableElements().find(prop => prop.key === filter.value)?.label || filter.value;
+
                     return (
                         <div key={index} className={FilterModalStyles.filterItem}>
-                            {`${propertyLabel} ${filter.comparator} ${filter.value}`}
+                            {`${firstElement.label} ${filter.comparator} ${secondElement}`}
+                            <CloseIcon
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => deleteFilter(index)}
+                            />
                         </div>
                     );
                 })}

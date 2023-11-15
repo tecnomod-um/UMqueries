@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { getCategory } from "../../utils/typeChecker.js";
+import { getCategory, getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -9,29 +9,11 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     // Data builder inputs
     const [operators, setOperators] = useState({});
     const inputRefs = {};
+
     const operatorLists = useMemo(() => ({
         number: ['=', '>', '<', '<=', '>='],
         text: ['=', '⊆'],
     }), []);
-
-    const getOperatorTooltip = (operator) => {
-        switch (operator) {
-            case '=':
-                return 'is equal to value';
-            case '>':
-                return 'is greater than value';
-            case '<':
-                return 'is lesser than value';
-            case '<=':
-                return 'is lesser than or equal to value';
-            case '>=':
-                return 'is greater than or equal to value';
-            case '⊆':
-                return 'contains value';
-            default:
-                return '';
-        }
-    }
 
     const getNewOperator = (currentOperator, type) =>
         operatorLists[type][(operatorLists[type].indexOf(currentOperator) + 1) % operatorLists[type].length];

@@ -25,7 +25,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
 
-    const operatorList = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
+    const operatorLists = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
 
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
@@ -125,7 +125,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     }
 
     const getNewOperator = (currentOperator) =>
-        operatorList[(operatorList.indexOf(currentOperator) + 1) % operatorList.length];
+        operatorLists[(operatorLists.indexOf(currentOperator) + 1) % operatorLists.length];
 
     const getOperatorTooltip = (operator) => {
         switch (operator) {
@@ -314,7 +314,12 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         onChange={(e) => setIsAbsolute(e.target.checked)}
                         className={BindingModalStyles.checkbox}
                     />
-                    <button className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>Add binding</button>
+                    <button
+                        className={BindingModalStyles.addButton}
+                        onClick={() => addBinding()}
+                        disabled={!hasOptions}>
+                        Add binding
+                    </button>
                 </div>
             </div>
         );
