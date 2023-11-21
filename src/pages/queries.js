@@ -430,6 +430,7 @@ function Queries() {
         return activeGraph.filters;
     }
 
+    // Toggles transitivity for the selected edge
     function toggleIsTransitive(edge) {
         let propCanBeTransitive;
         setGraphs(prevGraphs => {
@@ -467,7 +468,7 @@ function Queries() {
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
-            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} filters={activeGraph.filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div>
     );
 }

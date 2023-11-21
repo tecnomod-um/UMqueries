@@ -6,9 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilters }) {
-    // Temporary structure
-    const [graph, setGraph] = useState({ nodes: [], edges: [], bindings: [], filters: [] });
+function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters, setFilters }) {
     // Filter definitions
     const [tempFilters, setTempFilters] = useState([]);
     const [activeFilters, setActiveFilters] = useState([]);
@@ -84,9 +82,9 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
 
     // Fading in effect
     useEffect(() => {
-        const currentFilterIds = [...graph.filters, ...tempFilters].map(item => item.id);
+        const currentFilterIds = [...filters, ...tempFilters].map(item => item.id);
         setActiveFilters(currentFilterIds);
-    }, [graph, tempFilters]);
+    }, [filters, tempFilters]);
 
     // Updates the comparator to the selected element's type
     useEffect(() => {
@@ -114,13 +112,12 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         const selectedOptionValue = event.target.value;
         const parsedValue = JSON.parse(selectedOptionValue);
         const isCustomValue = parsedValue.custom;
-
         setCustomInput && setCustomInput(isCustomValue);
-        if (isCustomValue) {
+
+        if (isCustomValue)
             setValue({ label: "Custom Value", custom: true });
-        } else {
+        else
             setValue(parsedValue);
-        }
     }
 
     const getBindingCategory = (binding) => {
@@ -150,12 +147,12 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         setActiveFilters(updatedActiveFilters);
 
         setTimeout(() => {
-            const updatedFilters = graph.filters.filter(f => f.id !== filterId);
+            const updatedFilters = filters.filter(f => f.id !== filterId);
             const updatedTempFilters = tempFilters.filter(f => f.id !== filterId);
-            // setFilters(updatedFilters);
+            setFilters(updatedFilters);
             setTempFilters(updatedTempFilters);
         }, 500);
-    }, [activeFilters, graph, tempFilters]);
+    }, [activeFilters, filters, tempFilters, setFilters]);
 
     const makeItem = (element) => {
         return <option key={element.label} value={element.value}>{element.label}</option>;
@@ -171,6 +168,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
             setSecondFilterValue({ label: "Custom Value", custom: true });
     }
 
+    // Filter builder interface definition
     const filterBuilder = () => {
         const filterableElements = getFilterableElements();
         const hasOptions = filterableElements && filterableElements.length > 0;
@@ -234,6 +232,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         );
     }
 
+    // Defined filters interface definition
     const renderFilters = () => {
         const filterElements = getFilterableElements();
         const getLabel = (filterValue, isCustom) => {
