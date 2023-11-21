@@ -80,6 +80,22 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         if (!secondFilterValue) setDefaultValuesToFirstOption(setSecondFilterValue);
     }, [firstFilterValue, secondFilterValue, setDefaultValuesToFirstOption]);
 
+    // If a numeric comparator value is selected, update with the first available numeric value
+    useEffect(() => {
+        const isNumericOperator = ['<', '<=', '>=', '>'].includes(operator);
+        const firstValueCategory = firstFilterValue?.category || 'text';
+        const isNumericFirstValue = ['number', 'decimal'].includes(firstValueCategory);
+
+        if (isNumericOperator && isNumericFirstValue) {
+            const numericOptions = getFilterableElements().filter(item =>
+                item.category === 'number' || item.category === 'decimal'
+            );
+            if (numericOptions.length > 0) {
+                setSecondFilterValue(JSON.parse(numericOptions[0].value));
+            }
+        }
+    }, [operator, firstFilterValue, getFilterableElements]);
+
     // Fading in effect
     useEffect(() => {
         const currentFilterIds = [...filters, ...tempFilters].map(item => item.id);
@@ -95,11 +111,11 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
 
     // Sets up the builder visibility
     useEffect(() => {
-        if (!isFiltersOpen) setShowFilterBuilder(tempFilters.length === 0);
-    }, [isFiltersOpen, tempFilters]);
+        if (!isFiltersOpen) setShowFilterBuilder(filters.length === 0);
+    }, [isFiltersOpen, filters, tempFilters]);
 
     const handleSubmit = () => {
-        setFilters(tempFilters);
+        setFilters([...filters, ...tempFilters]);
         handleClose();
     }
 
@@ -171,13 +187,24 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
     // Filter builder interface definition
     const filterBuilder = () => {
         const filterableElements = getFilterableElements();
+        console.log(filterableElements)
         const hasOptions = filterableElements && filterableElements.length > 0;
-        const optionSet = hasOptions ? [
+        const isNumericOperator = ['<', '<=', '>=', '>'].includes(operator);
+
+        const firstOptionSet = hasOptions ? [
             ...filterableElements.map((item) => makeItem(item))
         ] : [<option key="no-options" value="">{`No options available`}</option>];
 
+        const secondOptionSet = hasOptions ?
+            isNumericOperator ? [
+                ...filterableElements.filter(item => JSON.parse(item.value).category === 'number' || JSON.parse(item.value).category === 'decimal').map((item) => makeItem(item))] : [
+                ...filterableElements.map((item) => makeItem(item))
+            ]
+            : [<option key="no-options" value="">{`No options available`}</option>];
+
         const currentCategory = firstFilterValue?.category || 'text';
         const isNumeric = currentCategory === 'number' || currentCategory === 'decimal';
+
         const showCustomValueInput = isCustomValueSelected && secondFilterValue?.custom;
         const gridTemplate = showCustomValueInput ?
             "0.8fr 250px 0.5fr 220px 20px 1fr" :
@@ -191,7 +218,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                         value={JSON.stringify(firstFilterValue)}
                         onChange={(e) => handleOptionChange(e, setFirstFilterValue, null)}
                         disabled={!hasOptions}>
-                        {optionSet}
+                        {firstOptionSet}
                     </select>
                     <select
                         title={getOperatorTooltip(operator)}
@@ -216,7 +243,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                         value={JSON.stringify(secondFilterValue)}
                         onChange={(e) => handleOptionChange(e, setSecondFilterValue, updateCustomValueSelection)}
                         disabled={!hasOptions}>
-                        {optionSet}
+                        {secondOptionSet}
                         <option key="custom-value" value={JSON.stringify({ label: "Custom Value", custom: true })}>
                             Custom value
                         </option>
@@ -240,15 +267,19 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             const element = filterElements.find(el => JSON.stringify(el.value) === JSON.stringify(filterValue));
             return element ? element.label : filterValue.label;
         }
-        return (tempFilters.map((filter, index) => (
-            <div key={index} className={`${FilterModalStyles.filterRow} ${activeFilters.includes(filter.id) ? FilterModalStyles.filterRowActive : ''}`}
-                style={{ backgroundColor: tempFilters.some(f => f.id === filter.id) ? "#e9e9e9" : "white" }}>
+        const allFilters = [
+            ...filters.map(item => ({ ...item, source: 'graph' })),
+            ...tempFilters.map(item => ({ ...item, source: 'tempFilters' }))
+        ];
+        return (allFilters.map((filter, index) => (
+            <div key={filter.id} className={`${FilterModalStyles.filterRow} ${activeFilters.includes(filter.id) ? FilterModalStyles.filterRowActive : ''}`}
+                style={{ backgroundColor: filter.source === 'tempFilters' ? "#e9e9e9" : "white" }}>
                 <div className={FilterModalStyles.expression}>{getLabel(filter.firstValue, false)}</div>
                 <div className={FilterModalStyles.operator}>{filter.comparator}</div>
                 <div className={FilterModalStyles.expression}>{getLabel(filter.secondValue, filter.secondValue?.custom)}</div>
-                <DeleteIcon
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleRemoveFilter(filter.id)} />
+                <button className={FilterModalStyles.filterRemove} onClick={() => handleRemoveFilter(filter.id)}>
+                    <DeleteIcon />
+                </button>
             </div>
         )));
     }

@@ -423,10 +423,12 @@ function Queries() {
 
     // Updates the filters in the current graph
     function setFilters(newFilters) {
+        console.log(activeGraph);
         setGraphs(prevGraphs => {
             const updatedGraph = { ...prevGraphs[activeGraphIndex], filters: newFilters };
             return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
+        console.log(activeGraph)
         return activeGraph.filters;
     }
 
