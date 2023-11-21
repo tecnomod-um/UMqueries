@@ -127,11 +127,11 @@ export const fetchData = (dataFile) => {
     });
 }
 
-export const handleQuery = (graphs, activeGraphId, bindings, startingVar, setIsLoading) => {
+export const handleQuery = (graphs, activeGraphId, startingVar, setIsLoading) => {
     setIsLoading(true);
     let data = {
         endpoint: endpointURL,
-        query: parseQuery(graphs, activeGraphId, bindings, startingVar)
+        query: parseQuery(graphs, activeGraphId, startingVar)
     };
 
     return new Promise((resolve, reject) => {

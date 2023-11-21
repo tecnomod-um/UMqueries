@@ -14,7 +14,7 @@ const SparqlQuery = ({ graphs, activeGraphId, bindings, startingVar, setResultDa
 
     const sendQuery = () => {
         if (inputValidator(startingVar) || bindings.some(binding => binding.showInResults)) {
-            handleQuery(graphs, activeGraphId, bindings, startingVar, setIsLoading)
+            handleQuery(graphs, activeGraphId, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);
                 })

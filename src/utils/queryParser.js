@@ -14,7 +14,7 @@ const getOperatorString = (operator, type, value, varNodeData) => {
 }
 
 // All SPARQL logic goes here
-export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
+export const parseQuery = (graphs, activeGraphId, startingVar) => {
 
     // Starting point of the query
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
@@ -45,8 +45,13 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
     });
     // Adds a graphs configuration to the query
     const addGraphDefinitions = (graph) => {
+
+        // Graph components
         const nodes = graph.nodes;
         const edges = graph.edges;
+        const bindings = graph.bindings;
+        const filters = graph.filters;
+
         Object.keys(nodes).forEach(nodeInList => {
             // If node represents a graph, build a UNION operation
             if (nodes[nodeInList].shape === 'circle') {
@@ -129,25 +134,37 @@ export const parseQuery = (graphs, activeGraphId, bindings, startingVar) => {
                     if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty)} ) .\n`;
                 }
             });
+
+            // Build binding variables
+            bindings.forEach(binding => {
+                const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
+                const operator = binding.operator;
+                let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
+                let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
+                let expression = `${firstValue} ${operator} ${secondValue}`;
+                if (binding.isAbsolute)
+                    expression = `ABS(${expression})`;
+                if (binding.showInResults)
+                    select += ' ?' + bindingName;
+                body += `BIND (${expression} AS ?${bindingName})\n`;
+            });
+
+            console.log(filters)
+            // Build filters
+            filters.forEach(filter => {
+                console.log(filter)
+                const firstElement = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                if (filter.firstValue.nodeVarID)
+                    body += `FILTER (${getOperatorString(filter.operator, filter.firstValue.nodeType, filter.key, firstElement)})`;
+                else
+                    body += `FILTER (${getOperatorString(filter.operator, nodes[nodeInList].properties[property].type, data, varProperty)})`;
+            });
+
             if (graph) body += `}\n`;
         });
     }
     // Start building the query in the current graph
     addGraphDefinitions(activeGraph);
-
-    // Build binding variables
-    bindings.forEach(binding => {
-        const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
-        const operator = binding.operator;
-        let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
-        let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
-        let expression = `${firstValue} ${operator} ${secondValue}`;
-        if (binding.isAbsolute)
-            expression = `ABS(${expression})`;
-        if (binding.showInResults)
-            select += ' ?' + bindingName;
-        body += `BIND (${expression} AS ?${bindingName})\n`;
-    });
 
     // Add metric aggregations
     Object.keys(startingVar).forEach(nodeId => {

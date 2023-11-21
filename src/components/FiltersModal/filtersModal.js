@@ -41,6 +41,8 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                             value: JSON.stringify({
                                 key: prop.uri,
                                 category: prop.type,
+                                nodeType: node.type,
+                                nodeVarID: node.varID,
                                 label: propName
                             })
                         });
@@ -55,6 +57,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                 value: JSON.stringify({
                     key: binding.id,
                     category,
+                    bindingLabel: binding.label,
                     label: binding.label
                 })
             });
@@ -187,7 +190,6 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
     // Filter builder interface definition
     const filterBuilder = () => {
         const filterableElements = getFilterableElements();
-        console.log(filterableElements)
         const hasOptions = filterableElements && filterableElements.length > 0;
         const isNumericOperator = ['<', '<=', '>=', '>'].includes(operator);
 

@@ -83,15 +83,13 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
 
     // Remove and update bindings
     const handleRemoveVariable = useCallback((bindingId) => {
-        const updatedActiveBindings = activeBindings.filter(bId => bId !== bindingId);
-        setActiveBindings(updatedActiveBindings);
-
+        setActiveBindings(prevBindings => prevBindings.filter(id => id !== bindingId));
         setTimeout(() => {
             let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
             setBindings(updatedBindings);
             setTempBindings(updatedTempBindings);
         }, 500);
-    }, [bindings, tempBindings, setBindings, setTempBindings, removeBindingAndDependencies, activeBindings]);
+    }, [bindings, tempBindings, setBindings, removeBindingAndDependencies]);
 
     // Updates bindings on node removal
     useEffect(() => {
