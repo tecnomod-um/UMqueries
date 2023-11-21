@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
+import { getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import BindingModalStyles from "./bindingsModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -124,32 +125,6 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         return <option key={element.label} value={element.value}>{element.label}</option>;
     }
 
-    const getNewOperator = (currentOperator) =>
-        operatorLists[(operatorLists.indexOf(currentOperator) + 1) % operatorLists.length];
-
-    const getOperatorTooltip = (operator) => {
-        switch (operator) {
-            case '+':
-                return 'plus';
-            case '-':
-                return 'minus';
-            case '*':
-                return 'multiplied by';
-            case '/':
-                return 'divided by';
-            case '>':
-                return 'greater than';
-            case '<':
-                return 'less than';
-            case '>=':
-                return 'TODO';
-            case '<=':
-                return 'TODO';
-            default:
-                return '';
-        }
-    }
-
     const usesRestrictedOperator = (binding) => {
         return ['>', '<'].includes(binding.operator);
     }
@@ -224,6 +199,10 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         }
     }
 
+    const handleOperatorChange = (e) => {
+        setOperator(e.target.value);
+    }
+
     const toggleBindingBuilderVisibility = () => {
         setShowBindingBuilder(!showBindingBuilder);
     }
@@ -240,11 +219,11 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         ] : [<option key="no-options" value="">{`No options available`}</option>];
         let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr 20px 1fr";
         if (showFirstCustomInput && showSecondCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 105px 35px 1fr 20px 1fr 20px 1fr";
+            gridTemplate = "0.8fr 100px 0.5fr 120px 20px 42px 120px 20px 1fr 20px 1fr 20px 1fr";
         else if (showFirstCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 105px 35px 42px 150px 1fr 20px 1fr 20px 1fr";
+            gridTemplate = "0.8fr 100px 0.5fr 120px 20px 42px 150px 1fr 20px 1fr 20px 1fr";
         else if (showSecondCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr 20px 1fr";
+            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 120px 20px 1fr 20px 1fr 20px 1fr";
         return (
             <div className={BindingModalStyles.bindingBuilder}>
                 <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
@@ -259,13 +238,6 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         {error && <CloseIcon className={BindingModalStyles.errorIcon} />}
                     </span>
                     <label className={BindingModalStyles.labelEquals}>equals</label>
-                    <select
-                        className={BindingModalStyles.input}
-                        value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
-                        disabled={!hasOptions}>
-                        {optionSet}
-                    </select>
                     {showFirstCustomInput && (
                         <input
                             type="number"
@@ -274,20 +246,22 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                             className={BindingModalStyles.input}
                         />
                     )}
-                    <button
-                        title={getOperatorTooltip(operator)}
-                        className={BindingModalStyles.operatorButton}
-                        onClick={() => setOperator(getNewOperator(operator))}
-                    >
-                        {operator}
-                    </button>
                     <select
                         className={BindingModalStyles.input}
-                        value={showSecondCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(secondBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, setSecondBuilderValue, setSecondCustomInput)}
-                        disabled={!hasOptions}
-                    >
+                        value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
+                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
+                        disabled={!hasOptions}>
                         {optionSet}
+                    </select>
+                    <select
+                        title={getOperatorTooltip(operator)}
+                        className={BindingModalStyles.operatorSelector}
+                        value={operator}
+                        onChange={handleOperatorChange}
+                        disabled={!hasOptions}>
+                        {operatorLists.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
                     </select>
                     {showSecondCustomInput && (
                         <input
@@ -297,6 +271,15 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                             className={BindingModalStyles.input}
                         />
                     )}
+                    <select
+                        className={BindingModalStyles.input}
+                        value={showSecondCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(secondBuilderValue)}
+                        onChange={(e) => handleOptionChange(e, setSecondBuilderValue, setSecondCustomInput)}
+                        disabled={!hasOptions}
+                    >
+                        {optionSet}
+                    </select>
+
                     <label className={BindingModalStyles.labelCheckbox}>Show in results</label>
                     <input
                         className={BindingModalStyles.checkbox}
@@ -410,9 +393,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         onClick={() => toggleBindingBuilderVisibility()}
                         className={BindingModalStyles.toggleButton}
                     >
-                        <ExpandMoreIcon
-                            style={{ transform: showBindingBuilder ? 'rotate(180deg)' : 'rotate(0)' }}
-                        />
+                        <ExpandMoreIcon style={{ transform: showBindingBuilder ? 'rotate(180deg)' : 'rotate(0)' }} />
                     </button>
                     <button className={BindingModalStyles.cancelBtn} onClick={handleClose}>
                         Cancel

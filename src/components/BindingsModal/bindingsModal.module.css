@@ -243,9 +243,8 @@
     position: relative;
 }
 
-.operatorButton {
+.operatorSelector {
     height: 100%;
-    width: 40px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -253,7 +252,9 @@
     transition: transform 0.25s ease, background-color 0.3s ease;
     background-color: #6c757d;
     color: #ffffff;
-    text-align: center;
+    text-align-last: center;
+    appearance: none;
+    position: relative;
 }
 
 .operatorButton:hover {

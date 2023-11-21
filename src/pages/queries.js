@@ -22,7 +22,6 @@ function Queries() {
     // Data structures used through the app
     const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [], bindings: [], filters: [] }]);
     const [activeGraphId, setActiveGraph] = useState(0);
-    const [bindings, setBindings] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
@@ -405,13 +404,24 @@ function Queries() {
                 id: graph.id,
                 label: graph.label,
                 nodes: graph.nodes,
-                edges: graph.edges
+                edges: graph.edges,
+                bindings: graph.bindings,
+                filters: graph.filters
             };
         });
-        result.bindings = bindings;
         return result;
     }
 
+    // Updates the bindings  in the current graph
+    function setBindings(newBindings) {
+        setGraphs(prevGraphs => {
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], bindings: newBindings };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return activeGraph.bindings;
+    }
+
+    // Updates the filters in the current graph
     function setFilters(newFilters) {
         setGraphs(prevGraphs => {
             const updatedGraph = { ...prevGraphs[activeGraphIndex], filters: newFilters };
@@ -453,11 +463,11 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal allNodes={allNodes} bindings={bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
-            <FiltersModal nodes={activeGraph.nodes} bindings={bindings} filters={activeGraph.filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+            <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} filters={activeGraph.filters} isFiltersOpen={isFiltersOpen} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div>
     );
 }

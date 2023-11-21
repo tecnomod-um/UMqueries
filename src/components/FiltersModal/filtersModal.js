@@ -3,17 +3,22 @@ import { getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import FilterModalStyles from './filtersModal.module.css';
 import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilters }) {
+    // Temporary structure
+    const [graph, setGraph] = useState({ nodes: [], edges: [], bindings: [], filters: [] });
     // Filter definitions
     const [tempFilters, setTempFilters] = useState([]);
+    const [activeFilters, setActiveFilters] = useState([]);
     // Filter inputs
     const [firstFilterValue, setFirstFilterValue] = useState('');
     const [secondFilterValue, setSecondFilterValue] = useState('');
     const [isCustomValueSelected, setIsCustomValueSelected] = useState(false);
     const [operator, setComparator] = useState('=');
     const [customFilterValue, setCustomFilterValue] = useState('');
+    const [showFilterBuilder, setShowFilterBuilder] = useState(tempFilters.length === 0);
 
     const operatorLists = useMemo(() => ({
         number: ['<', '<=', '=', '>=', '>'],
@@ -61,9 +66,15 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
 
     // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
+        setIsCustomValueSelected(false);
         const filterableElements = getFilterableElements();
-        setSelectedValue(filterableElements[0]);
-    }, [getFilterableElements]);
+        if (filterableElements.length > 0) {
+            const firstElement = filterableElements[0].value;
+            setSelectedValue(JSON.parse(firstElement));
+            const category = JSON.parse(firstElement).category || 'text';
+            setComparator(operatorLists[category][0]);
+        }
+    }, [getFilterableElements, operatorLists]);
 
     // Sets up the selects' default option so thats visually coherent
     useEffect(() => {
@@ -71,12 +82,23 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         if (!secondFilterValue) setDefaultValuesToFirstOption(setSecondFilterValue);
     }, [firstFilterValue, secondFilterValue, setDefaultValuesToFirstOption]);
 
+    // Fading in effect
+    useEffect(() => {
+        const currentFilterIds = [...graph.filters, ...tempFilters].map(item => item.id);
+        setActiveFilters(currentFilterIds);
+    }, [graph, tempFilters]);
+
     // Updates the comparator to the selected element's type
     useEffect(() => {
         const currentElement = getFilterableElements().find(prop => prop.key === firstFilterValue);
         const currentCategory = currentElement?.category || 'text';
         setComparator(operatorLists[currentCategory][0]);
     }, [firstFilterValue, getFilterableElements, operatorLists]);
+
+    // Sets up the builder visibility
+    useEffect(() => {
+        if (!isFiltersOpen) setShowFilterBuilder(tempFilters.length === 0);
+    }, [isFiltersOpen, tempFilters]);
 
     const handleSubmit = () => {
         setFilters(tempFilters);
@@ -88,36 +110,12 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         setFiltersOpen(false);
     }
 
-    const getBindingCategory = (binding) => {
-        if (['>', '<', '>=', '<='].includes(binding.operator))
-            return 'boolean';
-        return 'number';
-    }
-
-    const addFilter = () => {
-        setTempFilters([...tempFilters, { property: firstFilterValue, comparator: operator, value: isCustomValueSelected ? customFilterValue : secondFilterValue }]);
-        setFirstFilterValue();
-        setSecondFilterValue();
-        setComparator('=');
-        setCustomFilterValue('');
-    }
-
-    const deleteFilter = (index) => {
-        setTempFilters(currentFilters => currentFilters.filter((_, i) => i !== index));
-    };
-
-    const makeItem = (element) => {
-        return <option key={element.label} value={element.value}>{element.label}</option>;
-    }
-
     const handleOptionChange = (event, setValue, setCustomInput) => {
         const selectedOptionValue = event.target.value;
         const parsedValue = JSON.parse(selectedOptionValue);
         const isCustomValue = parsedValue.custom;
 
         setCustomInput && setCustomInput(isCustomValue);
-
-        // Update secondFilterValue to reflect 'Custom Value' selection
         if (isCustomValue) {
             setValue({ label: "Custom Value", custom: true });
         } else {
@@ -125,13 +123,52 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
         }
     }
 
-    console.log(secondFilterValue)
+    const getBindingCategory = (binding) => {
+        if (['>', '<', '>=', '<='].includes(binding.operator))
+            return 'boolean';
+        return 'number';
+    }
+
+    const addFilter = () => {
+        const firstValue = firstFilterValue;
+        const secondValue = isCustomValueSelected ? { label: customFilterValue, custom: true } : secondFilterValue;
+        const newFilter = {
+            id: Date.now(),
+            firstValue,
+            comparator: operator,
+            secondValue
+        };
+        setTempFilters([...tempFilters, newFilter]);
+        setFirstFilterValue('');
+        setSecondFilterValue('');
+        setComparator('=');
+        setCustomFilterValue('');
+    }
+
+    const handleRemoveFilter = useCallback((filterId) => {
+        const updatedActiveFilters = activeFilters.filter(fId => fId !== filterId);
+        setActiveFilters(updatedActiveFilters);
+
+        setTimeout(() => {
+            const updatedFilters = graph.filters.filter(f => f.id !== filterId);
+            const updatedTempFilters = tempFilters.filter(f => f.id !== filterId);
+            // setFilters(updatedFilters);
+            setTempFilters(updatedTempFilters);
+        }, 500);
+    }, [activeFilters, graph, tempFilters]);
+
+    const makeItem = (element) => {
+        return <option key={element.label} value={element.value}>{element.label}</option>;
+    }
+
+    const toggleFilterBuilderVisibility = () => {
+        setShowFilterBuilder(!showFilterBuilder);
+    }
+
     const updateCustomValueSelection = (isCustomValue) => {
         setIsCustomValueSelected(isCustomValue);
-
-        if (isCustomValue) {
+        if (isCustomValue)
             setSecondFilterValue({ label: "Custom Value", custom: true });
-        }
     }
 
     const filterBuilder = () => {
@@ -143,13 +180,10 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
 
         const currentCategory = firstFilterValue?.category || 'text';
         const isNumeric = currentCategory === 'number' || currentCategory === 'decimal';
-        const relatedProperties = filterableElements.filter(element => element.category === currentCategory);
-        const hasRelatedProperties = relatedProperties.length > 0;
-
-        const gridTemplate = isCustomValueSelected ?
-            "0.8fr 100px 0.5fr 150px 42px 105px 35px 1fr 20px 1fr 20px 1fr" :
-            "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr 20px 1fr";
-
+        const showCustomValueInput = isCustomValueSelected && secondFilterValue?.custom;
+        const gridTemplate = showCustomValueInput ?
+            "0.8fr 250px 0.5fr 220px 20px 1fr" :
+            "0.8fr 250px 0.5fr 250px 1fr";
         return (
             <div className={FilterModalStyles.filterBuilder}>
                 <div className={FilterModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
@@ -171,6 +205,14 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
                             <option key={option} value={option}>{option}</option>
                         ))}
                     </select>
+                    {showCustomValueInput && (
+                        <input
+                            className={FilterModalStyles.input}
+                            type={isNumeric ? 'number' : 'text'}
+                            value={customFilterValue}
+                            onChange={(e) => e.target.value ? setCustomFilterValue(e.target.value) : setCustomFilterValue(0)}
+                        />
+                    )}
                     <select
                         className={FilterModalStyles.input}
                         value={JSON.stringify(secondFilterValue)}
@@ -181,19 +223,11 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
                             Custom value
                         </option>
                     </select>
-                    {isCustomValueSelected && (
-                        <input
-                            className={FilterModalStyles.customValueInput}
-                            type={isNumeric ? 'number' : 'text'}
-                            value={customFilterValue}
-                            onChange={(e) => e.target.value ? setCustomFilterValue(e.target.value) : setCustomFilterValue(0)}
-                        />
-                    )}
                     <button
                         className={FilterModalStyles.addButton}
                         onClick={() => addFilter()}
                         disabled={!hasOptions}>
-                        Add Filter
+                        Add
                     </button>
                 </div>
             </div>
@@ -201,24 +235,23 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
     }
 
     const renderFilters = () => {
-        return (
-            <div className={FilterModalStyles.filtersList}>
-                {tempFilters.map((filter, index) => {
-                    const firstElement = getFilterableElements().find(prop => prop.key === filter.property)?.label || filter.property;
-                    const secondElement = isCustomValueSelected ? filter.value : getFilterableElements().find(prop => prop.key === filter.value)?.label || filter.value;
-
-                    return (
-                        <div key={index} className={FilterModalStyles.filterItem}>
-                            {`${firstElement.label} ${filter.comparator} ${secondElement}`}
-                            <CloseIcon
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => deleteFilter(index)}
-                            />
-                        </div>
-                    );
-                })}
+        const filterElements = getFilterableElements();
+        const getLabel = (filterValue, isCustom) => {
+            if (isCustom) return filterValue.label;
+            const element = filterElements.find(el => JSON.stringify(el.value) === JSON.stringify(filterValue));
+            return element ? element.label : filterValue.label;
+        }
+        return (tempFilters.map((filter, index) => (
+            <div key={index} className={`${FilterModalStyles.filterRow} ${activeFilters.includes(filter.id) ? FilterModalStyles.filterRowActive : ''}`}
+                style={{ backgroundColor: tempFilters.some(f => f.id === filter.id) ? "#e9e9e9" : "white" }}>
+                <div className={FilterModalStyles.expression}>{getLabel(filter.firstValue, false)}</div>
+                <div className={FilterModalStyles.operator}>{filter.comparator}</div>
+                <div className={FilterModalStyles.expression}>{getLabel(filter.secondValue, filter.secondValue?.custom)}</div>
+                <DeleteIcon
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleRemoveFilter(filter.id)} />
             </div>
-        );
+        )));
     }
 
     return (
@@ -229,13 +262,19 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, setFilte
             <button className={FilterModalStyles.closeBtn} onClick={handleClose}>
                 <CloseIcon style={{ color: 'white', marginBottom: '-7px' }} />
             </button>
-            <div className={FilterModalStyles.modalContent}>
+            <div className={`${FilterModalStyles.modalContent} ${showFilterBuilder ? FilterModalStyles.showFilterBuilder : ""}`}>
                 {renderFilters()}
                 {filterBuilder()}
             </div>
             <div className={FilterModalStyles.modalActions}>
                 <button className={FilterModalStyles.setBtn} onClick={handleSubmit}>
                     Set Filters
+                </button>
+                <button
+                    onClick={() => toggleFilterBuilderVisibility()}
+                    className={FilterModalStyles.toggleButton}
+                >
+                    <ExpandMoreIcon style={{ transform: showFilterBuilder ? 'rotate(180deg)' : 'rotate(0)' }} />
                 </button>
                 <button className={FilterModalStyles.cancelBtn} onClick={handleClose}>
                     Cancel

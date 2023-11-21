@@ -31,37 +31,11 @@
     text-align: center;
 }
 
-.closeBtn {
-    align-self: flex-end;
-    border: none;
-    background: transparent;
-    border-radius: 20px;
-    color: black;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: 500;
-    margin-right: 2px;
-    margin-top: 2px;
-    padding: 4px 4px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.closeBtn:hover {
-    background-color: rgba(0, 0, 0, 0.25);
-}
-
 .modalContent {
     box-sizing: border-box;
     max-height: calc(100vh - 225px);
     overflow-y: auto;
 }
-
 
 .modalActions {
     align-items: center;
@@ -120,7 +94,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-
 .setBtn {
     background-color: #c22535;
     color: #ffffff;
@@ -151,4 +124,223 @@
 
 .setBtn:hover:before {
     opacity: 0.5;
+}
+
+.addButton {
+    background-color: #c22535;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.addButton:hover {
+    background-color: #e63946;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fieldContainer {
+    background-color: #e1e1e1;
+    display: grid;
+    grid-template-columns: 0.8fr 100px 0.5fr 150px 42px;
+    grid-gap: 10px;
+    padding: 10px;
+    align-items: center;
+    min-height: min-content;
+    min-width: min-content;
+}
+
+.labelFilter {
+    text-align: center;
+    padding: 0.4em 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+}
+
+.operatorSelector {
+    height: 100%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.25s ease, background-color 0.3s ease;
+    background-color: #6c757d;
+    color: #ffffff;
+    text-align-last: center;
+    appearance: none;
+    padding-left: 5px;
+    position: relative;
+}
+
+.input {
+    background: none;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    border-radius: 2px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-bottom-color 0.3s ease-in-out;
+}
+
+.filterName {
+    font-weight: bold;
+    color: #333;
+    background-color: #f3f3f3;
+    padding: 0.4em 0.5em;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.filterRow,
+.filterRowActive {
+    display: grid;
+    grid-template-columns: 1fr 100px 1fr 42px;
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), opacity 0.5s ease-in-out;
+    align-items: center;
+    grid-gap: 10px;
+    border-bottom: none;
+    max-height: 0;
+    opacity: 0;
+    overflow: auto;
+    overflow-y: hidden;
+    padding: 0;
+}
+
+.filterRowActive {
+    max-height: 50px;
+    opacity: 1;
+    padding: 5px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.expression,
+.operator {
+    text-align: center;
+    padding: 5px;
+    background-color: #fff;
+    border: 2px solid #aaa;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filterRemove {
+    background: none;
+    border: none;
+    justify-self: end;
+}
+
+.filterRemove:hover {
+    background: none;
+    cursor: pointer;
+}
+
+.errorIcon {
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a00;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.operatorButton {
+    height: 100%;
+    width: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.25s ease, background-color 0.3s ease;
+    background-color: #6c757d;
+    color: #ffffff;
+    text-align: center;
+}
+
+.operatorButton:hover {
+    background-color: #5a6268;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox {
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #aaa;
+    border-radius: 2px;
+}
+
+.filterBuilder {
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), opacity 0.5s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    overflow: auto;
+    overflow-y: hidden;
+    padding: 0;
+}
+
+.showFilterBuilder .filterBuilder {
+    max-height: 80px;
+    opacity: 1;
+}
+
+.toggleButton {
+    background-color: #f3f3f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.3s, background-color 0.3s;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+}
+
+.toggleButton:hover {
+    background-color: #e1e1e1;
+}
+
+.toggleButton>svg {
+    font-size: 24px;
+    transition: transform 0.3s;
+}
+
+/* For Firefox */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Chrome, Safari, and Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Edge and Internet Explorer */
+input[type="number"]::-ms-clear {
+    display: none;
 }
