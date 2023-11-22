@@ -1,7 +1,7 @@
 import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
 
-const getOperatorString = (operator, type, value, varNodeData) => {
-    const valueString = ['number', 'decimal', 'datetime'].includes(type) ? value : `"${value}"`;
+const getOperatorString = (operator, type, value, varNodeData, isDefined) => {
+    const valueString = isDefined ? `?${value}` : ['number', 'decimal', 'datetime'].includes(type) ? value : `"${value}"`;
     const operators = {
         '>': `?${varNodeData} > ${valueString}`,
         '<': `?${varNodeData} < ${valueString}`,
@@ -131,7 +131,7 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                     const transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                     body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
                     if (show) select += ' ?' + varProperty;
-                    if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty)} ) .\n`;
+                    if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty, false)} ) .\n`;
                 }
             });
 
@@ -149,18 +149,20 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                 body += `BIND (${expression} AS ?${bindingName})\n`;
             });
 
-            console.log(filters)
             // Build filters
+            const createFilterElement = (value) => {
+                if (value.custom)
+                    return value.label;
+                else if (value.nodeType)
+                    return cleanString(capitalizeFirst(removeSpaceChars(value.label)) + '___' + value.nodeType.toUpperCase() + '___' + value.nodeVarID);
+                else return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
+            }
             filters.forEach(filter => {
-                console.log(filter)
-                const firstElement = '1';//cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
-                const secondElement = '2';//cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
-                if (filter.firstValue.nodeVarID)
-                    body += `FILTER (${getOperatorString(filter.operator, 'number', secondElement, firstElement)})`;
-                else
-                    body += `FILTER (${getOperatorString(filter.operator, '', secondElement, firstElement)})`;
+                const firstElement = createFilterElement(filter.firstValue);
+                const secondElement = createFilterElement(filter.secondValue);
+                const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
+                body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, secondElement, firstElement, !filter.secondValue.custom)} ) .\n`;
             });
-
             if (graph) body += `}\n`;
         });
     }
