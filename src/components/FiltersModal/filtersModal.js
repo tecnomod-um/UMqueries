@@ -88,15 +88,10 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
     useEffect(() => {
         const isNumericOperator = ['<', '<=', '>=', '>'].includes(operator);
         const firstValueCategory = firstFilterValue?.category || 'text';
-        const isNumericFirstValue = ['number', 'decimal'].includes(firstValueCategory);
-
-        if (isNumericOperator && isNumericFirstValue) {
-            const numericOptions = getFilterableElements().filter(item =>
-                item.category === 'number' || item.category === 'decimal'
-            );
-            if (numericOptions.length > 0) {
+        if (isNumericOperator && (firstValueCategory === 'number' || firstValueCategory === 'decimal')) {
+            const numericOptions = getFilterableElements().filter(item => ['number', 'decimal'].includes(JSON.parse(item.value).category));
+            if (numericOptions.length > 0)
                 setSecondFilterValue(JSON.parse(numericOptions[0].value));
-            }
         }
     }, [operator, firstFilterValue, getFilterableElements]);
 
