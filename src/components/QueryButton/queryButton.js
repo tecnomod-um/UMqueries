@@ -7,13 +7,16 @@ const SparqlQuery = ({ graphs, activeGraphId, bindings, startingVar, setResultDa
     const [isLoading, setIsLoading] = useState(false);
 
     function inputValidator(startingVar) {
-        if (!Object.keys(startingVar).length || bindings.some(binding => binding.showInResults))
-            return false;
-        return true;
+        const somePropIsShown = graphs.find(graph => graph.id === activeGraphId).nodes.some(node => Object.values(node.properties).some(prop => prop.show));
+        const startingVarIsEmpty = Object.keys(startingVar).length;
+        const someBindingIsShown = bindings.some(binding => binding.showInResults);
+        if (!startingVarIsEmpty || somePropIsShown || someBindingIsShown)
+            return true;
+        return false;
     }
 
     const sendQuery = () => {
-        if (inputValidator(startingVar) || bindings.some(binding => binding.showInResults)) {
+        if (inputValidator(startingVar)) {
             handleQuery(graphs, activeGraphId, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);

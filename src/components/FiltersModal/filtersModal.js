@@ -25,6 +25,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         boolean: ['=', '!='],
         datetime: ['<', '<=', '=', '>=', '>'],
         binary: ['=', '!='],
+        link: ['=', '!=', '⊆'],
         uri: ['=', '!=', '⊆'],
         select: ['=']
     }), []);

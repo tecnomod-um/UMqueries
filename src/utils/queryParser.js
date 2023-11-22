@@ -153,11 +153,12 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
             // Build filters
             filters.forEach(filter => {
                 console.log(filter)
-                const firstElement = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                const firstElement = '1';//cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                const secondElement = '2';//cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
                 if (filter.firstValue.nodeVarID)
-                    body += `FILTER (${getOperatorString(filter.operator, filter.firstValue.nodeType, filter.key, firstElement)})`;
+                    body += `FILTER (${getOperatorString(filter.operator, 'number', secondElement, firstElement)})`;
                 else
-                    body += `FILTER (${getOperatorString(filter.operator, nodes[nodeInList].properties[property].type, data, varProperty)})`;
+                    body += `FILTER (${getOperatorString(filter.operator, '', secondElement, firstElement)})`;
             });
 
             if (graph) body += `}\n`;
