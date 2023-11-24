@@ -351,7 +351,7 @@ function Queries() {
     }
 
     function loadQueryFile(importData) {
-        const { graphs, bindings } = importData;
+        const { graphs } = importData;
         const initialVarIDs = graphs.map(graph => ({
             id: graph.id,
             varIdList: Object.fromEntries(
@@ -361,6 +361,7 @@ function Queries() {
                 }, {})).map(type => [type, 0])
             )
         }));
+    
         const newGraphs = graphs.map((graph) => {
             const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
             let nodeIdToIndexMapping = {};
@@ -378,18 +379,22 @@ function Queries() {
                     data: uri,
                 };
             });
+    
             const newEdges = graph.edges.map(edge => ({
                 ...edge,
                 from: nodeIdToIndexMapping[edge.from],
                 to: nodeIdToIndexMapping[edge.to],
             }));
-
+    
             return {
                 ...graph,
                 nodes: newNodes,
                 edges: newEdges,
+                bindings: graph.bindings, // Added this line to handle bindings
+                filters: graph.filters   // Added this line to handle filters
             };
         });
+    
         const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
         const updatedVarIDs = initialVarIDs.map(varID => ({
             ...varID,
@@ -399,9 +404,8 @@ function Queries() {
         }));
         setGraphs(newGraphs);
         setVarIDs(updatedVarIDs);
-        setBindings(bindings);
         setActiveGraph(newGraphs[0]?.id || 0);
-    }
+    }    
 
     function getGraphData() {
         const result = {};
