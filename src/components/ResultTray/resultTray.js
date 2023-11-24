@@ -112,7 +112,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
 
     const numVarsSelected = Object.keys(startingVar).length;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
-    buttonFilterLabel = startingVar.filter ? "Filters set" : "No filters set";
+    buttonFilterLabel = activeGraph.filters.length ? activeGraph.filters.length === 1 ?
+        `${activeGraph.filters.length} filter set` : `${activeGraph.filters.length} filters set` : "No filters set";
 
     const nodeContents = (node, isInstance, isClass) => {
         return {

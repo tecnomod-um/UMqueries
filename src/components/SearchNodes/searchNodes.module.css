@@ -13,80 +13,90 @@
 }
 
 .input::placeholder {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dataContainer {
-    margin: 1vh 0 0 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 1vh 0 0 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    scrollbar-width: thin;
-    scrollbar-color: #ccc #f5f5f5;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f5f5f5;
 }
 
 .dataContainer::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
 
 .dataContainer::-webkit-scrollbar-thumb {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 
 .dataContainer::-webkit-scrollbar-track {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 .input::-ms-clear {
-    display: none;
+  display: none;
 }
 
 .input::-webkit-search-cancel-button {
-    display: none;
+  display: none;
 }
 
 .loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-  
-  .dot {
-    margin: 0 8px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.dot {
+  margin: 0 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #c22535;
+  animation: dotScaling 0.9s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
+  /* Slightly slower animation */
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotScaling {
+
+  0%,
+  100% {
+    transform: scale(1);
     background-color: #c22535;
-    animation: dotScaling 0.9s cubic-bezier(0.645, 0.045, 0.355, 1) infinite; /* Slightly slower animation */
-  }
-  
-  .dot:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  
-  .dot:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-  
-  @keyframes dotScaling {
-    0%, 100% { 
-      transform: scale(1);
-      background-color: #c22535; /* Original color */
-    }
-    50% { 
-      transform: scale(1.5);
-      background-color: #e63946; /* Transition color */
-    }
+    /* Original color */
   }
 
-  @media (max-width: 768px) {
-    .loader{
-      height: 10vh;
-    }
+  50% {
+    transform: scale(1.5);
+    background-color: #e63946;
+    /* Transition color */
   }
+}
+
+@media (max-width: 768px) {
+  .loader {
+    height: 10vh;
+  }
+
+  .dataContainer {
+    margin: 0 0 0 0;
+  }
+}

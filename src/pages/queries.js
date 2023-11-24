@@ -9,6 +9,7 @@ import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import FiltersModal from "../components/FiltersModal/filtersModal";
+import ArrowIcon from '@mui/icons-material/ArrowDropDown';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
@@ -33,6 +34,11 @@ function Queries() {
     // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    // Hooks used on smaller viewports
+    const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
+    const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
+
+
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
@@ -412,7 +418,7 @@ function Queries() {
         return result;
     }
 
-    // Updates the bindings  in the current graph
+    // Updates the bindings in the current graph
     function setBindings(newBindings) {
         setGraphs(prevGraphs => {
             const updatedGraph = { ...prevGraphs[activeGraphIndex], bindings: newBindings };
@@ -456,9 +462,16 @@ function Queries() {
     return (
         <div className={mainContainerClass}>
             <div className={QueriesStyles.constraint_container}>
-                <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
-                <VarTray varData={varData} colorList={colorList} addNode={addNode} />
-            </div>
+                <span className={`${QueriesStyles.SearchNodesWrapper} ${!isVarTrayExpanded ? QueriesStyles.SearchNodesWrapperActive : ''}`}>
+                    <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
+                </span>
+                <div className={QueriesStyles.toggleButton} onClick={toggleVarTrayAndSearchNodes}>
+                    <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
+                </div>
+                <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
+                    <VarTray varData={varData} colorList={colorList} addNode={addNode} />
+                </span>
+            </div >
             <div className={QueriesStyles.main_container}>
                 <span className={QueriesStyles.graph_wrapper}>
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
@@ -469,7 +482,7 @@ function Queries() {
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
             <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
-        </div>
+        </div >
     );
 }
 

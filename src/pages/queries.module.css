@@ -27,13 +27,13 @@
 }
 
 .loadingContainer {
-    padding: 10px;
-    margin: auto;
-    background-color: #ecebeb;
-    min-height: calc(100vh - 55px);
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: calc(100vh - 55px);
+    background-color: #ecebeb;
+    margin: 0;
+    padding: 10px;
 }
 
 .loadingAnimation {
@@ -42,12 +42,11 @@
     height: 100px;
 }
 
+
 .loadingAnimation:before,
 .loadingAnimation:after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -114,9 +113,108 @@
     height: 80vh;
     color: darkgray;
     font-size: 2em;
+    margin: 0;
+    padding: 10px;
+}
+
+.toggleButton {
+    width: 100%;
+    height: 15px;
+    display: none;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    background-color: #c22535;
+    color: #ffffff;
+    border-radius: 5px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.toggleButton:hover {
+    background-color: #e63946;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.VarTrayWrapperActive~.toggleButton {
+    top: 0;
+    bottom: unset;
+}
+
+.SearchNodesWrapperActive~.toggleButton {
+    bottom: 0;
+    top: unset;
+}
+
+.arrowIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {
+
+    .constraint_container {
+        position: relative;
+        max-width: 100%;
+        width: 90%;
+        min-height: 30vh;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .SearchNodesWrapper,
+    .VarTrayWrapper {
+        display: block;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: scaleY(0);
+        transition: transform 0.3s ease-in-out;
+        overflow: hidden;
+    }
+
+    .SearchNodesWrapper {
+        height: calc(60vh - 58px);
+        transform-origin: top;
+        z-index: 1;
+    }
+
+    .toggleButton {
+        display: block;
+    }
+
+    .VarTrayWrapper {
+        height: calc(60vh - 5px);
+        transform-origin: bottom;
+        z-index: 2;
+    }
+
+    .SearchNodesWrapperActive {
+        transform: scaleY(1);
+        z-index: 2;
+    }
+
+    .VarTrayWrapperActive {
+        transform: scaleY(1);
+        z-index: 1;
+    }
+
+    .arrowIcon {
+        transition: transform 0.3s;
+    }
+
+    .arrowDown {
+        transform: rotate(180deg);
+    }
+
+    .VarTrayWrapperActive~.toggleButton {
+        top: 0;
+        bottom: unset;
+    }
+
     .queryContainer {
         margin: auto;
         flex-direction: column;
@@ -124,16 +222,13 @@
         height: auto;
     }
 
-    .constraint_container {
-        max-width: 100%;
-        width: 90%;
-        height: 30vh;
-        margin: 0 auto;
-    }
-
     .main_container {
         max-width: 100%;
         width: 90%;
         margin: 1em auto;
+    }
+
+    .error_screen {
+        font-size: 1em;
     }
 }
