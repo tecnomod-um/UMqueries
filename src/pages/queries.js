@@ -9,7 +9,6 @@ import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import FiltersModal from "../components/FiltersModal/filtersModal";
-import ArrowIcon from '@mui/icons-material/ArrowDropDown';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
@@ -361,7 +360,7 @@ function Queries() {
                 }, {})).map(type => [type, 0])
             )
         }));
-    
+
         const newGraphs = graphs.map((graph) => {
             const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
             let nodeIdToIndexMapping = {};
@@ -379,22 +378,22 @@ function Queries() {
                     data: uri,
                 };
             });
-    
+
             const newEdges = graph.edges.map(edge => ({
                 ...edge,
                 from: nodeIdToIndexMapping[edge.from],
                 to: nodeIdToIndexMapping[edge.to],
             }));
-    
+
             return {
                 ...graph,
                 nodes: newNodes,
                 edges: newEdges,
-                bindings: graph.bindings, // Added this line to handle bindings
-                filters: graph.filters   // Added this line to handle filters
+                bindings: graph.bindings,
+                filters: graph.filters
             };
         });
-    
+
         const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
         const updatedVarIDs = initialVarIDs.map(varID => ({
             ...varID,
@@ -405,7 +404,7 @@ function Queries() {
         setGraphs(newGraphs);
         setVarIDs(updatedVarIDs);
         setActiveGraph(newGraphs[0]?.id || 0);
-    }    
+    }
 
     function getGraphData() {
         const result = {};

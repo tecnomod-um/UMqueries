@@ -6,9 +6,9 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 const QueryButton = ({ graphs, activeGraphId, bindings, startingVar, setResultData }) => {
     const [isLoading, setIsLoading] = useState(false);
 
-    function inputValidator(startingVar) {
+    function inputValidator(graphs, startingVar) {
         const somePropIsShown = graphs.find(graph => graph.id === activeGraphId).nodes.some(node => Object.values(node.properties).some(prop => prop.show));
-        const startingVarIsEmpty = Object.keys(startingVar).length;
+        const startingVarIsEmpty = Object.keys(startingVar)?.length <= 0;
         const someBindingIsShown = bindings.some(binding => binding.showInResults);
         if (!startingVarIsEmpty || somePropIsShown || someBindingIsShown)
             return true;
@@ -16,7 +16,7 @@ const QueryButton = ({ graphs, activeGraphId, bindings, startingVar, setResultDa
     }
 
     const sendQuery = () => {
-        if (inputValidator(startingVar)) {
+        if (inputValidator(graphs, startingVar)) {
             handleQuery(graphs, activeGraphId, startingVar, setIsLoading)
                 .then(result => {
                     setResultData(result);

@@ -37,8 +37,8 @@
 .resultCount {
     display: none;
     position: absolute;
-    bottom: 1px;
-    right: 1px;
+    bottom: 0px;
+    right: 0px;
     background-color: lightGray;
     padding: 2px;
     border-radius: 2px;
