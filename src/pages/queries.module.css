@@ -26,8 +26,14 @@
     border: solid;
 }
 
+.graph_wrapper {
+    position: relative;
+    display: inline-block;
+}
+
 .loadingContainer {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 55px);
@@ -40,6 +46,9 @@
     position: relative;
     width: 100px;
     height: 100px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
 
 
@@ -63,9 +72,24 @@
     animation: spin 0.75s infinite linear;
 }
 
-.graph_wrapper {
-    position: relative;
-    display: inline-block;
+.loadingMessage {
+    text-align: center;
+    font-size: 2em;
+    color: darkgray;
+    margin-top: 20px;
+    animation: fadeInOut 8s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 @keyframes spin {
@@ -228,6 +252,10 @@
     }
 
     .error_screen {
+        font-size: 1em;
+    }
+
+    .loadingMessage {
         font-size: 1em;
     }
 }

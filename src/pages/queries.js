@@ -9,9 +9,11 @@ import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import FiltersModal from "../components/FiltersModal/filtersModal";
+import config from '../config';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
+
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -80,6 +82,9 @@ function Queries() {
         return (
             <div className={loadingContainerClass}>
                 <div className={QueriesStyles.loadingAnimation} />
+                <div className={QueriesStyles.loadingMessage}>
+                    Fetching '{config.endpointUrl}' data...
+                </div>
             </div>
         );
     }
