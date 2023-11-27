@@ -122,8 +122,8 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                 const data = nodes[nodeInList].properties[property].data;
                 const uri = nodes[nodeInList].properties[property].uri;
                 const usedInBinding = bindings.some(binding =>
-                    (binding.firstValue.isFromNode && binding.firstValue.nodeId === nodes[nodeInList].id && binding.firstValue.property === uri) ||
-                    (binding.secondValue.isFromNode && binding.secondValue.nodeId === nodes[nodeInList].id && binding.secondValue.property === uri)
+                    ((binding.firstValue.isFromNode) && (binding.firstValue.nodeId === nodes[nodeInList].id) && (binding.firstValue.property === uri)) ||
+                    ((binding.secondValue.isFromNode) && (binding.secondValue.nodeId === nodes[nodeInList].id) && (binding.secondValue.property === uri))
                 );
                 if (show || data || usedInBinding) {
                     const varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
@@ -135,35 +135,35 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                 }
             });
 
-            // Build binding variables
-            bindings.forEach(binding => {
-                const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
-                const operator = binding.operator;
-                let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
-                let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
-                let expression = `${firstValue} ${operator} ${secondValue}`;
-                if (binding.isAbsolute)
-                    expression = `ABS(${expression})`;
-                if (binding.showInResults)
-                    select += ' ?' + bindingName;
-                body += `BIND (${expression} AS ?${bindingName})\n`;
-            });
-
-            // Build filters
-            const createFilterElement = (value) => {
-                if (value.custom)
-                    return value.label;
-                else if (value.nodeType)
-                    return cleanString(capitalizeFirst(removeSpaceChars(value.label)) + '___' + value.nodeType.toUpperCase() + '___' + value.nodeVarID);
-                else return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
-            }
-            filters.forEach(filter => {
-                const firstElement = createFilterElement(filter.firstValue);
-                const secondElement = createFilterElement(filter.secondValue);
-                const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
-                body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, secondElement, firstElement, !filter.secondValue.custom)} ) .\n`;
-            });
             if (graph) body += `}\n`;
+        });
+        console.log(bindings)
+        // Build binding variables
+        bindings.forEach(binding => {
+            const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
+            const operator = binding.operator;
+            let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
+            let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
+            let expression = `${firstValue} ${operator} ${secondValue}`;
+            if (binding.isAbsolute)
+                expression = `ABS(${expression})`;
+            if (binding.showInResults)
+                select += ' ?' + bindingName;
+            body += `BIND (${expression} AS ?${bindingName})\n`;
+        });
+        // Build filters
+        const createFilterElement = (value) => {
+            if (value.custom)
+                return value.label;
+            else if (value.nodeType)
+                return cleanString(capitalizeFirst(removeSpaceChars(value.label)) + '___' + value.nodeType.toUpperCase() + '___' + value.nodeVarID);
+            else return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
+        }
+        filters.forEach(filter => {
+            const firstElement = createFilterElement(filter.firstValue);
+            const secondElement = createFilterElement(filter.secondValue);
+            const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
+            body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, secondElement, firstElement, !filter.secondValue.custom)} ) .\n`;
         });
     }
     // Start building the query in the current graph

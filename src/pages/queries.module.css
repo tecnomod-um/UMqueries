@@ -168,7 +168,7 @@
 }
 
 .SearchNodesWrapperActive~.toggleTab {
-    transform: translateY(calc(30vh - 20px));
+    transform: translateY(calc(30vh - 18px));
 }
 
 .arrowIcon {
