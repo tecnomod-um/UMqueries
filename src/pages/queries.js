@@ -468,7 +468,7 @@ function Queries() {
                 <span className={`${QueriesStyles.SearchNodesWrapper} ${!isVarTrayExpanded ? QueriesStyles.SearchNodesWrapperActive : ''}`}>
                     <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
-                <div className={QueriesStyles.toggleButton} onClick={toggleVarTrayAndSearchNodes}>
+                <div className={QueriesStyles.toggleTab} onClick={toggleVarTrayAndSearchNodes}>
                     <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
                 </div>
                 <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
