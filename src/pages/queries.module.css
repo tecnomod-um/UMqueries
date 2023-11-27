@@ -39,6 +39,7 @@
     min-height: calc(100vh - 55px);
     background-color: #ecebeb;
     margin: 0;
+    user-select: none;
     padding: 10px;
 }
 
