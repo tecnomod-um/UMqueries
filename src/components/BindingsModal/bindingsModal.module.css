@@ -312,6 +312,13 @@
     transition: transform 0.3s;
 }
 
+@media (max-width: 768px) {
+    .bindingBuilder .labelVarname,
+    .bindingBuilder .labelCheckbox {
+        display: none;
+    }
+}
+
 /* For Firefox */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

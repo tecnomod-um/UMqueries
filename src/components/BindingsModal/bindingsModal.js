@@ -5,6 +5,7 @@ import ModalWrapper from '../ModalWrapper/modalWrapper';
 import BindingModalStyles from "./bindingsModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
@@ -16,15 +17,17 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const [operator, setOperator] = useState('+');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
     const [secondCustomValue, setSecondCustomValue] = useState(0);
-    const [showFirstCustomInput, setFirstCustomInput] = useState(false);
-    const [showSecondCustomInput, setSecondCustomInput] = useState(false);
     const [firstBuilderValue, setFirstBuilderValue] = useState("");
     const [secondBuilderValue, setSecondBuilderValue] = useState("");
     const [bindingName, setBindingName] = useState("");
     const [isAbsolute, setIsAbsolute] = useState(false);
     const [showInResults, setShowInResults] = useState(false);
+    // Modal element configurations
     const [error, showError] = useState(false);
     const [showBindingBuilder, setShowBindingBuilder] = useState(bindings.length === 0);
+    const [showFirstCustomInput, setFirstCustomInput] = useState(false);
+    const [showSecondCustomInput, setSecondCustomInput] = useState(false);
+    const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
     const operatorLists = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
 
@@ -35,6 +38,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                 .filter(([key, property]) => property.type === "number")
                 .map(([key, property]) => ({
                     label: capitalizeFirst(`${key} ${node.label}`),
+                    var: capitalizeFirst(`${node.type} ${node.id}`),
                     isFromNode: true,
                     nodeId: node.id,
                     propertyUri: property.uri,
@@ -90,6 +94,15 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
             setTempBindings(updatedTempBindings);
         }, 500);
     }, [bindings, tempBindings, setBindings, removeBindingAndDependencies]);
+
+    // Detects the viewport size for element configs
+    useEffect(() => {
+        const handleResize = () => {
+            setViewportWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Updates bindings on node removal
     useEffect(() => {
@@ -205,6 +218,21 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         setShowBindingBuilder(!showBindingBuilder);
     }
 
+    const getGridTemplate = (viewportWidth, showFirstCustomInput, showSecondCustomInput) => {
+        const baseTemplate = viewportWidth <= 768 ? "100px 30px" : "0.8fr 100px 0.5fr";
+        let middleTemplate = viewportWidth <= 768 ? "150px 42px 150px" : "150px 42px 150px 1fr";
+
+        if (showFirstCustomInput && showSecondCustomInput)
+            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 120px" : "120px 20px 42px 120px 20px 1fr";
+        else if (showFirstCustomInput)
+            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 150px" : "120px 20px 42px 150px 1fr";
+        else if (showSecondCustomInput)
+            middleTemplate = viewportWidth <= 768 ? "150px 42px 120px" : "150px 42px 120px 20px 1fr";
+        const endTemplate = viewportWidth <= 768 ? "20px 20px 60px" : "20px 1fr 20px 1fr";
+
+        return `${baseTemplate} ${middleTemplate} ${endTemplate}`;
+    }
+
     // Binding builder interface definition
     function bindingBuilder() {
         const numericProperties = getNumericProperties(allNodes, tempBindings);
@@ -215,16 +243,10 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                 Custom value
             </option>
         ] : [<option key="no-options" value="">{`No options available`}</option>];
-        let gridTemplate = "0.8fr 100px 0.5fr 150px 42px 150px 1fr 20px 1fr 20px 1fr";
-        if (showFirstCustomInput && showSecondCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 120px 20px 42px 120px 20px 1fr 20px 1fr 20px 1fr";
-        else if (showFirstCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 120px 20px 42px 150px 1fr 20px 1fr 20px 1fr";
-        else if (showSecondCustomInput)
-            gridTemplate = "0.8fr 100px 0.5fr 150px 42px 120px 20px 1fr 20px 1fr 20px 1fr";
+
         return (
             <div className={BindingModalStyles.bindingBuilder}>
-                <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
+                <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: getGridTemplate(viewportWidth, showFirstCustomInput, showSecondCustomInput) }}>
                     <label className={BindingModalStyles.labelVarname}>Variable</label>
                     <span className={BindingModalStyles.inputWrapper}>
                         <input
@@ -235,7 +257,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                             onChange={e => setBindingName(e.target.value)} />
                         {error && <CloseIcon className={BindingModalStyles.errorIcon} />}
                     </span>
-                    <label className={BindingModalStyles.labelEquals}>equals</label>
+                    <label className={BindingModalStyles.labelEquals}>{viewportWidth <= 768 ? "=" : "equals"}</label>
                     {showFirstCustomInput && (
                         <input
                             type="number"
@@ -295,11 +317,8 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         onChange={(e) => setIsAbsolute(e.target.checked)}
                         className={BindingModalStyles.checkbox}
                     />
-                    <button
-                        className={BindingModalStyles.addButton}
-                        onClick={() => addBinding()}
-                        disabled={!hasOptions}>
-                        Add binding
+                    <button className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>
+                        {viewportWidth <= 768 ? <AddCircleOutlineIcon /> : "Add binding"}
                     </button>
                 </div>
             </div>

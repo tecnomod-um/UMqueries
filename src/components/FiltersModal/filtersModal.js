@@ -4,6 +4,7 @@ import ModalWrapper from '../ModalWrapper/modalWrapper';
 import FilterModalStyles from './filtersModal.module.css';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters, setFilters }) {
@@ -13,10 +14,12 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
     // Filter inputs
     const [firstFilterValue, setFirstFilterValue] = useState('');
     const [secondFilterValue, setSecondFilterValue] = useState('');
-    const [isCustomValueSelected, setIsCustomValueSelected] = useState(false);
     const [operator, setComparator] = useState('=');
     const [customFilterValue, setCustomFilterValue] = useState('');
+    // Modal element configurations
     const [showFilterBuilder, setShowFilterBuilder] = useState(tempFilters.length === 0);
+    const [isCustomValueSelected, setIsCustomValueSelected] = useState(false);
+    const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
     const operatorLists = useMemo(() => ({
         number: ['<', '<=', '=', '>=', '>'],
@@ -83,6 +86,15 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         if (!firstFilterValue) setDefaultValuesToFirstOption(setFirstFilterValue);
         if (!secondFilterValue) setDefaultValuesToFirstOption(setSecondFilterValue);
     }, [firstFilterValue, secondFilterValue, setDefaultValuesToFirstOption]);
+
+    // Detects the viewport size for element configs
+    useEffect(() => {
+        const handleResize = () => {
+            setViewportWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // If a numeric comparator value is selected, update with the first available numeric value
     useEffect(() => {
@@ -183,6 +195,13 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             setSecondFilterValue({ label: "Custom Value", custom: true });
     }
 
+    const getGridTemplate = (viewportWidth, showCustomValueInput) => {
+        if (viewportWidth <= 768)
+            return showCustomValueInput ? "250px 220px 20px 60px" : "250px 45px 250px 60px";
+        else
+            return showCustomValueInput ? "0.8fr 250px 0.5fr 220px 20px 1fr" : "0.8fr 250px 0.5fr 250px 1fr";
+    }
+
     // Filter builder interface definition
     const filterBuilder = () => {
         const filterableElements = getFilterableElements();
@@ -204,12 +223,10 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         const isNumeric = currentCategory === 'number' || currentCategory === 'decimal';
 
         const showCustomValueInput = isCustomValueSelected && secondFilterValue?.custom;
-        const gridTemplate = showCustomValueInput ?
-            "0.8fr 250px 0.5fr 220px 20px 1fr" :
-            "0.8fr 250px 0.5fr 250px 1fr";
+
         return (
             <div className={FilterModalStyles.filterBuilder}>
-                <div className={FilterModalStyles.fieldContainer} style={{ gridTemplateColumns: gridTemplate }}>
+                <div className={FilterModalStyles.fieldContainer} style={{ gridTemplateColumns: getGridTemplate(viewportWidth, showCustomValueInput) }}>
                     <label className={FilterModalStyles.labelFilter}>Filter</label>
                     <select
                         className={FilterModalStyles.input}
@@ -250,7 +267,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                         className={FilterModalStyles.addButton}
                         onClick={() => addFilter()}
                         disabled={!hasOptions}>
-                        Add
+                        {viewportWidth <= 768 ? <AddCircleOutlineIcon /> : "Add"}
                     </button>
                 </div>
             </div>

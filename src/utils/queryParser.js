@@ -142,15 +142,15 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
         bindings.forEach(binding => {
             const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
             const operator = binding.operator;
-            let firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.label)))}`;
-            let secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.label)))}`;
-            let expression = `${firstValue} ${operator} ${secondValue}`;
-            if (binding.isAbsolute)
-                expression = `ABS(${expression})`;
+            const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.var)))}`;
+            const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.var)))}`;
+            const expression = binding.isAbsolute ? `ABS(${firstValue} ${operator} ${secondValue})` : `${firstValue} ${operator} ${secondValue}`;
+
             if (binding.showInResults)
                 select += ' ?' + bindingName;
             body += `BIND (${expression} AS ?${bindingName})\n`;
         });
+
         // Build filters
         const createFilterElement = (value) => {
             if (value.custom)
