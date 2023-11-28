@@ -142,10 +142,8 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
         console.log(bindings);
         // Build binding variables
         const createBindingElement = (value) => {
-            console.log(value)
             if (value.isCustom) return value.value;
             const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId) : value.label;
-            console.log(`?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`)
             return `?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`;
         };
         bindings.forEach(binding => {
@@ -165,8 +163,7 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
             if (value.custom)
                 return value.label;
             else if (value.nodeType)
-                return cleanString(capitalizeFirst(removeSpaceChars(value.label)) + '___' + value.nodeType.toUpperCase() + '___' + value.nodeVarID);
-            else return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
+                return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
         }
         filters.forEach(filter => {
             const firstElement = createFilterElement(filter.firstValue);

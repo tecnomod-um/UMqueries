@@ -40,14 +40,15 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             if (node.properties) {
                 Object.entries(node.properties).forEach(([propName, prop]) => {
                     if (prop.data || prop.show) {
+                        const label = `${propName} ${node.label}`;
                         filterableElements.push({
-                            label: propName,
+                            label: label,
                             value: JSON.stringify({
                                 key: prop.uri,
                                 category: prop.type,
                                 nodeType: node.type,
                                 nodeVarID: node.varID,
-                                label: propName
+                                label: label
                             })
                         });
                     }
@@ -56,6 +57,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         });
         bindings.forEach(binding => {
             const category = getBindingCategory(binding);
+            // For bindings, you can adjust the label similarly if required
             filterableElements.push({
                 label: binding.label,
                 value: JSON.stringify({
