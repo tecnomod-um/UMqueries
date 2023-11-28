@@ -36,17 +36,23 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         const nodeNumericValues = (allNodes ?? []).flatMap(node => {
             return Object.entries(node.properties)
                 .filter(([key, property]) => property.type === "number")
+                // Value is needed to reconstruct the option from select
                 .map(([key, property]) => ({
                     label: capitalizeFirst(`${key} ${node.label}`),
-                    var: capitalizeFirst(`${node.type} ${node.id}`),
+                    key: key,
+                    nodeLabel: node.label,
+                    isVar: node.varID >= 0,
                     isFromNode: true,
                     nodeId: node.id,
                     propertyUri: property.uri,
                     value: JSON.stringify({
                         label: capitalizeFirst(`${key} ${node.label}`),
+                        key: key,
+                        nodeLabel: node.label,
+                        isVar: node.varID > 0,
                         isFromNode: true,
                         nodeId: node.id,
-                        propertyUri: property.uri
+                        propertyUri: property.uri,
                     })
                 }));
         });
@@ -87,9 +93,10 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
 
     // Remove and update bindings
     const handleRemoveVariable = useCallback((bindingId) => {
-        setActiveBindings(prevBindings => prevBindings.filter(id => id !== bindingId));
+        let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
+        const updatedActiveBindings = [...updatedBindings, ...updatedTempBindings].map(b => b.id);
+        setActiveBindings(updatedActiveBindings);
         setTimeout(() => {
-            let [updatedBindings, updatedTempBindings] = removeBindingAndDependencies(bindingId, bindings, tempBindings);
             setBindings(updatedBindings);
             setTempBindings(updatedTempBindings);
         }, 500);
@@ -144,20 +151,22 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const findValueInfo = (value) => {
         if (value.isFromNode) {
             return {
-                isFromNode: true,
-                isCustom: false,
-                nodeId: value.nodeId,
-                property: value.propertyUri,
                 label: value.label,
+                key: value.key,
+                nodeLabel: value.nodeLabel,
+                isVar: value.isVar,
+                isFromNode: true,
+                nodeId: value.nodeId,
+                propertyUri: value.propertyUri,
             };
         }
         const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
         if (foundBinding) {
             return {
+                label: foundBinding.label,
                 isFromNode: false,
                 isCustom: false,
                 bindingId: foundBinding.id,
-                label: foundBinding.label,
             };
         }
     }
@@ -223,11 +232,11 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         let middleTemplate = viewportWidth <= 768 ? "150px 42px 150px" : "150px 42px 150px 1fr";
 
         if (showFirstCustomInput && showSecondCustomInput)
-            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 120px" : "120px 20px 42px 120px 20px 1fr";
+            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 120px 20px" : "120px 20px 42px 120px 20px 1fr";
         else if (showFirstCustomInput)
             middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 150px" : "120px 20px 42px 150px 1fr";
         else if (showSecondCustomInput)
-            middleTemplate = viewportWidth <= 768 ? "150px 42px 120px" : "150px 42px 120px 20px 1fr";
+            middleTemplate = viewportWidth <= 768 ? "150px 42px 120px 20px" : "150px 42px 120px 20px 1fr";
         const endTemplate = viewportWidth <= 768 ? "20px 20px 60px" : "20px 1fr 20px 1fr";
 
         return `${baseTemplate} ${middleTemplate} ${endTemplate}`;

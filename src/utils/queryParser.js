@@ -122,11 +122,14 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                 const data = nodes[nodeInList].properties[property].data;
                 const uri = nodes[nodeInList].properties[property].uri;
                 const usedInBinding = bindings.some(binding =>
-                    ((binding.firstValue.isFromNode) && (binding.firstValue.nodeId === nodes[nodeInList].id) && (binding.firstValue.property === uri)) ||
-                    ((binding.secondValue.isFromNode) && (binding.secondValue.nodeId === nodes[nodeInList].id) && (binding.secondValue.property === uri))
+                    ((binding.firstValue.isFromNode) && (binding.firstValue.nodeId === nodes[nodeInList].id) && (binding.firstValue.propertyUri === uri)) ||
+                    ((binding.secondValue.isFromNode) && (binding.secondValue.nodeId === nodes[nodeInList].id) && (binding.secondValue.propertyUri === uri))
                 );
                 if (show || data || usedInBinding) {
-                    const varProperty = cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                    const varProperty = (nodes[nodeInList].varID === -1)
+                        ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].label + '___' + nodes[nodeInList].id)
+                        : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+
                     const uri = nodes[nodeInList].properties[property].uri;
                     const transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
                     body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
@@ -134,23 +137,29 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                     if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty, false)} ) .\n`;
                 }
             });
-
             if (graph) body += `}\n`;
         });
-        console.log(bindings)
+        console.log(bindings);
         // Build binding variables
+        const createBindingElement = (value) => {
+            console.log(value)
+            if (value.isCustom) return value.value;
+            const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId) : value.label;
+            console.log(`?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`)
+            return `?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`;
+        };
         bindings.forEach(binding => {
-            const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
-            const operator = binding.operator;
-            const firstValue = binding.firstValue.isCustom ? binding.firstValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.firstValue.var)))}`;
-            const secondValue = binding.secondValue.isCustom ? binding.secondValue.value : `?${cleanString(capitalizeFirst(removeSpaceChars(binding.secondValue.var)))}`;
-            const expression = binding.isAbsolute ? `ABS(${firstValue} ${operator} ${secondValue})` : `${firstValue} ${operator} ${secondValue}`;
+            const formattedFirstValue = createBindingElement(binding.firstValue);
+            const formattedSecondValue = createBindingElement(binding.secondValue);
+            const expression = binding.isAbsolute
+                ? `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`
+                : `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
 
-            if (binding.showInResults)
-                select += ' ?' + bindingName;
+            const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
+
+            if (binding.showInResults) select += ` ?${bindingName}`;
             body += `BIND (${expression} AS ?${bindingName})\n`;
         });
-
         // Build filters
         const createFilterElement = (value) => {
             if (value.custom)
