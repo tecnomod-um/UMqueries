@@ -49,7 +49,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                         label: capitalizeFirst(`${key} ${node.label}`),
                         key: key,
                         nodeLabel: node.label,
-                        isVar: node.varID > 0,
+                        isVar: node.varID >= 0,
                         isFromNode: true,
                         nodeId: node.id,
                         propertyUri: property.uri,

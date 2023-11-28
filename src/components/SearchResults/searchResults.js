@@ -33,9 +33,8 @@ function SearchResults({ resultData }) {
         return filteredResult;
     }, [resultData, searchTerm]);
 
-    const placeholderText = resultData
-        ? `Search by ${Object.keys(resultData).join(", ")}`
-        : "No elements to display";
+    const placeholderText = (resultData && Object.keys(resultData).length > 0) ?
+        `Search by ${Object.keys(resultData).join(", ")}` : "No elements to display";
 
     return (
         <span className={SearchStyles.search}>
