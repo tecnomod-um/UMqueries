@@ -139,6 +139,7 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
             });
             if (graph) body += `}\n`;
         });
+console.log(bindings);
         // Build binding variables
         const createBindingElement = (value) => {
             if (value.isCustom) return value.value;
