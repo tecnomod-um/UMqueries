@@ -1,5 +1,5 @@
 {
-  "name": "umubioqueries",
+  "name": "intuition",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -71,5 +71,5 @@
         "postcss": "^8.4.31"
       }
     }
-  }  
+  }
 }
