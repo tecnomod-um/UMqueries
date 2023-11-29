@@ -22,3 +22,24 @@ export const getCategory = (inputType) => {
     }
     return 'text';
 }
+
+export const getOperatorTooltip = (operator) => {
+    switch (operator) {
+        case '=':
+            return 'is equal to';
+        case '!=':
+            return 'is not equal to';
+        case '<':
+            return 'is less than';
+        case '<=':
+            return 'is less than or equal to';
+        case '>':
+            return 'is greater than';
+        case '>=':
+            return 'is greater than or equal to';
+        case '⊆':
+            return 'contains';
+        default:
+            return 'operator';
+    }
+}

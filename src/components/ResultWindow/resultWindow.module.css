@@ -1,0 +1,28 @@
+.resultBody {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+}
+
+.resultTable {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+.resultTh,
+.resultTd {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.resultTrEven {
+    background-color: #f2f2f2;
+}
+
+.resultTh {
+    background-color: #e0e0e0;
+    color: #333;
+}

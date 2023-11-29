@@ -1,10 +1,22 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import ResultTable from "../ResultTable/resultTable";
+import ResultWindow from "../ResultWindow/resultWindow";
 import SearchStyles from "./searchResults.module.css";
+import OpenNewIcon from "@mui/icons-material/OpenInNew";
 
 function SearchResults({ resultData }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [showResultsWindow, setShowResultWindow] = useState(false);
+
     const handleChange = e => setSearchTerm(e.target.value.toLowerCase());
+
+    const handleOpenNewWindow = () => {
+        setShowResultWindow(true);
+    };
+
+    const handleCloseNewWindow = useCallback(() => {
+        setShowResultWindow(false);
+    }, []);
 
     const filteredResult = useMemo(() => {
         let filteredResult = {};
@@ -21,9 +33,8 @@ function SearchResults({ resultData }) {
         return filteredResult;
     }, [resultData, searchTerm]);
 
-    const placeholderText = resultData
-        ? `Search by ${Object.keys(resultData).join(", ")}`
-        : "No elements to display";
+    const placeholderText = (resultData && Object.keys(resultData).length > 0) ?
+        `Search by ${Object.keys(resultData).join(", ")}` : "No elements to display";
 
     return (
         <span className={SearchStyles.search}>
@@ -33,6 +44,15 @@ function SearchResults({ resultData }) {
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
+            <span className={`${SearchStyles.resultCount} ${Object.values(filteredResult)[0]?.length > 0 ? SearchStyles.shown : ""}`}>
+                {Object.values(filteredResult)[0]?.length}
+            </span>
+            {Object.values(filteredResult).some(array => array.length > 0) && (
+                <button className={SearchStyles.openButton} onClick={handleOpenNewWindow}>
+                    <OpenNewIcon />
+                </button>
+            )}
+            {showResultsWindow && <ResultWindow results={filteredResult} onClose={handleCloseNewWindow} />}
             <div className={SearchStyles.dataContainer}>
                 <ResultTable filteredLists={filteredResult} minCellWidth={120} />
             </div>

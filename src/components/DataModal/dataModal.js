@@ -1,37 +1,19 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import { CSSTransition } from "react-transition-group";
+import React, { useEffect, useState, useMemo } from "react";
+import { getCategory, getOperatorTooltip } from "../../utils/typeChecker.js";
+import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
-import { getCategory } from "../../utils/typeChecker.js";
 
 // Used to define a node's data properties
 function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode }) {
+    // Data builder inputs
     const [operators, setOperators] = useState({});
-    const modalRef = useRef(null);
+    const inputRefs = {};
 
     const operatorLists = useMemo(() => ({
         number: ['=', '>', '<', '<=', '>='],
         text: ['=', '⊆'],
     }), []);
-
-    const getOperatorTooltip = (operator) => {
-        switch (operator) {
-            case '=':
-                return 'is equal to value';
-            case '>':
-                return 'is greater than value';
-            case '<':
-                return 'is lesser than value';
-            case '<=':
-                return 'is lesser than or equal to value';
-            case '>=':
-                return 'is greater than or equal to value';
-            case '⊆':
-                return 'contains value';
-            default:
-                return '';
-        }
-    }
 
     const getNewOperator = (currentOperator, type) =>
         operatorLists[type][(operatorLists[type].indexOf(currentOperator) + 1) % operatorLists[type].length];
@@ -68,8 +50,6 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
             window.removeEventListener("keyup", handleKeyUp);
         };
     }, [isDataOpen, setDataOpen]);
-
-    const inputRefs = {};
 
     function getInsideDataFields() {
         const MakeItem = (X) => <option key={X}>{X}</option>;
@@ -158,7 +138,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     break;
             }
             result.push(
-                <div className={DataModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-checkbox`}>
+                <div className={DataModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-row`}>
                     <label className={DataModalStyles.labelProperty} htmlFor={label}>{label}</label>
                     {input}
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
@@ -176,7 +156,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
 
     const handleClose = () => {
         setDataOpen(false);
-    };
+    }
 
     if (!selectedNode || !selectedNode.label) {
         return null;
@@ -202,63 +182,40 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                 updatedNode.properties[label].operator = operators[label];
             }
         });
-        console.log(updatedNode)
         setNode(updatedNode);
         setDataOpen(false);
     }
 
     return (
-        <CSSTransition
-            in={isDataOpen}
-            timeout={{ enter: 150, exit: 0 }}
-            classNames={{
-                enter: DataModalStyles.fadeEnter,
-                enterActive: DataModalStyles.fadeEnterActive,
-                exit: DataModalStyles.fadeExit,
-                exitActive: DataModalStyles.fadeExitActive,
-            }}
-            nodeRef={modalRef}
-            unmountOnExit
-        >
-            <div className={DataModalStyles.darkBG} onClick={handleClose}>
-                <div
-                    className={DataModalStyles.centered}
-                    ref={modalRef}
-                    onClick={(e) => e.stopPropagation()}
+        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={700}>
+            <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
+                <h2
+                    title={insideData[selectedNode.type] ?
+                        `Node '${selectedNode.label}' data properties` :
+                        `${selectedNode.label} has no data properties`}
                 >
-                    <div className={DataModalStyles.modal}>
-                        <div
-                            className={DataModalStyles.modalHeader}
-                            style={{ background: selectedNode.color }} // Set the background color
-                        >
-                            <h2
-                                title={insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
-                            >
-                                {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
-                            </h2>
-                        </div>
-                        <button className={DataModalStyles.closeBtn} onClick={handleClose}>
-                            <CloseIcon style={{ marginBottom: "-7px" }} />
-                        </button>
-                        {getInsideDataFields()}
-                        <div className={DataModalStyles.modalActions}>
-                            <div className={DataModalStyles.actionsContainer}>
-                                <button
-                                    style={{ background: selectedNode.color, }}
-                                    className={DataModalStyles.setBtn}
-                                    onClick={handleSubmit}
-                                >
-                                    Set properties
-                                </button>
-                                <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                </h2>
+            </div>
+            <button className={DataModalStyles.closeBtn} onClick={handleClose}>
+                <CloseIcon style={{ marginBottom: "-7px" }} />
+            </button>
+            {getInsideDataFields()}
+            <div className={DataModalStyles.modalActions}>
+                <div className={DataModalStyles.actionsContainer}>
+                    <button
+                        style={{ background: selectedNode.color, }}
+                        className={DataModalStyles.setBtn}
+                        onClick={handleSubmit}
+                    >
+                        Set properties
+                    </button>
+                    <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
+                        Cancel
+                    </button>
                 </div>
             </div>
-        </CSSTransition>
+        </ModalWrapper>
     );
 }
 

@@ -29,49 +29,38 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
   const handleMouseEnter = (event) => {
     setIsSubMenuOpen(true);
 
-    if (ContainerProps.onMouseEnter) {
+    if (ContainerProps.onMouseEnter)
       ContainerProps.onMouseEnter(event);
-    }
-  };
+  }
 
   const handleMouseLeave = (event) => {
     setIsSubMenuOpen(false);
 
-    if (ContainerProps.onMouseLeave) {
+    if (ContainerProps.onMouseLeave)
       ContainerProps.onMouseLeave(event);
-    }
-  };
+  }
 
   const isSubmenuFocused = () => {
     const active = containerRef.current?.ownerDocument?.activeElement;
     return Array.from(menuContainerRef.current?.children || []).includes(active);
-  };
+  }
 
   const handleFocus = (event) => {
-    if (event.target === containerRef.current) {
+    if (event.target === containerRef.current)
       setIsSubMenuOpen(true);
-    }
-
-    if (ContainerProps.onFocus) {
+    if (ContainerProps.onFocus)
       ContainerProps.onFocus(event);
-    }
-  };
+  }
 
   const handleKeyDown = (event) => {
-    if (event.key === "Escape") {
+    if (event.key === "Escape")
       return;
-    }
-
-    if (isSubmenuFocused()) {
+    if (isSubmenuFocused())
       event.stopPropagation();
-    }
-
     const active = containerRef.current?.ownerDocument?.activeElement;
 
-    if (event.key === "ArrowLeft" && isSubmenuFocused()) {
+    if (event.key === "ArrowLeft" && isSubmenuFocused())
       containerRef.current?.focus();
-    }
-
     if (
       event.key === "ArrowRight" &&
       event.target === containerRef.current &&
@@ -80,7 +69,7 @@ const NestedMenuItem = React.forwardRef((props, ref) => {
       const firstChild = menuContainerRef.current?.children[0];
       firstChild?.focus();
     }
-  };
+  }
 
   const open = isSubMenuOpen && parentMenuOpen;
 

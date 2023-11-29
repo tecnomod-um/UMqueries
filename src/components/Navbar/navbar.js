@@ -12,8 +12,8 @@ export default function Navbar() {
                 <img src={logo} width={40} height={40} alt="Home menu, displaying University of Murcia's logo." />
             </Link>
             <ul className={NavbarStyles.navlinks}>
-                <input type="checkbox" className={NavbarStyles.checkbox_toggle} />
-                <span className={NavbarStyles.hamburger}>&#9776;</span>
+                <input type="checkbox" id="menuToggle" className={NavbarStyles.checkbox_toggle} />
+                <label htmlFor="menuToggle" className={NavbarStyles.hamburger}>&#9776;</label>
                 <div className={NavbarStyles.menu}>
                     <li><CustomLink to="/">Home</CustomLink></li>
                     <li><CustomLink to="/queries">Queries</CustomLink></li>

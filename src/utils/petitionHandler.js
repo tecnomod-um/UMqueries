@@ -27,6 +27,7 @@ export const populateWithFilteredNodeData = (filter, setData, setIsLoading) => {
         .then(([nodeData]) => {
             setData(nodeData);
             setIsLoading(false);
+
         })
         .catch(error => {
             console.log(error);
@@ -41,7 +42,7 @@ export const populateWithEndpointData = (setVarData, setVarIDs, setObjectPropert
     ])
         .then(([varData, propertiesData]) => {
             setVarData(varData);
-            setVarIDs(Object.fromEntries(Object.keys(varData).map(type => [type, 0])));
+            setVarIDs([{ id: 0, varIdList: Object.fromEntries(Object.keys(varData).map(type => [type, 0])) }]);
             setObjectProperties(propertiesData.objectProperties);
             setDataProperties(propertiesData.dataProperties);
         })
@@ -51,15 +52,15 @@ export const populateWithEndpointData = (setVarData, setVarIDs, setObjectPropert
 }
 
 export const handlePropertiesFetch = () => {
-    return fetchData(`/umq/data/properties`);
+    return fetchData(`/intu/data/properties`);
 }
 
 export const handleFilteredNodeDataFetch = (filter) => {
-    return fetchData(`/umq/data/nodes?filter=${filter}`);
+    return fetchData(`/intu/data/nodes?filter=${filter}`);
 }
 
 export const handleVarDataFetch = () => {
-    return fetchData(`/umq/data/vars`);
+    return fetchData(`/intu/data/vars`);
 }
 
 export const fetchData = (dataFile) => {
@@ -126,17 +127,17 @@ export const fetchData = (dataFile) => {
     });
 }
 
-export const handleQuery = (nodes, edges, startingVar, setIsLoading) => {
+export const handleQuery = (graphs, activeGraphId, startingVar, setIsLoading) => {
     setIsLoading(true);
     let data = {
         endpoint: endpointURL,
-        query: parseQuery(nodes, edges, startingVar)
+        query: parseQuery(graphs, activeGraphId, startingVar)
     };
 
     return new Promise((resolve, reject) => {
         axios({
             method: 'post',
-            url: `${proxyURL}/umq/sparql`,
+            url: `${proxyURL}/intu/sparql`,
             data: data,
             withCredentials: true,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

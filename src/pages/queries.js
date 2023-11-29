@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
 import SearchNodes from '../components/SearchNodes/searchNodes';
 import VarTray from '../components/VarTray/varTray';
+import UnionTray from '../components/UnionTray/unionTray';
 import Graph from '../components/Graph/graph';
 import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
+import FiltersModal from "../components/FiltersModal/filtersModal";
+import config from '../config';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
+import { getCategory } from "../utils/typeChecker.js";
+
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -17,16 +22,41 @@ function Queries() {
     const [dataProperties, setDataProperties] = useState(null);
     const [objectProperties, setObjectProperties] = useState(null);
     // Data structures used through the app
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
+    const [graphs, setGraphs] = useState([{ id: 0, label: 'Default', nodes: [], edges: [], bindings: [], filters: [] }]);
+    const [activeGraphId, setActiveGraph] = useState(0);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [varIDs, setVarIDs] = useState(null);
-    // Flags used in the UI
+    // Modal-related hooks
     const [isDataOpen, setDataOpen] = useState(false);
     const [isBindingsOpen, setBindingsOpen] = useState(false);
+    const [isUnionTrayOpen, setUnionTrayOpen] = useState(false);
+    const [isFiltersOpen, setFiltersOpen] = useState(false);
+    // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    // Hooks used on smaller viewports
+    const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
+    const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
+
+
+    // Graph currently being displayed
+    const activeGraph = graphs.find(graph => graph.id === activeGraphId);
+    const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
+    // Nodes defined though all graphs
+    const allNodes = useMemo(() => {
+        const uniqueNodesMap = new Map();
+        graphs.forEach(graph => {
+            graph.nodes.forEach(node => {
+                const nodeKey = `${node.type}_${node.varID}`;
+                if (!uniqueNodesMap.has(nodeKey)) {
+                    uniqueNodesMap.set(nodeKey, node);
+                }
+            });
+        });
+        return Array.from(uniqueNodesMap.values());
+    }, [graphs]);
+
     // Loads endpoint data when first loaded
     useEffect(() => {
         populateWithEndpointData(setVarData, setVarIDs, setObjectProperties, setDataProperties)
@@ -52,15 +82,22 @@ function Queries() {
         return (
             <div className={loadingContainerClass}>
                 <div className={QueriesStyles.loadingAnimation} />
+                <div className={QueriesStyles.loadingMessage}>
+                    Fetching '{config.endpointUrl}' data...
+                </div>
             </div>
         );
     }
+    // Can't connect to server screen
+    else if (varData == null)
+        return <div className={QueriesStyles.error_screen}>Server can't be reached at the moment. Try again later.</div>;
 
     const mainContainerClass = isFading
         ? `${QueriesStyles.queryContainer} ${QueriesStyles.fadeIn}`
         : QueriesStyles.queryContainer;
 
     function generateColorList(varData) {
+        if (!varData) return {};
         const palette = distinctColors({
             count: Object.keys(varData).length,
             chromaMin: 15,
@@ -77,16 +114,135 @@ function Queries() {
 
     const colorList = generateColorList(varData);
 
-    function addNode(id, data, type, isVar, graph, classURI, uriOnly) {
+    const toggleUnionTray = () => {
+        setUnionTrayOpen(prevState => !prevState);
+    }
+
+    function changeActiveGraph(graphId) {
+        setActiveGraph(graphId);
+    }
+
+    // Checks if adding a graph would create a loop.
+    function isGraphLoop(graphIdToAdd, currentGraphId, visitedGraphs) {
+        if (graphIdToAdd === currentGraphId)
+            return true;
+        if (visitedGraphs.has(graphIdToAdd))
+            return true;
+
+        visitedGraphs.add(graphIdToAdd);
+        const graphToAdd = graphs.find(graph => graph.id === graphIdToAdd);
+        for (const node of graphToAdd.nodes) {
+            if (node.shape === 'circle' && node.data) {
+                if (node.data === currentGraphId)
+                    return true;
+                if (isGraphLoop(graphIdToAdd, node.data, visitedGraphs))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    function addGraph(label, graph) {
+        const newId = Math.max(...graphs.map(item => Number(item.id))) + 1;
+        const newGraph = graph ? graph : { id: newId, label: label, nodes: [], edges: [], bindings: [], filters: [] }
+        setGraphs([...graphs, newGraph]);
+        setVarIDs([...varIDs, { id: newId, varIdList: Object.fromEntries(Object.keys(varData).map(type => [type, 0])) }]);
+        return true;
+    }
+
+    // Adds the passed graph as a node to the active one
+    function addGraphNode(graphId) {
+        if (isGraphLoop(graphId, activeGraphId, new Set())) return false;
+        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
+    }
+
+    function addUnion(selectedNodeId, targetNodeId) {
+        setGraphs(prevGraphs => {
+            const newEdges = [...prevGraphs[activeGraphIndex].edges];
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.edges.reduce((max, edge) => Math.max(max, edge.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
+            const unionEdge = {
+                id: maxId,
+                dashes: false,
+                from: selectedNodeId,
+                to: targetNodeId,
+                label: 'UNION',
+                data: 'UNION',
+                isOptional: false,
+                isTransitive: false,
+                isFromInstance: false,
+                arrows: {
+                    to: { enabled: true, scaleFactor: 1, type: 'arrow' },
+                    from: { enabled: true, scaleFactor: 1, type: 'arrow' }
+                },
+                smooth: {
+                    enabled: true,
+                    type: 'curvedCW',
+                    roundness: 0.5
+                },
+                width: 2,
+                chosen: true,
+                color: {
+                    color: '#848484',
+                    highlight: '#848484',
+                    hover: '#848484',
+                    inherit: false
+                },
+            }
+            newEdges.push(unionEdge);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return true;
+    }
+
+    function removeGraph(graphId) {
+        if (graphs.length <= 1)
+            return false;
+        setGraphs(prevGraphs => {
+            const graphIndex = prevGraphs.findIndex(graph => graph.id === graphId);
+            const idIndex = varIDs.findIndex(set => set.id === graphId);
+            setVarIDs(prevIds => [...prevIds.slice(0, idIndex), ...prevIds.slice(idIndex + 1)]);
+            if (graphId === activeGraphId) {
+                if (graphIndex > 0)
+                    setActiveGraph(prevGraphs[graphIndex - 1].id);
+                else if (graphIndex < prevGraphs.length - 1)
+                    setActiveGraph(prevGraphs[graphIndex + 1].id);
+                else
+                    setActiveGraph(prevGraphs[0].id);
+            }
+            return [...prevGraphs.slice(0, graphIndex), ...prevGraphs.slice(graphIndex + 1)];
+        });
+        return true;
+    }
+
+    function addNode(id, data, type, isVar, graph, classURI, uriOnly, isGraph) {
         let newNode;
-        setNodes((prevNodes) => {
-            const maxId = prevNodes.reduce((maxId, node) => Math.max(maxId, node.id), -1);
-            const varID = isVar ? varIDs[type] : -1;
-            const label = isVar ? `${id} ${varID}` : id;
-            const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : data;
-            if (isVar) setVarIDs(prevVarIDs => ({ ...prevVarIDs, [type]: prevVarIDs[type] + 1 }));
-            const shape = uriOnly ? 'box' : 'big ellipse';
-            const color = uriOnly ? '#D3D3D3' : colorList[type];
+        setGraphs(prevGraphs => {
+            const newNodes = [...prevGraphs[activeGraphIndex].nodes];
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.nodes.reduce((max, node) => Math.max(max, node.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
+            const varID = isVar ? varIDs[varIDs.findIndex(set => set.id === activeGraphId)].varIdList[type] : -1;
+            const uri = isVar ? `?${capitalizeFirst(type)}___${varID}___URI` : isGraph ? id : data;
+            const label = isVar ? `${id} ${varID}` : isGraph ? data : id;
+
+            // Update only the active graph varIds 
+            if (isVar) {
+                setVarIDs(prevVarIDs => {
+                    return prevVarIDs.map(set => {
+                        if (set.id === activeGraphId)
+                            return { ...set, varIdList: { ...set.varIdList, [type]: set.varIdList[type] + 1 } };
+                        return set;
+                    });
+                });
+            }
+            const shape = uriOnly ? 'box' : isGraph ? 'circle' : 'big ellipse';
+            const color = uriOnly ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
+            const fontColor = isGraph ? 'white' : 'black';
             newNode = {
                 id: maxId + 1,
                 data: uri,
@@ -96,18 +252,37 @@ function Queries() {
                 varID: varID,
                 graph: graph,
                 class: classURI,
-                shape: shape
-            };
+                shape: shape,
+                font: { color: fontColor },
+                properties: {}
+            }
 
-            return [...prevNodes, newNode];
+            dataProperties[type]?.forEach(property => {
+                newNode.properties[property.label] = {
+                    uri: property.property,
+                    data: '',
+                    show: false,
+                    type: getCategory(property.type),
+                    transitive: false,
+                    operator: '=',
+                }
+            });
+            newNodes.push(newNode);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], nodes: newNodes };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
         return newNode;
     }
 
-    function addEdge(id1, id2, label, data, isOptional) {
-        setEdges((prevEdges) => {
-            const maxId = prevEdges.reduce((maxId, edge) => Math.max(maxId, edge.id), -1);
-            const newEdge = {
+    function addEdge(id1, id2, label, data, isOptional, isFromInstance) {
+        let newEdge;
+        setGraphs((prevGraphs) => {
+            const newEdges = [...prevGraphs[activeGraphIndex].edges];
+            const maxId = prevGraphs.reduce((maxId, graph) => {
+                const graphMaxId = graph.edges.reduce((max, edge) => Math.max(max, edge.id), -1);
+                return Math.max(maxId, graphMaxId);
+            }, -1);
+            newEdge = {
                 id: maxId + 1,
                 dashes: isOptional,
                 from: id1,
@@ -115,114 +290,207 @@ function Queries() {
                 label: label,
                 data: data,
                 isOptional: isOptional,
-                isTransitive: false
+                isTransitive: false,
+                isFromInstance: isFromInstance,
+                arrows: {
+                    to: { enabled: true, scaleFactor: 1, type: 'arrow' },
+                    from: { enabled: false }
+                },
+                smooth: {
+                    enabled: false,
+                },
+                width: 1,
+                chosen: true,
+                color: {
+                    color: '#000000',
+                    highlight: '#000000',
+                    hover: '#000000',
+                    inherit: false
+                },
             };
-            return [...prevEdges, newEdge];
+            newEdges.push(newEdge);
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
         });
+        return newEdge;
     }
 
     function setNode(updatedNode) {
-        setNodes(nodes => {
-            let newNodes = nodes.filter(node => node.id !== updatedNode.id);
+        setGraphs(graphs => {
+            let newNodes = graphs[activeGraphIndex].nodes.filter(node => node.id !== updatedNode.id);
             newNodes.push(updatedNode);
             newNodes.sort((node1, node2) => node1.id - node2.id);
-            return newNodes;
+            const updatedGraph = { ...graphs[activeGraphIndex], nodes: newNodes };
+            return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
         });
         setSelectedNode(updatedNode);
     }
 
     function removeNode() {
-        setEdges(edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id)));
-        setNodes(nodes.filter(node => node.id !== selectedNode.id));
-        setSelectedNode(null);
-        setSelectedEdge(null);
-        setDataOpen(false);
+        if (selectedNode) {
+            setGraphs(graphs => {
+                const updatedEdges = graphs[activeGraphIndex].edges.filter(edge => (edge.from !== selectedNode.id) && (edge.to !== selectedNode.id));
+                const updatedNodes = graphs[activeGraphIndex].nodes.filter(node => node.id !== selectedNode.id);
+                const updatedGraph = { ...graphs[activeGraphIndex], nodes: updatedNodes, edges: updatedEdges };
+                return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
+            });
+            setSelectedNode(null);
+            setSelectedEdge(null);
+            setDataOpen(false);
+            return true;
+        } return false;
     }
 
     function removeEdge() {
-        setEdges(edges.filter(edge => (edge.id !== selectedEdge.id)));
-        setSelectedNode(null);
-        setSelectedEdge(null);
+        if (selectedEdge) {
+            setGraphs(graphs => {
+                const updatedEdges = graphs[activeGraphIndex].edges.filter(edge => (edge.id !== selectedEdge.id));
+                const updatedGraph = { ...graphs[activeGraphIndex], edges: updatedEdges };
+                return [...graphs.slice(0, activeGraphIndex), updatedGraph, ...graphs.slice(activeGraphIndex + 1)];
+            });
+            setSelectedNode(null);
+            setSelectedEdge(null);
+            return true;
+        } return false;
     }
 
-    function loadGraph(graph) {
-        setNodes([]);
-        setEdges([]);
-        const initialVarIDs = Object.fromEntries(Object.keys(varData).map(type => [type, 0]));
-        setVarIDs(initialVarIDs);
-        let newVarIDs = { ...initialVarIDs };
+    function loadQueryFile(importData) {
+        const { graphs } = importData;
+        const initialVarIDs = graphs.map(graph => ({
+            id: graph.id,
+            varIdList: Object.fromEntries(
+                Object.keys(graph.nodes.reduce((acc, node) => {
+                    acc[node.type] = 0;
+                    return acc;
+                }, {})).map(type => [type, 0])
+            )
+        }));
 
-        let nodeIdToIndex = {};  // Map from node IDs to their index in the newNodes array
+        const newGraphs = graphs.map((graph) => {
+            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
+            let nodeIdToIndexMapping = {};
+            const newNodes = graph.nodes.map((node) => {
+                let varID = node.varID;
+                if (varID !== -1)
+                    varID = currentVarIDObj.varIdList[node.type]++;
+                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
+                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
+                nodeIdToIndexMapping[node.id] = node.id;
+                return {
+                    ...node,
+                    varID,
+                    label,
+                    data: uri,
+                };
+            });
 
-        const newNodes = graph.nodes.map((node, index) => {
-            const varID = node.varID !== -1 ? newVarIDs[node.type] : -1;
-            const label = node.varID !== -1 ? `${node.label} ${varID}` : node.label;
-            const uri = node.varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
-            const shape = node.shape === 'box' ? 'box' : 'big ellipse';
-            const color = node.shape === 'box' ? '#D3D3D3' : colorList[node.type];
-            if (node.varID !== -1) newVarIDs[node.type] = varID + 1;
+            const newEdges = graph.edges.map(edge => ({
+                ...edge,
+                from: nodeIdToIndexMapping[edge.from],
+                to: nodeIdToIndexMapping[edge.to],
+            }));
 
-            const newNode = {
-                id: node.id,  // Use the actual node id, not the index
-                data: uri,
-                label: label,
-                color: color,
-                type: node.type,
-                varID: varID,
-                graph: node.graph,
-                class: node.class,
-                shape: shape
-            };
-
-            nodeIdToIndex[node.id] = index;  // Store the index for later use in edges
-
-            if (node.properties) {
-                newNode.properties = node.properties;
-            }
-
-            return newNode;
-        });
-        setNodes(newNodes);
-        setVarIDs(newVarIDs);
-        const newEdges = graph.edges.map((edge, index) => {
             return {
-                id: index,
-                dashes: edge.isOptional,
-                from: nodeIdToIndex[edge.from],  // Use the correct index from the map
-                to: nodeIdToIndex[edge.to],  // Use the correct index from the map
-                label: edge.label,
-                data: edge.data,
-                isOptional: edge.isOptional,
-                isTransitive: false
+                ...graph,
+                nodes: newNodes,
+                edges: newEdges,
+                bindings: graph.bindings,
+                filters: graph.filters
             };
         });
-        setEdges(newEdges);
+
+        const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
+        const updatedVarIDs = initialVarIDs.map(varID => ({
+            ...varID,
+            varIdList: Object.fromEntries(
+                Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
+            )
+        }));
+        setGraphs(newGraphs);
+        setVarIDs(updatedVarIDs);
+        setActiveGraph(newGraphs[0]?.id || 0);
     }
 
+    function getGraphData() {
+        const result = {};
+        result.graphs = graphs.map(graph => {
+            return {
+                id: graph.id,
+                label: graph.label,
+                nodes: graph.nodes,
+                edges: graph.edges,
+                bindings: graph.bindings,
+                filters: graph.filters
+            };
+        });
+        return result;
+    }
+
+    // Updates the bindings in the current graph
+    function setBindings(newBindings) {
+        setGraphs(prevGraphs => {
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], bindings: newBindings };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return activeGraph.bindings;
+    }
+
+    // Updates the filters in the current graph
+    function setFilters(newFilters) {
+        setGraphs(prevGraphs => {
+            const updatedGraph = { ...prevGraphs[activeGraphIndex], filters: newFilters };
+            return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+        });
+        return activeGraph.filters;
+    }
+
+    // Toggles transitivity for the selected edge
     function toggleIsTransitive(edge) {
-        let propCanBeTransitive = objectProperties[nodes.find(node => node.id === edge.to).type].some(obj => obj.property = edge.data);
-        if (propCanBeTransitive) {
-            let label = edge.label;
-            edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
-            let newEdges = [...edges];
-            newEdges[edge.id] = { id: edge.id, dashes: edge.isOptional, from: edge.from, to: edge.to, label: label, data: edge.data, isOptional: edge.isOptional, isTransitive: !edge.isTransitive };
-            setEdges(newEdges);
-        }
+        let propCanBeTransitive;
+        setGraphs(prevGraphs => {
+            propCanBeTransitive = edge.data === 'UNION' ? false : objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
+            if (propCanBeTransitive) {
+                let label = edge.label;
+                edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
+                let newEdges = [...prevGraphs[activeGraphIndex].edges];
+                const edgeIndex = newEdges.findIndex(e => e.id === edge.id);
+                newEdges[edgeIndex] = {
+                    ...edge,
+                    label: label,
+                    isTransitive: !edge.isTransitive
+                };
+                const updatedGraph = { ...prevGraphs[activeGraphIndex], edges: newEdges };
+                return [...prevGraphs.slice(0, activeGraphIndex), updatedGraph, ...prevGraphs.slice(activeGraphIndex + 1)];
+            }
+            return prevGraphs;
+        });
+        return propCanBeTransitive;
     }
 
     return (
         <div className={mainContainerClass}>
             <div className={QueriesStyles.constraint_container}>
-                <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
-                <VarTray varData={varData} colorList={colorList} addNode={addNode} />
-            </div>
-            <div className={QueriesStyles.graph_container}>
-                <Graph nodesInGraph={nodes} edgesInGraph={edges} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
-                <ResultTray edgeData={objectProperties} insideData={dataProperties} nodes={nodes} edges={edges} selectedNode={selectedNode} selectedEdge={selectedEdge} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen}  loadGraph={loadGraph} />
+                <span className={`${QueriesStyles.SearchNodesWrapper} ${!isVarTrayExpanded ? QueriesStyles.SearchNodesWrapperActive : ''}`}>
+                    <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
+                </span>
+                <div className={QueriesStyles.toggleTab} onClick={toggleVarTrayAndSearchNodes}>
+                    <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
+                </div>
+                <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
+                    <VarTray varData={varData} colorList={colorList} addNode={addNode} />
+                </span>
+            </div >
+            <div className={QueriesStyles.main_container}>
+                <span className={QueriesStyles.graph_wrapper}>
+                    <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
+                    <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
+                </span>
+                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal selectedNode={selectedNode} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} />
-        </div>
+            <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+        </div >
     );
 }
 

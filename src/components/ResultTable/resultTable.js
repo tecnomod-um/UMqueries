@@ -1,32 +1,27 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import ResultTableStyles from "./resultTable.module.css";
 
 function getTableHeaders(filteredLists) {
-  if (!filteredLists) {
-      return [];
-  }
+  if (!filteredLists) return [];
   return Object.keys(filteredLists);
 }
 
-function getTableContent(filteredLists) {
-  if (!filteredLists || Object.keys(filteredLists).length === 0) {
-      return null;
-  }
-
+function getTableContent(filteredLists, tbodyElement) {
+  if (!filteredLists || Object.keys(filteredLists).length === 0) return null;
   const rowCount = Object.values(filteredLists)[0].length;
 
   return (
-      <tbody className={ResultTableStyles.resTbody}>
-          {[...Array(rowCount)].map((_, rowIndex) => (
-              <tr key={`row-${rowIndex}`} className={ResultTableStyles.resTr}>
-                  {Object.keys(filteredLists).map((key) => (
-                      <td key={`${key}-${rowIndex}`} className={ResultTableStyles.resTd}>
-                          <span className={ResultTableStyles.resSpan}>{filteredLists[key][rowIndex]}</span>
-                      </td>
-                  ))}
-              </tr>
+    <tbody className={ResultTableStyles.resTbody} ref={tbodyElement}>
+      {[...Array(rowCount)].map((_, rowIndex) => (
+        <tr key={`row-${rowIndex}`} className={ResultTableStyles.resTr}>
+          {Object.keys(filteredLists).map((key) => (
+            <td key={`${key}-${rowIndex}`} className={ResultTableStyles.resTd}>
+              <span className={ResultTableStyles.resSpan}>{filteredLists[key][rowIndex]}</span>
+            </td>
           ))}
-      </tbody>
+        </tr>
+      ))}
+    </tbody>
   );
 }
 
@@ -36,6 +31,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [columns, setColumns] = useState(createHeaders(["."]));
   const tableElement = useRef(null);
+  const tbodyElement = useRef(null);
   const gridTemplateColumns = columns.map(() => 'minmax(100px, 1fr)').join(' ');
 
   function createHeaders(headers) {
@@ -54,34 +50,50 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
     setColumns(createHeaders(tableHeaders));
   }, [filteredLists]);
 
-  useEffect(() => {
-    setTableHeight(tableElement.current.offsetHeight);
-  }, []);
+  useLayoutEffect(() => {
+    if (tbodyElement.current) {
+      requestAnimationFrame(() => {
+        let totalHeight = 0;
+        const rows = tbodyElement.current.children;
+        totalHeight += rows[0].children[0].getBoundingClientRect().height;
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].children;
+          let maxHeight = 0;
+          for (let j = 0; j < cells.length; j++) {
+            maxHeight = Math.max(maxHeight, cells[j].getBoundingClientRect().height);
+          }
+          totalHeight += maxHeight;
+        }
+        setTableHeight(`${totalHeight}px`);
+      });
+    }
+  }, [filteredLists]);
 
   const mouseDown = useCallback((index) => {
     setActiveIndex(index);
+    toggleTextSelection(false);
   }, []);
 
-  const mouseMove = useCallback(
-    (e) => {
-      const scrollLeft = tableElement.current.scrollLeft;
-      const gridColumns = columns.map((col, i) => {
-        if (i === activeIndex) {
-          const width = e.clientX - (col.ref.current.offsetLeft - scrollLeft);
-          if (width >= minCellWidth) {
-            return `${width}px`;
-          }
+  const mouseMove = useCallback((e) => {
+    const tableRect = tableElement.current.getBoundingClientRect();
+    const gridColumns = columns.map((col, i) => {
+      if (i === activeIndex) {
+        const colOffsetLeft = col.ref.current.offsetLeft;
+        const width = e.clientX - tableRect.left - colOffsetLeft + tableElement.current.scrollLeft;
+        if (width >= minCellWidth) {
+          return `${width}px`;
         }
-        return `${col.ref.current.offsetWidth}px`;
-      });
-      tableElement.current.style.gridTemplateColumns = gridColumns.join(" ");
-    },
+      }
+      return `${col.ref.current.offsetWidth}px`;
+    });
+    tableElement.current.style.gridTemplateColumns = gridColumns.join(" ");
+  },
     [activeIndex, columns, minCellWidth]
   );
 
-
   const mouseUp = useCallback(() => {
     setActiveIndex(null);
+    toggleTextSelection(true);
   }, []);
 
   useEffect(() => {
@@ -96,6 +108,10 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
     };
   }, [activeIndex, mouseMove, mouseUp]);
 
+  const toggleTextSelection = (enabled) => {
+    document.body.style.userSelect = enabled ? '' : 'none';
+  }
+
   return (
     <table className={ResultTableStyles.resTable} style={{ gridTemplateColumns }} ref={tableElement}>
       <thead className={ResultTableStyles.resThead}>
@@ -106,14 +122,13 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
               <div
                 style={{ height: tableHeight }}
                 onMouseDown={() => mouseDown(i)}
-                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"
-                  }`}
+                className={`${ResultTableStyles.resizeHandle} ${activeIndex === i ? ResultTableStyles.active : "idle"}`}
               />
             </th>
           ))}
         </tr>
       </thead>
-      {getTableContent(filteredLists)}
+      {getTableContent(filteredLists, tbodyElement)}
     </table>
   );
 };

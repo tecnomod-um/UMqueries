@@ -3,12 +3,15 @@ import VisGraph from "react-vis-graph-wrapper";
 import GraphStyles from "./graph.module.css";
 
 // Vis.js Graph component.
-function Graph({ nodesInGraph, edgesInGraph, setSelectedNode, setSelectedEdge, setDataOpen, toggleIsTransitive }) {
+function Graph({ activeGraph, setSelectedNode, setSelectedEdge, setDataOpen, toggleIsTransitive }) {
+
+  const nodesInGraph = activeGraph.nodes;
+  const edgesInGraph = activeGraph.edges;
 
   const options = {
     autoResize: false,
-    height: '100%', // use relative height instead of static
-    width: '100%', // set the width of the graph to fill its container
+    height: '100%',
+    width: '100%',
   };
 
   const graph = {

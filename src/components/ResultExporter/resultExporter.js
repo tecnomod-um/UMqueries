@@ -1,7 +1,7 @@
 import React from 'react';
 import { DropdownMenuItem } from "../Dropdown/dropdown";
 import { saveAs } from 'file-saver';
-import XLSX from 'xlsx/dist/xlsx.full.min.js';
+import XLSX from 'xlsx';
 
 // Exports the result to the passed filetype
 const ResultExporter = ({ data, fileType }) => {

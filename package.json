@@ -1,32 +1,39 @@
 {
-  "name": "umubioqueries",
+  "name": "intuition",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.0",
+    "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.3.6",
+    "axios": "^1.6.1",
+    "css-select": "^5.1.0",
     "distinct-colors": "^3.0.0",
     "file-saver": "^2.0.5",
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-graph-vis": "^1.0.7",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-virtualized": "^9.22.5",
     "react-vis-graph-wrapper": "^0.1.3",
     "react-vis-network-graph": "^3.0.1",
     "redux": "^4.2.1",
+    "resolve-url-loader": "^5.0.0",
+    "stable": "^0.1.8",
     "tachyons": "^4.12.0",
+    "uuid": "^9.0.1",
     "vis-data": "^7.1.6",
     "vis-network": "^9.1.6",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz"
   },
   "scripts": {
     "start": "react-scripts --max_old_space_size=4096 start",
@@ -53,6 +60,16 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@svgr/webpack": "^6.2.1",
     "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "overrides": {
+    "react-scripts": {
+      "@svgr/webpack": "6.5.1",
+      "resolve-url-loader": {
+        "postcss": "^8.4.31"
+      }
+    }
   }
 }

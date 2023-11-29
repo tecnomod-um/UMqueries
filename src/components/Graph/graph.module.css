@@ -1,16 +1,16 @@
 .map {
-    outline: 2px solid darkgray;
-    border-radius: 2px;
-    background-color: white;
-    padding: 0;
-    height: 59vh;
-    width: 100%;
-    margin: 0 0 1vh 0;
-    box-sizing: border-box;
+  outline: 2px solid darkgray;
+  border-radius: 2px;
+  background-color: white;
+  padding: 0;
+  height: 59vh;
+  width: 98%;
+  margin: 0 0 1vh 0;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
-    .map {
-      height: 25vh;
-    }
+  .map {
+    height: 25vh;
   }
+}
