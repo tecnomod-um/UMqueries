@@ -33,6 +33,22 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         select: ['=']
     }), []);
 
+    // Check if a filter is valid
+    const isFilterValid = useMemo(() => {
+        return (filter) => {
+            const checkElementValidity = (element) => {
+                if (element.custom)
+                    return true;
+                else if (element.nodeType)
+                    return nodes.some(node => node.id === element.nodeID);
+                else if (element.category === 'binding')
+                    return bindings.some(binding => binding.id === element.key);
+                return false;
+            };
+            return checkElementValidity(filter.firstValue) && checkElementValidity(filter.secondValue);
+        };
+    }, [nodes, bindings]);
+
     // Gets all elements that could be useful for a filter definition
     const getFilterableElements = useCallback(() => {
         const filterableElements = [];
@@ -47,6 +63,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                                 key: prop.uri,
                                 category: prop.type,
                                 nodeType: node.type,
+                                nodeID: node.id,
                                 nodeVarID: node.varID,
                                 label: label
                             })
@@ -88,6 +105,16 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         if (!firstFilterValue) setDefaultValuesToFirstOption(setFirstFilterValue);
         if (!secondFilterValue) setDefaultValuesToFirstOption(setSecondFilterValue);
     }, [firstFilterValue, secondFilterValue, setDefaultValuesToFirstOption]);
+
+    // Update filters when nodes or bindings change
+    useEffect(() => {
+        const updatedFilters = filters.filter(isFilterValid);
+        const updatedTempFilters = tempFilters.filter(isFilterValid);
+        if (updatedFilters.length !== filters.length || updatedTempFilters.length !== tempFilters.length) {
+            setFilters(updatedFilters);
+            setTempFilters(updatedTempFilters);
+        }
+    }, [nodes, bindings, filters, tempFilters, setFilters, isFilterValid]);
 
     // Detects the viewport size for element configs
     useEffect(() => {
@@ -164,6 +191,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             comparator: operator,
             secondValue
         };
+        console.log(newFilter)
         setTempFilters([...tempFilters, newFilter]);
         setFirstFilterValue('');
         setSecondFilterValue('');

@@ -142,7 +142,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     <label className={DataModalStyles.labelProperty} htmlFor={label}>{label}</label>
                     {input}
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
-                    <input className={DataModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} name={`${label}_queriesShow`} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
+                    <input className={DataModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} name={`${label}_queriesShow`} /*disabled={!isVar}*/ style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesTransitive"}>Make transitive:</label>
                     <input className={DataModalStyles.checkbox} type="checkbox" id={label + "_queriesTransitive"} name={`${label}_queriesTransitive`} disabled={!isVar} style={{ display: 'inline-block' }} defaultChecked={checkTransitive} ref={el => (inputRefs[label + "_queriesTransitive"] = el)} />
                 </div>
