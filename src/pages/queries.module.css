@@ -240,15 +240,17 @@
     }
 
     .queryContainer {
-        margin: auto;
+        margin: 0 auto;
         flex-direction: column;
         align-items: flex-start;
         height: auto;
+        padding: 8px;
     }
 
     .main_container {
         max-width: 100%;
         width: 90%;
+        height: auto;
         margin: 1em auto;
     }
 
