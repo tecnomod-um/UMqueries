@@ -79,4 +79,4 @@ The control panel is located underneath the graph. Here are located the buttons 
 - **Home page**: Includes a brief explanation of the app.
 - **About page**: Includes the creators of the tool.
 
-For further assistance or bug reporting, please refer to the support section on our website.
+For further assistance or bug reporting, feel free to create an issue or contact us directly.
