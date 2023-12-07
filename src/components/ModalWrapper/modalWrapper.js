@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import ModalWrapperStyles from "./modalWrapper.module.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -7,6 +7,13 @@ const ModalWrapper = ({ isOpen, children, closeModal, maxWidth }) => {
     // Modal behavior
     const modalRef = useRef(null);
     const [mouseDownOnBackdrop, setMouseDownOnBackdrop] = useState(false);
+
+    // Get focus on open
+    useEffect(() => {
+        if (isOpen) {
+            modalRef.current?.focus();
+        }
+    }, [isOpen]);
 
     const handleBackdropMouseDown = () => {
         setMouseDownOnBackdrop(true);

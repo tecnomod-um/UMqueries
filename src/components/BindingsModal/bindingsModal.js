@@ -30,7 +30,6 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
     const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
     const operatorLists = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
-
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getNumericProperties = useCallback(() => {
         const nodeNumericValues = (allNodes ?? []).flatMap(node => {
@@ -254,7 +253,8 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
         ] : [<option key="no-options" value="">{`No options available`}</option>];
 
         return (
-            <div className={BindingModalStyles.bindingBuilder}>
+            <section aria-labelledby="binding-builder-title" className={BindingModalStyles.bindingBuilder}>
+                <h3 id="binding-builder-title" className="visually-hidden">Binding Builder</h3>
                 <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: getGridTemplate(viewportWidth, showFirstCustomInput, showSecondCustomInput) }}>
                     <label className={BindingModalStyles.labelVarname}>Variable</label>
                     <span className={BindingModalStyles.inputWrapper}>
@@ -263,13 +263,15 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                             type="text"
                             value={bindingName}
                             disabled={!hasOptions}
-                            onChange={e => setBindingName(e.target.value)} />
-                        {error && <CloseIcon className={BindingModalStyles.errorIcon} />}
+                            onChange={e => setBindingName(e.target.value)}
+                            aria-label="Variable Input" />
+                        {error && <CloseIcon aria-label="Input error" aria-live="polite" className={BindingModalStyles.errorIcon} />}
                     </span>
                     <label className={BindingModalStyles.labelEquals}>{viewportWidth <= 768 ? "=" : "equals"}</label>
                     {showFirstCustomInput && (
                         <input
                             type="number"
+                            aria-label="First custom value"
                             value={firstCustomValue}
                             onChange={(e) => e.target.value ? setFirstCustomValue(parseInt(e.target.value, 10)) : setFirstCustomValue(0)}
                             className={BindingModalStyles.input}
@@ -277,6 +279,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     )}
                     <select
                         className={BindingModalStyles.input}
+                        aria-label="First value"
                         value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
                         onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
                         disabled={!hasOptions}>
@@ -284,6 +287,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     </select>
                     <select
                         title={getOperatorTooltip(operator)}
+                        aria-label="Operator Selector"
                         className={BindingModalStyles.operatorSelector}
                         value={operator}
                         onChange={handleOperatorChange}
@@ -295,6 +299,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     {showSecondCustomInput && (
                         <input
                             type="number"
+                            aria-label="Second custom value"
                             value={secondCustomValue}
                             onChange={(e) => e.target.value ? setSecondCustomValue(parseInt(e.target.value, 10)) : setSecondCustomValue(0)}
                             className={BindingModalStyles.input}
@@ -302,6 +307,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     )}
                     <select
                         className={BindingModalStyles.input}
+                        aria-label="Second value"
                         value={showSecondCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(secondBuilderValue)}
                         onChange={(e) => handleOptionChange(e, setSecondBuilderValue, setSecondCustomInput)}
                         disabled={!hasOptions}
@@ -313,6 +319,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     <input
                         className={BindingModalStyles.checkbox}
                         type="checkbox"
+                        aria-label="Show in Results"
                         style={{ display: 'inline-block' }}
                         checked={showInResults}
                         disabled={!hasOptions}
@@ -320,17 +327,18 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
                     <input
                         type="checkbox"
+                        aria-label="Absolute"
                         style={{ display: 'inline-block' }}
                         checked={isAbsolute}
                         disabled={!hasOptions}
                         onChange={(e) => setIsAbsolute(e.target.checked)}
                         className={BindingModalStyles.checkbox}
                     />
-                    <button className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>
+                    <button aria-label="Add Binding" className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>
                         {viewportWidth <= 768 ? <AddCircleOutlineIcon /> : "Add binding"}
                     </button>
                 </div>
-            </div>
+            </section>
         );
     }
 
@@ -340,92 +348,94 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
             ...bindings.map(item => ({ ...item, source: 'bindings' })),
             ...tempBindings.map(item => ({ ...item, source: 'tempBindings' }))
         ];
-        return allBindings.map((binding, index) => (
-            <div
-                key={binding.id}
-                className={`${BindingModalStyles.bindingRow} ${activeBindings.includes(binding.id) ? BindingModalStyles.bindingRowActive : ''}`}
-                style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
-                <div className={BindingModalStyles.bindingName}>{binding.label}</div>
-                <div className={BindingModalStyles.bindingExpression}>
-                    {binding.firstValue.label} {binding.operator} {binding.secondValue.label}
-                </div>
-                <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
-                <input
-                    className={BindingModalStyles.checkbox}
-                    type="checkbox"
-                    style={{ display: 'inline-block' }}
-                    checked={binding.showInResults}
-                    onChange={() => {
-                        const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
-                        const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
-                        const updatedBindings = [...sourceList];
-                        updatedBindings[sourceIndex] = {
-                            ...updatedBindings[sourceIndex],
-                            showInResults: !updatedBindings[sourceIndex].showInResults
-                        };
-                        if (binding.source === 'bindings')
-                            setBindings(updatedBindings);
-                        else
-                            setTempBindings(updatedBindings);
-                    }}
-                />
-                <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
-                <input
-                    className={BindingModalStyles.checkbox}
-                    type="checkbox"
-                    style={{ display: 'inline-block' }}
-                    checked={binding.isAbsolute}
-                    onChange={() => {
-                        const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
-                        const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
-                        const updatedBindings = [...sourceList];
-                        updatedBindings[sourceIndex] = {
-                            ...updatedBindings[sourceIndex],
-                            isAbsolute: !updatedBindings[sourceIndex].isAbsolute
-                        };
-                        if (binding.source === 'bindings')
-                            setBindings(updatedBindings);
-                        else
-                            setTempBindings(updatedBindings);
-                    }}
-                />
-                <button className={BindingModalStyles.bindingRemove} onClick={() => handleRemoveVariable(binding.id, binding.source)}>
-                    <DeleteIcon />
-                </button>
-            </div>
-        ));
+        return (
+            <section aria-labelledby="defined-bindings-title">
+                <h3 id="defined-bindings-title" className="visually-hidden">Defined Bindings</h3>{
+                    allBindings.map((binding, index) => (
+                        <div
+                            key={binding.id}
+                            className={`${BindingModalStyles.bindingRow} ${activeBindings.includes(binding.id) ? BindingModalStyles.bindingRowActive : ''}`}
+                            style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
+                            <div className={BindingModalStyles.bindingName}>{binding.label}</div>
+                            <div className={BindingModalStyles.bindingExpression}>
+                                {binding.firstValue.label} {binding.operator} {binding.secondValue.label}
+                            </div>
+                            <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
+                            <input
+                                className={BindingModalStyles.checkbox}
+                                type="checkbox"
+                                style={{ display: 'inline-block' }}
+                                checked={binding.showInResults}
+                                onChange={() => {
+                                    const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
+                                    const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
+                                    const updatedBindings = [...sourceList];
+                                    updatedBindings[sourceIndex] = {
+                                        ...updatedBindings[sourceIndex],
+                                        showInResults: !updatedBindings[sourceIndex].showInResults
+                                    };
+                                    if (binding.source === 'bindings')
+                                        setBindings(updatedBindings);
+                                    else
+                                        setTempBindings(updatedBindings);
+                                }}
+                            />
+                            <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
+                            <input
+                                className={BindingModalStyles.checkbox}
+                                type="checkbox"
+                                style={{ display: 'inline-block' }}
+                                checked={binding.isAbsolute}
+                                onChange={() => {
+                                    const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
+                                    const sourceIndex = sourceList.findIndex(item => item.id === binding.id);
+                                    const updatedBindings = [...sourceList];
+                                    updatedBindings[sourceIndex] = {
+                                        ...updatedBindings[sourceIndex],
+                                        isAbsolute: !updatedBindings[sourceIndex].isAbsolute
+                                    };
+                                    if (binding.source === 'bindings')
+                                        setBindings(updatedBindings);
+                                    else
+                                        setTempBindings(updatedBindings);
+                                }}
+                            />
+                            <button
+                                className={BindingModalStyles.bindingRemove}
+                                onClick={() => handleRemoveVariable(binding.id, binding.source)}
+                                aria-label={`Remove Binding ${binding.id}`}>
+                                <DeleteIcon />
+                            </button>
+                        </div>
+                    ))}
+            </section>);
     }
 
     return (
-        <ModalWrapper isOpen={isBindingsOpen} closeModal={handleClose} maxWidth={1500}>
+        <ModalWrapper isOpen={isBindingsOpen} closeModal={handleClose} maxWidth={1500} aria-labelledby="modal-title">
             <div className={BindingModalStyles.modalHeader}>
-                <h2 title={"Bindings and variables"}>Bindings and variables</h2>
+                <h2 id="modal-title">Bindings and Variables</h2>
             </div>
             <div className={`${BindingModalStyles.modalContent} ${showBindingBuilder ? BindingModalStyles.showBindingBuilder : ""}`}>
                 {renderBindings()}
                 {bindingBuilder()}
             </div>
-            <button className={BindingModalStyles.closeBtn} onClick={handleClose}>
+            <button className={BindingModalStyles.closeBtn} onClick={handleClose} aria-label="Close">
                 <CloseIcon style={{ color: 'white', marginBottom: "-7px" }} />
             </button>
-            <div className={BindingModalStyles.modalActions}>
+            <footer className={BindingModalStyles.modalActions}>
                 <div className={BindingModalStyles.actionsContainer}>
-                    <button
-                        className={BindingModalStyles.setBtn}
-                        onClick={handleSubmit}>
+                    <button className={BindingModalStyles.setBtn} onClick={handleSubmit} aria-label="Set Bindings">
                         Set bindings
                     </button>
-                    <button
-                        onClick={() => toggleBindingBuilderVisibility()}
-                        className={BindingModalStyles.toggleButton}
-                    >
+                    <button onClick={toggleBindingBuilderVisibility} className={BindingModalStyles.toggleButton} aria-label="Toggle Binding Builder">
                         <ExpandMoreIcon style={{ transform: showBindingBuilder ? 'rotate(180deg)' : 'rotate(0)' }} />
                     </button>
-                    <button className={BindingModalStyles.cancelBtn} onClick={handleClose}>
+                    <button className={BindingModalStyles.cancelBtn} onClick={handleClose} aria-label="Cancel and Close">
                         Cancel
                     </button>
                 </div>
-            </div>
+            </footer>
         </ModalWrapper>
     );
 }
