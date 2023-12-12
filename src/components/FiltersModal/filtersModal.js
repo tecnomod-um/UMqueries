@@ -41,7 +41,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
                     return true;
                 else if (element.nodeType)
                     return nodes.some(node => node.id === element.nodeID);
-                else if (element.category === 'binding')
+                else if (element.bindingLabel)
                     return bindings.some(binding => binding.id === element.key);
                 return false;
             };
@@ -56,7 +56,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             if (node.properties) {
                 Object.entries(node.properties).forEach(([propName, prop]) => {
                     if (prop.data || prop.show) {
-                        const label = `${propName} ${node.label}`;
+                        const label = `${propName} ${node.label}${node.varID < 0 ? ` ${node.id}` : ''}`;
                         filterableElements.push({
                             label: label,
                             value: JSON.stringify({
@@ -191,7 +191,6 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             comparator: operator,
             secondValue
         };
-        console.log(newFilter)
         setTempFilters([...tempFilters, newFilter]);
         setFirstFilterValue('');
         setSecondFilterValue('');
@@ -227,7 +226,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
 
     const getGridTemplate = (viewportWidth, showCustomValueInput) => {
         if (viewportWidth <= 768)
-            return showCustomValueInput ? "250px 220px 20px 60px" : "250px 45px 250px 60px";
+            return showCustomValueInput ? "250px 45px 220px 20px 60px" : "250px 45px 250px 60px";
         else
             return showCustomValueInput ? "0.8fr 250px 0.5fr 220px 20px 1fr" : "0.8fr 250px 0.5fr 250px 1fr";
     }

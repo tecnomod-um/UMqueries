@@ -45,61 +45,79 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
     });
     // Adds a graphs configuration to the query
     const addGraphDefinitions = (graph) => {
-
         // Graph components
         const nodes = graph.nodes;
         const edges = graph.edges;
         const bindings = graph.bindings;
         const filters = graph.filters;
-
+        // Define unions present in the graph
+        const unionPairs = edges.filter(edge => edge.data === "UNION").map(edge => ({ from: edge.from, to: edge.to }));
+        // Track processed graph nodes to avoid duplication
+        const processedNodes = new Set();
         Object.keys(nodes).forEach(nodeInList => {
             // If node represents a graph, build a UNION operation
-            if (nodes[nodeInList].shape === 'circle') {
-                if (edges.some(edge => (edge.from === nodes[nodeInList].id))) body += '{\n';
-                else return;
-                edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(union => {
-                    const firstUnionBlock = graphs.find(graph => graph.id === nodes[nodeInList].data);
-                    addGraphDefinitions(firstUnionBlock);
-                    body += `} UNION {\n`;
-                    const secondUnionBlock = graphs.find(graph => graph.id === nodes.find(node => node.id === union.to)?.data);
-                    addGraphDefinitions(secondUnionBlock);
-                    body += `}\n`;
+            const currentNode = nodes[nodeInList];
+            // Skip if the node has already been processed in UNIONS
+            if (processedNodes.has(currentNode.id)) return;
+            if (currentNode.shape === 'circle') {
+                let isPartOfUnion = false;
+                unionPairs.forEach(pair => {
+                    if (pair.from === currentNode.id || pair.to === currentNode.id) {
+                        isPartOfUnion = true;
+                        processedNodes.add(pair.from);
+                        processedNodes.add(pair.to);
+                        console.log("detected pair")
+                        // Build UNION clause
+                        body += '{\n';
+                        const firstUnionBlock = graphs.find(graph => graph.id === nodes.find(node => node.id === pair.from)?.data);
+                        addGraphDefinitions(firstUnionBlock);
+                        body += `} UNION {\n`;
+                        const secondUnionBlock = graphs.find(graph => graph.id === nodes.find(node => node.id === pair.to)?.data);
+                        addGraphDefinitions(secondUnionBlock);
+                        body += `}\n`;
+                    }
                 });
+                // Current node is not part of any union pair, wrap it in brackets
+                if (!isPartOfUnion) {
+                    body += '{\n';
+                    addGraphDefinitions(graphs.find(graph => graph.id === currentNode.data));
+                    body += '}\n';
+                }
                 return;
             }
             // If node is a uri list it will be skipped
-            if (nodeInList.shape === 'box') return;
-            const nodeIsVar = nodes[nodeInList].varID >= 0;
-            const varNode = nodeIsVar ? nodes[nodeInList].data : `<${nodes[nodeInList].data}>`;
+            if (currentNode.shape === 'box') return;
+            const nodeIsVar = currentNode.varID >= 0;
+            const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
             // Detect both general and instance edges
-            let hasClassVariable = !edges.some(edge => (edge.from === nodes[nodeInList].id || edge.to === nodes[nodeInList].id));
+            let hasClassVariable = !edges.some(edge => (edge.from === currentNode.id || edge.to === currentNode.id));
             let hasInstanceVariable = false;
-            edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(edge => {
+            edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
                 hasClassVariable = hasClassVariable || !edge.isFromInstance;
                 hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
             });
             // Apply class/graph restrictions
             let graph = '';
             if (hasClassVariable) {
-                if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
-                    body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`;
-                else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
-                    graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
+                if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode?.class))
+                    body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`;
+                else if (edges.some(edge => edge.from === currentNode.id)) {
+                    graph = `GRAPH <${currentNode.graph}> {\n`;
                     body += graph;
                 }
             }
             // Apply instance restrictions
             if (hasInstanceVariable) {
-                if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(nodes[nodeInList]?.class))
-                    body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode} .\n${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${nodes[nodeInList].class}> .\n`
-                else if (edges.some(edge => edge.from === nodes[nodeInList].id)) {
-                    graph = `GRAPH <${nodes[nodeInList].graph}> {\n`;
+                if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode?.class))
+                    body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode} .\n${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`
+                else if (edges.some(edge => edge.from === currentNode.id)) {
+                    graph = `GRAPH <${currentNode.graph}> {\n`;
                     body += graph;
                     body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode}___class .\n${varNode}___class <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .\n`;
                 }
             }
             // Build object properties
-            edges.filter(edge => edge.from === nodes[nodeInList].id).forEach(edge => {
+            edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
                 let optional = edge.isOptional ? `OPTIONAL { ` : ``;
                 let transitive = edge.isTransitive ? `*` : ``;
                 let targetNode = nodes.find(node => node.id === edge.to);
@@ -117,29 +135,33 @@ export const parseQuery = (graphs, activeGraphId, startingVar) => {
                 body += `${optional}${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
             });
             // Build data properties
-            Object.keys(nodes[nodeInList].properties).forEach(property => {
-                const show = nodes[nodeInList].properties[property].show;
-                const data = nodes[nodeInList].properties[property].data;
-                const uri = nodes[nodeInList].properties[property].uri;
-                const usedInBinding = bindings.some(binding =>
-                    ((binding.firstValue.isFromNode) && (binding.firstValue.nodeId === nodes[nodeInList].id) && (binding.firstValue.propertyUri === uri)) ||
-                    ((binding.secondValue.isFromNode) && (binding.secondValue.nodeId === nodes[nodeInList].id) && (binding.secondValue.propertyUri === uri))
-                );
+            Object.keys(currentNode.properties).forEach(property => {
+                const show = currentNode.properties[property].show;
+                const data = currentNode.properties[property].data;
+                const uri = currentNode.properties[property].uri;
+                const usedInBinding = bindings.some(binding => {
+                    console.log('checking')
+                    console.log(currentNode)
+                    console.log(binding)
+                    return ((binding.firstValue.isFromNode) && (binding.firstValue.propertyUri === uri)) ||
+                        ((binding.secondValue.isFromNode) && (binding.secondValue.propertyUri === uri))
+                });
+                if (usedInBinding) console.log(property)
                 if (show || data || usedInBinding) {
-                    const varProperty = (nodes[nodeInList].varID === -1)
-                        ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].label + '___' + nodes[nodeInList].id)
-                        : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + nodes[nodeInList].type.toUpperCase() + '___' + nodes[nodeInList].varID);
+                    const varProperty = (currentNode.varID === -1)
+                        ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.label + '___' + currentNode.id)
+                        : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.type.toUpperCase() + '___' + currentNode.varID);
 
-                    const uri = nodes[nodeInList].properties[property].uri;
-                    const transitive = nodes[nodeInList].properties[property].transitive ? `*` : ``;
+                    const uri = currentNode.properties[property].uri;
+                    const transitive = currentNode.properties[property].transitive ? `*` : ``;
                     body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
                     if (show) select += ' ?' + varProperty;
-                    if (data) body += `FILTER ( ${getOperatorString(nodes[nodeInList].properties[property].operator, nodes[nodeInList].properties[property].type, data, varProperty, false)} ) .\n`;
+                    if (data) body += `FILTER ( ${getOperatorString(currentNode.properties[property].operator, currentNode.properties[property].type, data, varProperty, false)} ) .\n`;
                 }
             });
             if (graph) body += `}\n`;
         });
-console.log(bindings);
+
         // Build binding variables
         const createBindingElement = (value) => {
             if (value.isCustom) return value.value;
@@ -159,15 +181,9 @@ console.log(bindings);
             body += `BIND (${expression} AS ?${bindingName})\n`;
         });
         // Build filters
-        const createFilterElement = (value) => {
-            if (value.custom)
-                return value.label;
-            else if (value.nodeType)
-                return cleanString(capitalizeFirst(removeSpaceChars(value.label)));
-        }
         filters.forEach(filter => {
-            const firstElement = createFilterElement(filter.firstValue);
-            const secondElement = createFilterElement(filter.secondValue);
+            const firstElement = cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label)));
+            const secondElement = cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label)));
             const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
             body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, secondElement, firstElement, !filter.secondValue.custom)} ) .\n`;
         });

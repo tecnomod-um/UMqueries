@@ -9,7 +9,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Modal used in binding definitions
-function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
+function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBindingsOpen, setBindings }) {
     // Binding definitions
     const [tempBindings, setTempBindings] = useState([]);
     const [activeBindings, setActiveBindings] = useState([]);
@@ -55,19 +55,27 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                     })
                 }));
         });
-        const combinedBindingsValues = [...bindings, ...tempBindings].filter(binding => !usesRestrictedOperator(binding))
-            .map(binding => ({
-                label: binding.label,
-                isFromNode: false,
-                bindingId: binding.id,
-                value: JSON.stringify({
-                    label: binding.label,
-                    isFromNode: false,
-                    bindingId: binding.id
-                })
-            }));
+        const combinedBindingsValues = [...allBindings, ...tempBindings]
+            .reduce((acc, binding) => {
+                // Check if the binding ID already exists in the accumulator
+                if (!acc.some(accBinding => accBinding.label === binding.label)) {
+                    // If not, add the new binding to the accumulator
+                    acc.push({
+                        label: binding.label,
+                        isFromNode: false,
+                        bindingId: binding.id,
+                        value: JSON.stringify({
+                            label: binding.label,
+                            isFromNode: false,
+                            bindingId: binding.id
+                        })
+                    });
+                }
+                return acc;
+            }, [])
+            .filter(binding => !usesRestrictedOperator(binding));
         return [...nodeNumericValues, ...combinedBindingsValues];
-    }, [allNodes, bindings, tempBindings]);
+    }, [allNodes, allBindings, tempBindings]);
 
     // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
@@ -159,7 +167,7 @@ function BindingsModal({ allNodes, bindings, isBindingsOpen, setBindingsOpen, se
                 propertyUri: value.propertyUri,
             };
         }
-        const foundBinding = [...bindings, ...tempBindings].find(binding => binding.id === value.bindingId);
+        const foundBinding = [...allBindings, ...tempBindings].find(binding => binding.id === value.bindingId);
         if (foundBinding) {
             return {
                 label: foundBinding.label,

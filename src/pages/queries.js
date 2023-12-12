@@ -38,8 +38,6 @@ function Queries() {
     // Hooks used on smaller viewports
     const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
     const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
-
-
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
@@ -48,13 +46,23 @@ function Queries() {
         const uniqueNodesMap = new Map();
         graphs.forEach(graph => {
             graph.nodes.forEach(node => {
-                const nodeKey = `${node.type}_${node.varID}`;
-                if (!uniqueNodesMap.has(nodeKey)) {
+                const nodeKey = node.varID > 0 ? `${node.type}_${node.varID}` : node.label;
+                if (!uniqueNodesMap.has(nodeKey))
                     uniqueNodesMap.set(nodeKey, node);
-                }
             });
         });
         return Array.from(uniqueNodesMap.values());
+    }, [graphs]);
+    // Bindings defined though all graphs
+    const allBindings = useMemo(() => {
+        const uniqueBindingsMap = new Map();
+        graphs.forEach(graph => {
+            graph.bindings.forEach(binding => {
+                if (!uniqueBindingsMap.has(binding.label))
+                    uniqueBindingsMap.set(binding.label, binding);
+            });
+        });
+        return Array.from(uniqueBindingsMap.values());
     }, [graphs]);
 
     // Loads endpoint data when first loaded
@@ -153,7 +161,7 @@ function Queries() {
     // Adds the passed graph as a node to the active one
     function addGraphNode(graphId) {
         if (isGraphLoop(graphId, activeGraphId, new Set())) return false;
-        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
+        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, 'graph', null, null, null, false, true);
     }
 
     function addUnion(selectedNodeId, targetNodeId) {
@@ -488,7 +496,7 @@ function Queries() {
                 <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
             <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div >
     );
