@@ -364,15 +364,19 @@ function Queries() {
 
     function loadQueryFile(importData) {
         const { graphs } = importData;
-        const initialVarIDs = graphs.map(graph => ({
-            id: graph.id,
-            varIdList: Object.fromEntries(
-                Object.keys(graph.nodes.reduce((acc, node) => {
-                    acc[node.type] = 0;
-                    return acc;
-                }, {})).map(type => [type, 0])
-            )
-        }));
+        const initialVarIDs = graphs.map(graph => {
+            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
+                if (node.varID !== -1)
+                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
+                return acc;
+            }, {});
+            return {
+                id: graph.id,
+                varIdList: Object.fromEntries(
+                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
+                )
+            };
+        });
 
         const newGraphs = graphs.map((graph) => {
             const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
