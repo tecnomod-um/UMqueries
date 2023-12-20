@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 // Exports all query graphs to .json file
 export function QueryToFile({ getQueryData }) {
   const exportQueries = useCallback(() => {
-    const { graphs, bindings, filters, startingVar } = getQueryData();
+    const { graphs, bindings, filters, startingVar, isDistinct, isCount } = getQueryData();
     let modifiedGraphs = graphs.map(graph => ({
       ...graph,
       nodes: graph.nodes.map(node => {
@@ -27,6 +27,8 @@ export function QueryToFile({ getQueryData }) {
       bindings,
       filters,
       startingVar,
+      isDistinct,
+      isCount
     };
 
     const fileName = "queries.json";

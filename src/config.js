@@ -7,7 +7,7 @@ const config = {
     //endpointUrl: 'http://ssb4.nt.ntnu.no:23032/sparql',
     //endpointUrl: 'https://biogateway.eu/sparql-endpoint/',
     //endpointUrl: 'http://ssb4.nt.ntnu.no:10022/sparql',
-    
+
     //endpointUrl: 'http://127.0.0.1:34029/sparql',
 
     chunkSize: 1024 * 1024,

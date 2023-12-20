@@ -10,6 +10,8 @@ import SearchResults from "../SearchResults/searchResults";
 import TrashIcon from '@mui/icons-material/DeleteOutline';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
@@ -17,6 +19,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
     const [uriList, setUriList] = useState([]);
+    const [isDistinct, setDistinct] = useState(true);
+    const [isCount, setCount] = useState(false);
     const inputRefs = useRef({});
     // Current elements being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
@@ -247,14 +251,20 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         loadQueryFile(importData);
         if (importData.startingVar)
             setStartingVar(importData.startingVar);
+        if (importData.isDistinct)
+            setDistinct(importData.isDistinct)
+        if (importData.isCount)
+            setCount(importData.isCount)
     }, [loadQueryFile]);
 
     // Set data to export format
     const getQueryData = useCallback(() => {
         const queryData = getGraphData();
         queryData.startingVar = startingVar;
+        queryData.isDistinct = isDistinct;
+        queryData.isCount = isCount;
         return (queryData);
-    }, [getGraphData, startingVar])
+    }, [getGraphData, startingVar, isDistinct, isCount])
 
     // Remove nodes
     const deleteSelected = useCallback(() => {
@@ -304,6 +314,40 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                 <SearchResults startingData={startingVar} resultData={resultData} />
             </div>
             <div className={ResultTrayStyles.queryColumn}>
+                <div className={ResultTrayStyles.switchRow}>
+                    <FormControlLabel
+                        className={ResultTrayStyles.formControlLabel}
+                        control={
+                            <Switch
+                                checked={isDistinct}
+                                onChange={(e) => setDistinct(e.target.checked)}
+                                style={{ color: '#c22535' }}
+                                sx={{
+                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                        backgroundColor: '#c22535',
+                                    },
+                                }} />
+                        }
+                        label="Distinct"
+                    />
+                    <FormControlLabel
+                        className={ResultTrayStyles.formControlLabel}
+                        control={
+                            <Switch
+                                checked={isCount}
+                                onChange={(e) => setCount(e.target.checked)}
+                                style={{ color: '#c22535' }}
+                                sx={{
+                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                        backgroundColor: '#c22535',
+                                    },
+                                }}
+                            />
+                        }
+                        label="Count" />
+                </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                         menu={
@@ -314,7 +358,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                                 <ResultExporter data={resultData} fileType="ods" />
                                 ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
-                    <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} setResultData={setResultData} />
+                    <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} isDistinct={isDistinct} isCount={isCount} setResultData={setResultData} />
                 </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown

@@ -127,11 +127,11 @@ export const fetchData = (dataFile) => {
     });
 }
 
-export const handleQuery = (graphs, activeGraphId, startingVar, setIsLoading) => {
+export const handleQuery = (graphs, activeGraphId, startingVar, isDistinct, isCount, setIsLoading) => {
     setIsLoading(true);
     let data = {
         endpoint: endpointURL,
-        query: parseQuery(graphs, activeGraphId, startingVar)
+        query: parseQuery(graphs, activeGraphId, startingVar, isDistinct, isCount)
     };
 
     return new Promise((resolve, reject) => {

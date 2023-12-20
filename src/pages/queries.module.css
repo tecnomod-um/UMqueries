@@ -1,5 +1,6 @@
 .queryContainer {
-    padding: 10px;
+    padding: 1vh;
+    min-height: calc(100vh - 55px);
     margin: auto;
     background-color: #ecebeb;
     display: flex;
