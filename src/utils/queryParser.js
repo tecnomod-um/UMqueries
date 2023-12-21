@@ -186,16 +186,20 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
     bindings.forEach(binding => {
         const formattedFirstValue = createBindingElement(binding.firstValue);
         const formattedSecondValue = createBindingElement(binding.secondValue);
-        const expression = binding.isAbsolute
-            ? `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`
-            : `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
+        let expression;
+        if (binding.operator === '⊆')
+            expression = `CONTAINS(${formattedFirstValue}, ${formattedSecondValue})`;
+        else if (binding.isAbsolute)
+            expression = `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`;
+        else
+            expression = `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
 
         const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
-
         if (binding.showInResults)
             parsedQuery.select += isCount ? ` COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : ` ?${bindingName}`;
         parsedQuery.body += `BIND (${expression} AS ?${bindingName})\n`;
     });
+
     // Build filters
     filters.forEach(filter => {
         const firstElement = cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label)));

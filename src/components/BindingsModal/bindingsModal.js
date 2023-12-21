@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { capitalizeFirst } from "../../utils/stringFormatter.js";
 import { getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
+import Checkbox from "../Checkbox/checkbox.js";
 import BindingModalStyles from "./bindingsModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -17,8 +18,8 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
     const [operator, setOperator] = useState('+');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
     const [secondCustomValue, setSecondCustomValue] = useState(0);
-    const [firstBuilderValue, setFirstBuilderValue] = useState("");
-    const [secondBuilderValue, setSecondBuilderValue] = useState("");
+    const [firstBuilderValue, setFirstBuilderValue] = useState({ custom: false, type: 'number' });
+    const [secondBuilderValue, setSecondBuilderValue] = useState({ custom: false, type: 'number' });
     const [bindingName, setBindingName] = useState("");
     const [isAbsolute, setIsAbsolute] = useState(false);
     const [showInResults, setShowInResults] = useState(false);
@@ -29,59 +30,48 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
     const [showSecondCustomInput, setSecondCustomInput] = useState(false);
     const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
-    const operatorLists = useMemo(() => (['+', '-', '*', '/', '>', '<', '>=', '<=']), []);
+    const operatorLists = useMemo(() => ({
+        number: ['+', '-', '*', '/', '>', '<', '>=', '<='],
+        decimal: ['+', '-', '*', '/', '>', '<', '>=', '<='],
+        text: ['=', '⊆'],
+        boolean: ['=', '!='],
+        datetime: ['<', '<=', '=', '>=', '>'],
+        binary: ['=', '!='],
+        link: ['=', '!=', '⊆'],
+        uri: ['=', '!=', '⊆'],
+        select: ['='],
+        custom: ['+', '-', '*', '/', '>', '<', '>=', '<=', '=', '!=', '⊆']
+    }), []);
+
     // Gets all elements that could be useful for a binding definition, including other bindings
-    const getNumericProperties = useCallback(() => {
-        const nodeNumericValues = (allNodes ?? []).flatMap(node => {
-            return Object.entries(node.properties)
-                .filter(([key, property]) => property.type === "number")
-                // Value is needed to reconstruct the option from select
-                .map(([key, property]) => ({
-                    label: capitalizeFirst(`${key} ${node.label}`),
-                    key: key,
-                    nodeLabel: node.label,
-                    isVar: node.varID >= 0,
-                    isFromNode: true,
-                    nodeId: node.id,
-                    propertyUri: property.uri,
-                    value: JSON.stringify({
-                        label: capitalizeFirst(`${key} ${node.label}`),
-                        key: key,
-                        nodeLabel: node.label,
-                        isVar: node.varID >= 0,
-                        isFromNode: true,
-                        nodeId: node.id,
-                        propertyUri: property.uri,
-                    })
-                }));
-        });
-        const combinedBindingsValues = [...allBindings, ...tempBindings]
-            .reduce((acc, binding) => {
-                // Check if the binding ID already exists in the accumulator
-                if (!acc.some(accBinding => accBinding.label === binding.label)) {
-                    // If not, add the new binding to the accumulator
-                    acc.push({
-                        label: binding.label,
-                        isFromNode: false,
-                        bindingId: binding.id,
-                        value: JSON.stringify({
-                            label: binding.label,
-                            isFromNode: false,
-                            bindingId: binding.id
-                        })
-                    });
-                }
-                return acc;
-            }, [])
-            .filter(binding => !usesRestrictedOperator(binding));
-        return [...nodeNumericValues, ...combinedBindingsValues];
+    const getAvailableProperties = useCallback(() => {
+        const nodeValues = (allNodes ?? []).flatMap(node => Object.entries(node.properties)
+            .filter(([_, property]) => property.show)
+            .map(([key, property]) => ({
+                label: capitalizeFirst(`${key} ${node.label}`),
+                key, nodeLabel: node.label, isVar: node.varID >= 0,
+                isFromNode: true, nodeId: node.id, propertyUri: property.uri, type: property.type,
+                value: JSON.stringify({ label: capitalizeFirst(`${key} ${node.label}`), key, nodeLabel: node.label, isVar: node.varID >= 0, isFromNode: true, nodeId: node.id, propertyUri: property.uri, type: property.type })
+            })));
+
+        const combinedBindings = [...allBindings, ...tempBindings].reduce((acc, binding) => {
+            if (!acc.some(accBinding => accBinding.label === binding.label)) {
+                acc.push({
+                    label: binding.label, isFromNode: false, bindingId: binding.id, type: 'custom',
+                    value: JSON.stringify({ label: binding.label, isFromNode: false, bindingId: binding.id, type: 'custom' })
+                });
+            }
+            return acc;
+        }, []).filter(binding => !usesRestrictedOperator(binding));
+
+        return [...nodeValues, ...combinedBindings];
     }, [allNodes, allBindings, tempBindings]);
 
     // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
-        const numericProperties = getNumericProperties(allNodes, tempBindings);
+        const numericProperties = getAvailableProperties(allNodes, tempBindings);
         setSelectedValue(numericProperties[0]);
-    }, [allNodes, tempBindings, getNumericProperties]);
+    }, [allNodes, tempBindings, getAvailableProperties]);
 
     // Recursively removes a binding tree
     const removeBindingAndDependencies = useCallback((bindingId, bindingArray, tempBindingArray) => {
@@ -108,6 +98,20 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
             setTempBindings(updatedTempBindings);
         }, 500);
     }, [bindings, tempBindings, setBindings, removeBindingAndDependencies]);
+
+    // Initialize the firstBuilderValue and secondBuilderValue
+    const initializeBuilderValues = useCallback(() => {
+        const availableProperties = getAvailableProperties();
+        if (availableProperties.length > 0) {
+            const firstOption = JSON.parse(availableProperties[0].value);
+            setFirstBuilderValue(firstOption);
+            setSecondBuilderValue(firstOption);
+        }
+    }, [getAvailableProperties]);
+
+    useEffect(() => {
+        initializeBuilderValues();
+    }, [initializeBuilderValues]);
 
     // Detects the viewport size for element configs
     useEffect(() => {
@@ -165,6 +169,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                 isFromNode: true,
                 nodeId: value.nodeId,
                 propertyUri: value.propertyUri,
+                type: value.type
             };
         }
         const foundBinding = [...allBindings, ...tempBindings].find(binding => binding.id === value.bindingId);
@@ -174,6 +179,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                 isFromNode: false,
                 isCustom: false,
                 bindingId: foundBinding.id,
+                type: 'custom'
             };
         }
     }
@@ -218,11 +224,15 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
 
     const handleOptionChange = (event, setValue, setCustomInput) => {
         const value = JSON.parse(event.target.options[event.target.selectedIndex].value);
+
         if (value.custom) {
             setCustomInput(true);
+            setValue({ custom: true, type: 'custom' });
+            setOperator(operatorLists.custom[0]);
         } else {
             setCustomInput(false);
             setValue(value);
+            setOperator(operatorLists[value.type][0]);
         }
     }
 
@@ -244,14 +254,14 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
             middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 150px" : "120px 20px 42px 150px 1fr";
         else if (showSecondCustomInput)
             middleTemplate = viewportWidth <= 768 ? "150px 42px 120px 20px" : "150px 42px 120px 20px 1fr";
-        const endTemplate = viewportWidth <= 768 ? "20px 20px 60px" : "20px 1fr 20px 1fr";
+        const endTemplate = viewportWidth <= 768 ? "30px 30px 60px" : "1fr 1fr";
 
         return `${baseTemplate} ${middleTemplate} ${endTemplate}`;
     }
 
     // Binding builder interface definition
     function bindingBuilder() {
-        const numericProperties = getNumericProperties(allNodes, tempBindings);
+        const numericProperties = getAvailableProperties(allNodes, tempBindings);
         const hasOptions = numericProperties && numericProperties.length > 0;
         const optionSet = hasOptions ? [
             ...numericProperties.map((item) => makeItem(item)),
@@ -300,9 +310,13 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                         value={operator}
                         onChange={handleOperatorChange}
                         disabled={!hasOptions}>
-                        {operatorLists.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                        ))}
+                        {
+                            firstBuilderValue.custom ?
+                                operatorLists.custom.map(option => (
+                                    <option key={option} value={option}>{option}</option>)) :
+                                (operatorLists[firstBuilderValue.type] || []).map(option => (
+                                    <option key={option} value={option}>{option}</option>))
+                        }
                     </select>
                     {showSecondCustomInput && (
                         <input
@@ -323,24 +337,23 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                         {optionSet}
                     </select>
 
-                    <label className={BindingModalStyles.labelCheckbox}>Show in results</label>
-                    <input
-                        className={BindingModalStyles.checkbox}
-                        type="checkbox"
-                        aria-label="Show in Results"
-                        style={{ display: 'inline-block' }}
+                    <Checkbox
+                        label="Show in results"
+                        labelClassName={BindingModalStyles.labelCheckbox}
                         checked={showInResults}
+                        aria-label="Show in Results"
                         disabled={!hasOptions}
-                        onChange={e => setShowInResults(e.target.checked)} />
-                    <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
-                    <input
-                        type="checkbox"
-                        aria-label="Absolute"
-                        style={{ display: 'inline-block' }}
+                        onChange={(e) => setShowInResults(e.target.checked)}
+                    />
+
+
+                    <Checkbox
+                        label="Absolute"
+                        labelClassName={BindingModalStyles.labelCheckbox}
                         checked={isAbsolute}
+                        aria-label="Absolute"
                         disabled={!hasOptions}
                         onChange={(e) => setIsAbsolute(e.target.checked)}
-                        className={BindingModalStyles.checkbox}
                     />
                     <button aria-label="Add Binding" className={BindingModalStyles.addButton} onClick={() => addBinding()} disabled={!hasOptions}>
                         {viewportWidth <= 768 ? <AddCircleOutlineIcon /> : "Add binding"}
@@ -356,6 +369,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
             ...bindings.map(item => ({ ...item, source: 'bindings' })),
             ...tempBindings.map(item => ({ ...item, source: 'tempBindings' }))
         ];
+
         return (
             <section aria-labelledby="defined-bindings-title">
                 <h3 id="defined-bindings-title" className="visually-hidden">Defined Bindings</h3>{
@@ -366,13 +380,13 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                             style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
                             <div className={BindingModalStyles.bindingName}>{binding.label}</div>
                             <div className={BindingModalStyles.bindingExpression}>
-                                {binding.firstValue.label} {binding.operator} {binding.secondValue.label}
+                                {binding.firstValue.label}
+                                {binding.operator === '⊆' ? ' is contained in ' : ` ${binding.operator} `}
+                                {binding.secondValue.label}
                             </div>
-                            <label className={BindingModalStyles.labelCheckbox}>Show in results:</label>
-                            <input
-                                className={BindingModalStyles.checkbox}
-                                type="checkbox"
-                                style={{ display: 'inline-block' }}
+                            <Checkbox
+                                label="Show in results"
+                                labelClassName={BindingModalStyles.labelCheckbox}
                                 checked={binding.showInResults}
                                 onChange={() => {
                                     const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
@@ -382,17 +396,12 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                                         ...updatedBindings[sourceIndex],
                                         showInResults: !updatedBindings[sourceIndex].showInResults
                                     };
-                                    if (binding.source === 'bindings')
-                                        setBindings(updatedBindings);
-                                    else
-                                        setTempBindings(updatedBindings);
+                                    binding.source === 'bindings' ? setBindings(updatedBindings) : setTempBindings(updatedBindings);
                                 }}
                             />
-                            <label className={BindingModalStyles.labelCheckbox}>Absolute</label>
-                            <input
-                                className={BindingModalStyles.checkbox}
-                                type="checkbox"
-                                style={{ display: 'inline-block' }}
+                            <Checkbox
+                                label="Absolute"
+                                labelClassName={BindingModalStyles.labelCheckbox}
                                 checked={binding.isAbsolute}
                                 onChange={() => {
                                     const sourceList = binding.source === 'bindings' ? bindings : tempBindings;
@@ -402,10 +411,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                                         ...updatedBindings[sourceIndex],
                                         isAbsolute: !updatedBindings[sourceIndex].isAbsolute
                                     };
-                                    if (binding.source === 'bindings')
-                                        setBindings(updatedBindings);
-                                    else
-                                        setTempBindings(updatedBindings);
+                                    binding.source === 'bindings' ? setBindings(updatedBindings) : setTempBindings(updatedBindings);
                                 }}
                             />
                             <button
@@ -415,8 +421,10 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                                 <DeleteIcon />
                             </button>
                         </div>
-                    ))}
-            </section>);
+                    ))
+                }
+            </section>
+        );
     }
 
     return (
