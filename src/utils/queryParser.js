@@ -189,6 +189,8 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
         let expression;
         if (binding.operator === '⊆')
             expression = `CONTAINS(${formattedFirstValue}, ${formattedSecondValue})`;
+        if (binding.operator === '=')
+            expression = `${formattedSecondValue}`;
         else if (binding.isAbsolute)
             expression = `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`;
         else

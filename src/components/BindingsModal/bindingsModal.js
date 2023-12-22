@@ -15,7 +15,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
     const [tempBindings, setTempBindings] = useState([]);
     const [activeBindings, setActiveBindings] = useState([]);
     // Binding builder inputs
-    const [operator, setOperator] = useState('+');
+    const [operator, setOperator] = useState('==');
     const [firstCustomValue, setFirstCustomValue] = useState(0);
     const [secondCustomValue, setSecondCustomValue] = useState(0);
     const [firstBuilderValue, setFirstBuilderValue] = useState({ custom: false, type: 'number' });
@@ -31,16 +31,16 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
     const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
     const operatorLists = useMemo(() => ({
-        number: ['+', '-', '*', '/', '>', '<', '>=', '<='],
-        decimal: ['+', '-', '*', '/', '>', '<', '>=', '<='],
-        text: ['=', '⊆'],
-        boolean: ['=', '!='],
-        datetime: ['<', '<=', '=', '>=', '>'],
-        binary: ['=', '!='],
-        link: ['=', '!=', '⊆'],
-        uri: ['=', '!=', '⊆'],
-        select: ['='],
-        custom: ['+', '-', '*', '/', '>', '<', '>=', '<=', '=', '!=', '⊆']
+        number: ['+', '-', '*', '/', '==', '>', '<', '>=', '<=', '='],
+        decimal: ['+', '-', '*', '/', '==', '>', '<', '>=', '<=', '='],
+        text: ['==', '⊆', '='],
+        boolean: ['==', '!=', '='],
+        datetime: ['==', '<', '<=', '>=', '>', '='],
+        binary: ['==', '!=', '='],
+        link: ['==', '!=', '⊆', '='],
+        uri: ['==', '!=', '⊆', '='],
+        select: ['==', '='],
+        custom: ['==', '+', '-', '*', '/', '>', '<', '>=', '<=', '!=', '⊆', '=']
     }), []);
 
     // Gets all elements that could be useful for a binding definition, including other bindings
@@ -244,18 +244,34 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
         setShowBindingBuilder(!showBindingBuilder);
     }
 
-    const getGridTemplate = (viewportWidth, showFirstCustomInput, showSecondCustomInput) => {
-        const baseTemplate = viewportWidth <= 768 ? "100px 30px" : "0.8fr 100px 0.5fr";
-        let middleTemplate = viewportWidth <= 768 ? "150px 42px 150px" : "150px 42px 150px 1fr";
+    // Adapts the element positioning for the different options inside bindingBuilder
+    const getGridTemplate = (viewportWidth, showFirstCustomInput, showSecondCustomInput, operator) => {
+        const isEqualsOperator = operator === '=';
+        let baseTemplate, middleTemplate, endTemplate;
 
-        if (showFirstCustomInput && showSecondCustomInput)
-            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 120px 20px" : "120px 20px 42px 120px 20px 1fr";
-        else if (showFirstCustomInput)
-            middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 150px" : "120px 20px 42px 150px 1fr";
-        else if (showSecondCustomInput)
-            middleTemplate = viewportWidth <= 768 ? "150px 42px 120px 20px" : "150px 42px 120px 20px 1fr";
-        const endTemplate = viewportWidth <= 768 ? "30px 30px 60px" : "1fr 1fr";
+        if (isEqualsOperator) {
+            if (viewportWidth <= 768) {
+                baseTemplate = showSecondCustomInput ? "120px 30px" : "150px 30px";
+                middleTemplate = "120px 20px";
+                endTemplate = "30px 30px 1fr";
+            } else {
+                baseTemplate = "0.5fr 150px";
+                middleTemplate = showSecondCustomInput ? "0.5fr 120px 20px" : "0.5fr 150px";
+                endTemplate = "0.5fr 0.5fr 1fr";
+            }
+        } else {
+            baseTemplate = viewportWidth <= 768 ? "100px 30px" : "0.8fr 100px 1fr";
+            endTemplate = viewportWidth <= 768 ? "30px 30px 60px" : "1fr 1fr";
 
+            if (showFirstCustomInput && showSecondCustomInput)
+                middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 120px 20px" : "120px 20px 42px 120px 20px 1fr";
+            else if (showFirstCustomInput)
+                middleTemplate = viewportWidth <= 768 ? "120px 20px 42px 150px" : "120px 20px 42px 150px 1fr";
+            else if (showSecondCustomInput)
+                middleTemplate = viewportWidth <= 768 ? "150px 42px 120px 20px" : "150px 42px 120px 20px 1fr";
+            else
+                middleTemplate = viewportWidth <= 768 ? "150px 42px 150px" : "150px 42px 150px 1fr";
+        }
         return `${baseTemplate} ${middleTemplate} ${endTemplate}`;
     }
 
@@ -269,11 +285,11 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                 Custom value
             </option>
         ] : [<option key="no-options" value="">{`No options available`}</option>];
-
+        const isEqualsOperator = operator === '=';
         return (
             <section aria-labelledby="binding-builder-title" className={BindingModalStyles.bindingBuilder}>
                 <h3 id="binding-builder-title" className="visually-hidden">Binding Builder</h3>
-                <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: getGridTemplate(viewportWidth, showFirstCustomInput, showSecondCustomInput) }}>
+                <div className={BindingModalStyles.fieldContainer} style={{ gridTemplateColumns: getGridTemplate(viewportWidth, showFirstCustomInput, showSecondCustomInput, operator) }}>
                     <label className={BindingModalStyles.labelVarname}>Variable</label>
                     <span className={BindingModalStyles.inputWrapper}>
                         <input
@@ -285,24 +301,33 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                             aria-label="Variable Input" />
                         {error && <CloseIcon aria-label="Input error" aria-live="polite" className={BindingModalStyles.errorIcon} />}
                     </span>
-                    <label className={BindingModalStyles.labelEquals}>{viewportWidth <= 768 ? "=" : "equals"}</label>
-                    {showFirstCustomInput && (
-                        <input
-                            type="number"
-                            aria-label="First custom value"
-                            value={firstCustomValue}
-                            onChange={(e) => e.target.value ? setFirstCustomValue(parseInt(e.target.value, 10)) : setFirstCustomValue(0)}
-                            className={BindingModalStyles.input}
-                        />
+                    {!isEqualsOperator && (
+                        <label className={BindingModalStyles.labelEquals}>{viewportWidth <= 768 ? ":" : "results from"}</label>
                     )}
-                    <select
-                        className={BindingModalStyles.input}
-                        aria-label="First value"
-                        value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
-                        onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
-                        disabled={!hasOptions}>
-                        {optionSet}
-                    </select>
+                    {
+                        !isEqualsOperator && (
+                            <>
+                                {showFirstCustomInput && (
+                                    <input
+                                        type="number"
+                                        aria-label="First custom value"
+                                        value={firstCustomValue}
+                                        onChange={(e) => e.target.value ? setFirstCustomValue(parseInt(e.target.value, 10)) : setFirstCustomValue(0)}
+                                        className={BindingModalStyles.input}
+                                    />
+                                )}
+                                <select
+                                    className={BindingModalStyles.input}
+                                    aria-label="First value"
+                                    value={showFirstCustomInput ? JSON.stringify({ custom: true }) : JSON.stringify(firstBuilderValue)}
+                                    onChange={(e) => handleOptionChange(e, setFirstBuilderValue, setFirstCustomInput)}
+                                    disabled={!hasOptions}>
+                                    {optionSet}
+                                </select>
+                            </>
+                        )
+                    }
+
                     <select
                         title={getOperatorTooltip(operator)}
                         aria-label="Operator Selector"
@@ -377,9 +402,10 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                             style={{ backgroundColor: binding.source === 'tempBindings' ? "#e9e9e9" : "white" }}>
                             <div className={BindingModalStyles.bindingName}>{binding.label}</div>
                             <div className={BindingModalStyles.bindingExpression}>
-                                {binding.firstValue.label}
-                                {binding.operator === '⊆' ? ' is contained in ' : ` ${binding.operator} `}
-                                {binding.secondValue.label}
+                                {binding.operator === '='
+                                    ? `assigned as ${binding.secondValue.label}`
+                                    : `${binding.firstValue.label} ${binding.operator === '⊆' ? 'is contained in'
+                                        : binding.operator} ${binding.secondValue.label}`}
                             </div>
                             <Checkbox
                                 label="Show in results"

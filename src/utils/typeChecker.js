@@ -27,6 +27,8 @@ export const getOperatorTooltip = (operator) => {
     switch (operator) {
         case '=':
             return 'is equal to';
+        case '==':
+            return 'is the same as';
         case '!=':
             return 'is not equal to';
         case '<':
@@ -39,7 +41,15 @@ export const getOperatorTooltip = (operator) => {
             return 'is greater than or equal to';
         case '⊆':
             return 'contains';
+        case '+':
+            return 'adds';
+        case '-':
+            return 'subtracts';
+        case '*':
+            return 'multiplies';
+        case '/':
+            return 'divides';
         default:
-            return 'operator';
+            return 'unknown operator';
     }
 }
