@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import styles from './checkbox.module.css';
 
-const Checkbox = ({ checked: checkedProp, onChange, ...props }) => {
+const Checkbox = ({ label, labelClassName, checked: checkedProp, onChange, ...props }) => {
     const [checked, setChecked] = useState(checkedProp);
 
     const handleChange = (e) => {
         setChecked(e.target.checked);
-        if (onChange)
-            onChange(e);
+        if (onChange) onChange(e);
     };
 
     return (
         <label className={styles.checkboxContainer}>
+            {label && <span className={`${styles.checkboxLabel} ${labelClassName || ''}`}>{label}</span>}
             <input
                 type="checkbox"
                 checked={checked}

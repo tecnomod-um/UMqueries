@@ -336,7 +336,6 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                     >
                         {optionSet}
                     </select>
-
                     <Checkbox
                         label="Show in results"
                         labelClassName={BindingModalStyles.labelCheckbox}
@@ -345,8 +344,6 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                         disabled={!hasOptions}
                         onChange={(e) => setShowInResults(e.target.checked)}
                     />
-
-
                     <Checkbox
                         label="Absolute"
                         labelClassName={BindingModalStyles.labelCheckbox}

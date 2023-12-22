@@ -18,7 +18,6 @@ function InputCounter({ results }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [caseSensitive, setCaseSensitive] = useState(false);
     const [exactMatch, setExactMatch] = useState(false);
-    // css styles need to be defined MANUALLY when opening in a new window with inlines
     const [hover, setHover] = useState(false);
 
     const countResults = () => {
@@ -35,7 +34,7 @@ function InputCounter({ results }) {
         });
         return count;
     };
-
+    // css styles need to be defined MANUALLY when opening in a new window with inline css
     const styles = {
         tray: {
             position: 'fixed',
