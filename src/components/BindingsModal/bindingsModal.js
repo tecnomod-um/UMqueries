@@ -48,10 +48,10 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
         const nodeValues = (allNodes ?? []).flatMap(node => Object.entries(node.properties)
             .filter(([_, property]) => property.show)
             .map(([key, property]) => ({
-                label: capitalizeFirst(`${key} ${node.label}`),
+                label: capitalizeFirst(property.as || `${key} ${node.label}`),
                 key, nodeLabel: node.label, isVar: node.varID >= 0,
-                isFromNode: true, nodeId: node.id, propertyUri: property.uri, type: property.type,
-                value: JSON.stringify({ label: capitalizeFirst(`${key} ${node.label}`), key, nodeLabel: node.label, isVar: node.varID >= 0, isFromNode: true, nodeId: node.id, propertyUri: property.uri, type: property.type })
+                isFromNode: true, nodeId: node.ids, propertyUri: property.uri, type: property.type,
+                value: JSON.stringify({ label: capitalizeFirst(`${key} ${node.label}`), key, nodeLabel: node.label, isVar: node.varID >= 0, isFromNode: true, nodeId: node.ids, propertyUri: property.uri, type: property.type })
             })));
 
         const combinedBindings = [...allBindings, ...tempBindings].reduce((acc, binding) => {
@@ -124,14 +124,30 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
 
     // Updates bindings on node removal
     useEffect(() => {
-        const bindingsToRemove = bindings.filter(binding =>
-            (binding.firstValue.isFromNode && !allNodes.some(node => node.id === binding.firstValue.nodeId)) ||
-            (binding.secondValue.isFromNode && !allNodes.some(node => node.id === binding.secondValue.nodeId))
-        );
-        bindingsToRemove.forEach(binding =>
-            handleRemoveVariable(binding.id)
-        );
-    }, [allNodes, bindings, handleRemoveVariable]);
+        const currentNodesIds = new Set(allNodes.flatMap(node => node.ids));
+        const updatedBindings = bindings.map(binding => {
+            const updateNodeIds = (value) => {
+                console.log(value)
+                if (value.isFromNode)
+                    value.nodeId = value.nodeId.filter(id => currentNodesIds.has(id));
+            };
+            updateNodeIds(binding.firstValue);
+            updateNodeIds(binding.secondValue);
+            return binding;
+        });
+
+        const bindingsToRemove = updatedBindings.filter(binding => {
+            const isFirstValueInvalid = binding.firstValue.isFromNode && (!binding.firstValue.nodeId || binding.firstValue.nodeId.length === 0);
+            const isSecondValueInvalid = binding.secondValue.isFromNode && (!binding.secondValue.nodeId || binding.secondValue.nodeId.length === 0);
+            return isFirstValueInvalid && isSecondValueInvalid; // Both values are invalid
+        });
+
+        bindingsToRemove.forEach(binding => handleRemoveVariable(binding.id));
+        if (bindingsToRemove.length > 0) {
+            const remainingBindings = updatedBindings.filter(binding => !bindingsToRemove.includes(binding));
+            setBindings(remainingBindings);
+        }
+    }, [allNodes, bindings, handleRemoveVariable, setBindings]);
 
     // Sets up the builder visibility
     useEffect(() => {

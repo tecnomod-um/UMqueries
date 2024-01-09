@@ -15,8 +15,8 @@ const getOperatorString = (operator, type, value, varNodeData, isDefined) => {
 
 // Add both general and instance variables defined in StartingVar
 const defineProjectionVariables = (startingVar, isCount) => {
-    let variables = '';
-    let countVariables = '';
+    let variables = [];
+    let countVariables = [];
 
     Object.keys(startingVar).forEach(nodeId => {
         if (startingVar[nodeId].class || startingVar[nodeId].instance) {
@@ -27,12 +27,12 @@ const defineProjectionVariables = (startingVar, isCount) => {
             const varInstanceUri = baseVar + '___URI___instance';
 
             if (startingVar[nodeId].class) {
-                variables += ` ?${varUri}`;
-                countVariables += ` COUNT(DISTINCT ?${varUri}) AS ?${varUri}___count`;
+                variables.push(`?${varUri}`);
+                countVariables.push(`COUNT(DISTINCT ?${varUri}) AS ?${varUri}___count`);
             }
             if (startingVar[nodeId].instance) {
-                variables += ` ?${varInstanceUri}`;
-                countVariables += ` COUNT(DISTINCT ?${varInstanceUri}) AS ?${varInstanceUri}___count`;
+                variables.push(`?${varInstanceUri}`);
+                countVariables.push(`COUNT(DISTINCT ?${varInstanceUri}) AS ?${varInstanceUri}___count`);
             }
         }
     });
@@ -40,7 +40,7 @@ const defineProjectionVariables = (startingVar, isCount) => {
 }
 
 // Adds a graphs configuration to the query
-const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
+const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) => {
     // Graph components
     const nodes = graph.nodes;
     const edges = graph.edges;
@@ -54,10 +54,10 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
                 uniqueBindingsMap.set(label, {});
             const properties = uniqueBindingsMap.get(label);
             [firstValue, secondValue].forEach(value => {
-                if (value?.propertyUri) {
+                if (value.propertyUri) {
                     properties[value.propertyUri] = properties[value.propertyUri] || new Set();
-                    if (value.nodeId !== undefined)
-                        properties[value.propertyUri].add(value.nodeId);
+                    if (value.nodeId)
+                        value.nodeId.forEach(id => properties[value.propertyUri].add(id));
                 }
             });
         });
@@ -83,43 +83,59 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
                     // Build UNION clause
                     parsedQuery.body += '{\n';
                     const firstUnionBlock = graphs.find(graph => graph.id === nodes.find(node => node.id === pair.from)?.data);
-                    addGraphDefinitions(firstUnionBlock, graphs, parsedQuery, isCount);
+                    addGraphDefinitions(firstUnionBlock, graphs, parsedQuery, isCount, selectVars);
                     parsedQuery.body += `} UNION {\n`;
                     const secondUnionBlock = graphs.find(graph => graph.id === nodes.find(node => node.id === pair.to)?.data);
-                    addGraphDefinitions(secondUnionBlock, graphs, parsedQuery, isCount);
+                    addGraphDefinitions(secondUnionBlock, graphs, parsedQuery, isCount, selectVars);
                     parsedQuery.body += `}\n`;
                 }
             });
             // Current node is not part of any union pair, wrap it in brackets
             if (!isPartOfUnion) {
                 parsedQuery.body += '{\n';
-                addGraphDefinitions(graphs.find(graph => graph.id === currentNode.data), graphs, parsedQuery, isCount);
+                addGraphDefinitions(graphs.find(graph => graph.id === currentNode.data), graphs, parsedQuery, isCount, selectVars);
                 parsedQuery.body += '}\n';
             }
             return;
         }
         // If node is a uri list it will be skipped
         if (currentNode.shape === 'box') return;
+
+
+
+
+
         // Regular nodes
         const nodeIsVar = currentNode.varID >= 0;
         const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
-        // Detect both general and instance edges
+        // Detect both general, instance, and data property edges
         let hasClassVariable = !edges.some(edge => (edge.from === currentNode.id));
         let hasInstanceVariable = false;
+        let hasDataPropertyWithGraph = false; // New flag for data property graph check
+
         edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
             hasClassVariable = hasClassVariable || !edge.isFromInstance;
             hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
         });
-        // Apply class/graph restrictions
+
+        // New check for data properties with associated graphs
+        Object.values(currentNode.properties).forEach(property => {
+            if (property.show) { // Check if property is shown in results and has a graph
+                hasDataPropertyWithGraph = true;
+            }
+        });
+
+        // Apply class/graph and data property graph restrictions
         let graph = '';
-        if (hasClassVariable) {
+        if (hasClassVariable || hasDataPropertyWithGraph) { // Updated condition to include data property graph check
             if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode.class))
                 parsedQuery.body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`;
-            else if (edges.some(edge => edge.from === currentNode.id)) {
+            else if (edges.some(edge => edge.from === currentNode.id) || hasDataPropertyWithGraph) { // Updated condition
                 graph = `GRAPH <${currentNode.graph}> {\n`;
                 parsedQuery.body += graph;
             }
         }
+
         // Apply instance restrictions
         if (hasInstanceVariable) {
             if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode?.class))
@@ -152,20 +168,23 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
             const show = currentNode.properties[property].show;
             const data = currentNode.properties[property].data;
             const uri = currentNode.properties[property].uri;
+            const asValue = currentNode.properties[property].as;
 
             const usedInBinding = allBindings.some(bindingObject =>
                 Object.entries(bindingObject).some(([propertyUri, nodeIds]) =>
                     propertyUri === uri && nodeIds.has(currentNode.id)
                 )
             );
+
             if (show || data || usedInBinding) {
-                const varProperty = (!nodeIsVar)
+                // Use asValue if present, otherwise use the default naming scheme
+                const varProperty = asValue || (!nodeIsVar
                     ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.label + '___' + currentNode.id)
-                    : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.type.toUpperCase() + '___' + currentNode.varID);
-                const uri = currentNode.properties[property].uri;
+                    : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.type.toUpperCase() + '___' + currentNode.varID));
+
                 const transitive = currentNode.properties[property].transitive ? `*` : ``;
                 if (show)
-                    parsedQuery.select += isCount ? ` COUNT(DISTINCT ?${varProperty}) AS ?${varProperty}___count` : ` ?${varProperty}`;
+                    selectVars.add(isCount ? `COUNT(DISTINCT ?${varProperty}) AS ?${varProperty}___count` : `?${varProperty}`);
                 // In versions before VIRTUOSO 8, a bug prevents declaring filters using vars declared with '=' inside UNIONS.
                 if (data && currentNode.properties[property].operator === '=')
                     parsedQuery.body += `${varNode} <${uri}>${transitive} ${currentNode.properties[property].type === 'number' ? data : `"${data}"`} .\n`;
@@ -175,12 +194,13 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
                 }
             }
         });
+
         if (graph) parsedQuery.body += `}\n`;
     });
     // Build binding variables
     const createBindingElement = (value) => {
         if (value.isCustom) return value.value;
-        const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId) : value.label;
+        const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId[0]) : value.label;
         return `?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`;
     };
     bindings.forEach(binding => {
@@ -198,7 +218,7 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
 
         const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
         if (binding.showInResults)
-            parsedQuery.select += isCount ? ` COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : ` ?${bindingName}`;
+            selectVars.add(isCount ? `COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : `?${bindingName}`);
         parsedQuery.body += `BIND (${expression} AS ?${bindingName})\n`;
     });
 
@@ -214,25 +234,24 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount) => {
 // Parses a SPARQL query from the apps used structures
 export const parseQuery = (graphs, activeGraphId, startingVar, isDistinct, isCount) => {
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
-    let parsedQuery = {
-        select: 'SELECT',
+    const parsedQuery = {
+        select: `SELECT${isDistinct ? ' DISTINCT' : ''}`,
         body: 'WHERE {\n'
     };
+    const selectVars = new Set();
+    const variablesArray = defineProjectionVariables(startingVar, isCount);
+    variablesArray.forEach(varName => selectVars.add(varName));
+    addGraphDefinitions(activeGraph, graphs, parsedQuery, isCount, selectVars);
 
-    let variablesString = defineProjectionVariables(startingVar, isCount);
+    const selectVarsArray = Array.from(selectVars);
+    if (selectVarsArray.length > 0)
+        parsedQuery.select += ' ' + selectVarsArray.join(' ');
 
-    if (isCount)
-        parsedQuery.select += ` ${variablesString}`;
-    else {
-        if (isDistinct) parsedQuery.select += ' DISTINCT';
-        parsedQuery.select += variablesString;
-    }
-
-    addGraphDefinitions(activeGraph, graphs, parsedQuery, isCount);
     parsedQuery.body += '}';
     console.log(parsedQuery.select + '\n' + parsedQuery.body + '\n');
     return parsedQuery.select + '\n' + parsedQuery.body + '\n';
-};
+}
+
 
 export const parseResponse = (response) => {
     const resultURIAndLabels = {};

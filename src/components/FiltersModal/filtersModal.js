@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { React, useState, useCallback, useEffect, useMemo } from 'react';
 import { getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import FilterModalStyles from './filtersModal.module.css';
@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters, setFilters }) {
+function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, filters, setFilters }) {
     // Filter definitions
     const [tempFilters, setTempFilters] = useState([]);
     const [activeFilters, setActiveFilters] = useState([]);
@@ -36,43 +36,46 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
     // Check if a filter is valid
     const isFilterValid = useMemo(() => {
         return (filter) => {
-            const checkElementValidity = (element) => {
-                if (element.custom)
+            const checkElementValidity = (value) => {
+                if (value.custom)
                     return true;
-                else if (element.nodeType)
-                    return nodes.some(node => node.id === element.nodeID);
-                else if (element.bindingLabel)
-                    return bindings.some(binding => binding.id === element.key);
+                else if (value.nodeType)
+                    return value.ids.some(nodeId => allNodes.some(node => node.ids.includes(nodeId)));
+                else if (value.bindingLabel)
+                    return allBindings.some(binding => binding.id === value.key);
                 return false;
             };
             return checkElementValidity(filter.firstValue) && checkElementValidity(filter.secondValue);
         };
-    }, [nodes, bindings]);
+    }, [allNodes, allBindings]);
 
     // Gets all elements that could be useful for a filter definition
     const getFilterableElements = useCallback(() => {
         const filterableElements = [];
-        nodes.forEach(node => {
+        allNodes.forEach(node => {
             if (node.properties) {
                 Object.entries(node.properties).forEach(([propName, prop]) => {
                     if (prop.data || prop.show) {
-                        const label = `${propName} ${node.label}${node.varID < 0 ? ` ${node.id}` : ''}`;
-                        filterableElements.push({
-                            label: label,
-                            value: JSON.stringify({
-                                key: prop.uri,
-                                category: prop.type,
-                                nodeType: node.type,
-                                nodeID: node.id,
-                                nodeVarID: node.varID,
-                                label: label
-                            })
-                        });
+                        const label = prop.as || `${propName} ${node.label}${node.varID < 0 ? ` ${node.id}` : ''}`;
+                        if (!filterableElements.some(element => element.label === label)) {
+                            filterableElements.push({
+                                label: label,
+                                value: JSON.stringify({
+                                    key: prop.uri,
+                                    category: prop.type,
+                                    nodeType: node.type,
+                                    ids: node.ids,
+                                    nodeVarID: node.varID,
+                                    asLabel: prop.as,
+                                    label: label
+                                })
+                            });
+                        }
                     }
                 });
             }
         });
-        bindings.forEach(binding => {
+        allBindings.forEach(binding => {
             const category = getBindingCategory(binding);
             // For bindings, you can adjust the label similarly if required
             filterableElements.push({
@@ -86,7 +89,7 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
             });
         });
         return filterableElements;
-    }, [nodes, bindings]);
+    }, [allNodes, allBindings]);
 
     // Resets select values
     const setDefaultValuesToFirstOption = useCallback((setSelectedValue) => {
@@ -100,6 +103,13 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
         }
     }, [getFilterableElements, operatorLists]);
 
+    const updateFilterNodeIds = useCallback((value) => {
+        if (value.nodeType) {
+            const existingNodeIds = allNodes.flatMap(node => node.ids);
+            value.ids = value.ids.filter(nodeId => existingNodeIds.includes(nodeId));
+        }
+    }, [allNodes]);
+
     // Sets up the selects' default option so thats visually coherent
     useEffect(() => {
         if (!firstFilterValue) setDefaultValuesToFirstOption(setFirstFilterValue);
@@ -108,13 +118,21 @@ function FiltersModal({ nodes, bindings, isFiltersOpen, setFiltersOpen, filters,
 
     // Update filters when nodes or bindings change
     useEffect(() => {
-        const updatedFilters = filters.filter(isFilterValid);
-        const updatedTempFilters = tempFilters.filter(isFilterValid);
+        const updatedFilters = filters.map(filter => {
+            updateFilterNodeIds(filter.firstValue);
+            updateFilterNodeIds(filter.secondValue);
+            return filter;
+        }).filter(isFilterValid);
+        const updatedTempFilters = tempFilters.map(filter => {
+            updateFilterNodeIds(filter.firstValue);
+            updateFilterNodeIds(filter.secondValue);
+            return filter;
+        }).filter(isFilterValid);
         if (updatedFilters.length !== filters.length || updatedTempFilters.length !== tempFilters.length) {
             setFilters(updatedFilters);
             setTempFilters(updatedTempFilters);
         }
-    }, [nodes, bindings, filters, tempFilters, setFilters, isFilterValid]);
+    }, [allNodes, allBindings, filters, tempFilters, setFilters, isFilterValid, updateFilterNodeIds]);
 
     // Detects the viewport size for element configs
     useEffect(() => {

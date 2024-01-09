@@ -35,7 +35,7 @@ function Queries() {
     // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-    // Hooks used on smaller viewports
+    // Hooks used on smaller viewport
     const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
     const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
     // Graph currently being displayed
@@ -46,13 +46,31 @@ function Queries() {
         const uniqueNodesMap = new Map();
         graphs.forEach(graph => {
             graph.nodes.forEach(node => {
-                const nodeKey = node.varID > 0 ? `${node.type}_${node.varID}` : node.label;
-                if (!uniqueNodesMap.has(nodeKey))
-                    uniqueNodesMap.set(nodeKey, node);
+                const nodeKey = node.label ? node.label : `${node.type}_${node.varID}`;
+                let nodeData = uniqueNodesMap.get(nodeKey);
+                if (nodeData) {
+                    Object.entries(node.properties).forEach(([propKey, propValue]) => {
+                        if (nodeData.properties[propKey]) {
+                            if (JSON.stringify(nodeData.properties[propKey]) !== JSON.stringify(propValue)) {
+                                let newPropKey = `${propKey}_${Object.keys(nodeData.properties).length}`;
+                                nodeData.properties[newPropKey] = propValue;
+                            }
+                        } else
+                            nodeData.properties[propKey] = propValue;
+                    });
+                    if (!nodeData.ids.includes(node.id))
+                        nodeData.ids.push(node.id);
+
+                } else {
+                    nodeData = { ...node, ids: [node.id] };
+                    delete nodeData.id;
+                    uniqueNodesMap.set(nodeKey, nodeData);
+                }
             });
         });
         return Array.from(uniqueNodesMap.values());
     }, [graphs]);
+
     // Bindings defined though all graphs
     const allBindings = useMemo(() => {
         const uniqueBindingsMap = new Map();
@@ -501,7 +519,7 @@ function Queries() {
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
             <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
-            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+            <FiltersModal allNodes={allNodes} allBindings={allBindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div >
     );
 }

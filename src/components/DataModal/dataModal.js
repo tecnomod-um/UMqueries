@@ -10,6 +10,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     // Data builder inputs
     const [operators, setOperators] = useState({});
     const inputRefs = {};
+    const asInputRefs = {};
 
     const operatorLists = useMemo(() => ({
         number: ['=', '>', '<', '<=', '>='],
@@ -61,7 +62,9 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
             const isVar = selectedNode.varID >= 0 ? true : false;
             const { type, label } = property;
             // TODO if (!isVar) fill fields with actual values (query)
-            let value = '';
+            let value = '', asValue = '';
+            if (selectedNode.properties && selectedNode.properties[label] && selectedNode.properties[label].as)
+                asValue = selectedNode.properties[label].as;
             let { checkShow, checkTransitive } = false;
             if (selectedNode.properties && selectedNode.properties[label]) {
                 value = selectedNode.properties[label].data;
@@ -138,10 +141,12 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     );
                     break;
             }
+
             result.push(
                 <div className={DataModalStyles.fieldContainer} key={`${selectedNode.label}-${label}-row`}>
                     <label className={DataModalStyles.labelProperty} htmlFor={label}>{label}</label>
                     {input}
+                    <input className={DataModalStyles.inputAs} type="text" placeholder="show as..." defaultValue={asValue} ref={el => (asInputRefs[label] = el)} />
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesShow"}>Show in results:</label>
                     <input className={DataModalStyles.checkbox} type="checkbox" id={label + "_queriesShow"} name={`${label}_queriesShow`} /*disabled={!isVar}*/ style={{ display: 'inline-block' }} defaultChecked={checkShow} ref={el => (inputRefs[label + "_queriesShow"] = el)} />
                     <label className={DataModalStyles.labelCheckbox} htmlFor={label + "_queriesTransitive"}>Make transitive:</label>
@@ -170,6 +175,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
         insideData[selectedNode.type]?.forEach((property) => {
             const { label } = property;
             const inputElement = inputRefs[label];
+            const asInputElement = asInputRefs[label];
             if (inputElement) {
                 updatedNode.properties[label] = {
                     uri: property.property,
@@ -177,6 +183,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     show: inputRefs[label + '_queriesShow'].checked,
                     type: getCategory(property.type),
                     transitive: inputRefs[label + '_queriesTransitive'].checked,
+                    as: asInputElement ? asInputElement.value : ''
                 };
             }
             if (operators[label]) {
@@ -187,8 +194,9 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
         setDataOpen(false);
     }
 
+
     return (
-        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={700}>
+        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={875}>
             <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
                 <h2
                     title={insideData[selectedNode.type] ?
