@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styles from './checkbox.module.css';
 
-const Checkbox = ({ label, labelClassName, checked: checkedProp, onChange, ...props }) => {
-    const [checked, setChecked] = useState(checkedProp);
+const Checkbox = ({ label, labelClassName, checked, onChange, ...props }) => {
+    const [isChecked, setIsChecked] = useState(checked);
 
     const handleChange = (e) => {
-        setChecked(e.target.checked);
+        setIsChecked(e.target.checked);
         if (onChange) onChange(e);
     };
 
@@ -14,12 +14,12 @@ const Checkbox = ({ label, labelClassName, checked: checkedProp, onChange, ...pr
             {label && <span className={`${styles.checkboxLabel} ${labelClassName || ''}`}>{label}</span>}
             <input
                 type="checkbox"
-                checked={checked}
+                checked={isChecked}
                 onChange={handleChange}
                 className={styles.checkboxInput}
                 {...props}
             />
-            <span className={styles.checkmark}></span>
+            <span className={styles.checker}></span>
         </label>
     );
 }

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { getCategory, getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
-import Checkbox from "../Checkbox/checkbox.js";
 import CloseIcon from "@mui/icons-material/Close";
 
 // Used to define a node's data properties

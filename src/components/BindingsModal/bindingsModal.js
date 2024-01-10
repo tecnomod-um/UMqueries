@@ -45,19 +45,38 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
 
     // Gets all elements that could be useful for a binding definition, including other bindings
     const getAvailableProperties = useCallback(() => {
-        const nodeValues = (allNodes ?? []).flatMap(node => Object.entries(node.properties)
-            .filter(([_, property]) => property.show)
-            .map(([key, property]) => ({
-                label: capitalizeFirst(property.as || `${key} ${node.label}`),
-                key, nodeLabel: node.label, isVar: node.varID >= 0,
-                isFromNode: true, nodeId: node.ids, propertyUri: property.uri, type: property.type,
-                value: JSON.stringify({ label: capitalizeFirst(`${key} ${node.label}`), key, nodeLabel: node.label, isVar: node.varID >= 0, isFromNode: true, nodeId: node.ids, propertyUri: property.uri, type: property.type })
-            })));
+        const nodeValues = (() => {
+            const labelMap = new Map();
+            allNodes.flatMap(node =>
+                Object.entries(node.properties)
+                    .filter(([_, property]) => property.show)
+                    .forEach(([key, property]) => {
+                        const label = capitalizeFirst(property.as || `${key} ${node.label}`);
+                        if (!labelMap.has(label)) {
+                            labelMap.set(label, {
+                                label,
+                                key,
+                                nodeLabel: node.label,
+                                isVar: node.varID >= 0,
+                                isFromNode: true,
+                                nodeId: node.ids,
+                                propertyUri: property.uri,
+                                type: property.type,
+                                value: JSON.stringify({ label, key, nodeLabel: node.label, isVar: node.varID >= 0, isFromNode: true, nodeId: node.ids, propertyUri: property.uri, type: property.type })
+                            });
+                        }
+                    })
+            );
+            return Array.from(labelMap.values());
+        })();
 
         const combinedBindings = [...allBindings, ...tempBindings].reduce((acc, binding) => {
             if (!acc.some(accBinding => accBinding.label === binding.label)) {
                 acc.push({
-                    label: binding.label, isFromNode: false, bindingId: binding.id, type: 'custom',
+                    label: binding.label,
+                    isFromNode: false,
+                    bindingId: binding.id,
+                    type: 'custom',
                     value: JSON.stringify({ label: binding.label, isFromNode: false, bindingId: binding.id, type: 'custom' })
                 });
             }
@@ -127,7 +146,6 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
         const currentNodesIds = new Set(allNodes.flatMap(node => node.ids));
         const updatedBindings = bindings.map(binding => {
             const updateNodeIds = (value) => {
-                console.log(value)
                 if (value.isFromNode)
                     value.nodeId = value.nodeId.filter(id => currentNodesIds.has(id));
             };

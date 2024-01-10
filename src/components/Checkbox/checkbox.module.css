@@ -17,7 +17,7 @@
     width: 0;
 }
 
-.checkmark {
+.checker {
     position: relative;
     top: 50%;
     left: 0;
@@ -29,7 +29,7 @@
     margin-left: 5px;
 }
 
-.checkmark:after {
+.checker:after {
     content: "";
     position: absolute;
     display: none;
@@ -42,24 +42,24 @@
     border-width: 0 3px 3px 0;
 }
 
-.checkboxInput:checked~.checkmark:after {
+.checkboxInput:checked~.checker:after {
     display: block;
 }
 
-.checkboxInput:checked~.checkmark {
+.checkboxInput:checked~.checker {
     background-color: #6c757d;
 }
 
-.checkboxInput:disabled~.checkmark {
+.checkboxInput:disabled~.checker {
     background-color: #e9e9e9;
     border-color: #ccc;
 }
 
-.checkboxInput:disabled~.checkmark:after {
+.checkboxInput:disabled~.checker:after {
     border-color: #777;
 }
 
 .checkboxInput:disabled~.checkboxLabel,
-.checkboxInput:disabled~.checkmark~.checkboxLabel {
+.checkboxInput:disabled~.checker~.checkboxLabel {
     color: #aaa;
 }
