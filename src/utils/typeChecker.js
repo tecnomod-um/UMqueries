@@ -2,7 +2,7 @@ export const getCategory = (inputType) => {
     if (Array.isArray(inputType)) {
         return 'select';
     }
-    const type = inputType.toLowerCase();
+    const type = inputType?.toLowerCase();
     const patterns = [
         { re: /uri|link|url|typed-literal/, return: 'link' },
         { re: /numeric|int|integer|long|decimal|byte|short|nonnegativeinteger|unsignedlong|unsignedint|unsignedshort|unsignedbyte|positiveinteger/, return: 'number' },

@@ -150,11 +150,12 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         if (isTotal) { }
         // Detects properties marked as shown in vars
         if (!isTotal) {
+            console.log(activeGraph.nodes)
             activeGraph.nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
                 .forEach(targetedNode => {
                     if (targetedNode.properties)
                         Object.entries(targetedNode.properties).forEach(([key, value]) => {
-                            let show = value.show;
+                            const show = value.show;
                             const category = getCategory(insideData[targetedNode.type].filter(entry => entry.property === value.uri)[0]?.type);
                             if (show && (category === 'number' || category === 'decimal' || category === 'datetime')) {
                                 result.push(<DropdownMenuItem onClick={() =>
@@ -173,23 +174,25 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
 
         // Toggle selected state for a given node
-        const toggleNodeSelection = (nodeId, nodeInfo, isInstance, isClass) => {
+        const toggleNodeSelection = (nodeIds, nodeInfo, isInstance, isClass) => {
             setStartingVar(prevStartingVar => {
                 const updatedStartingVar = { ...prevStartingVar };
-                if (nodeId in updatedStartingVar) {
-                    if (isInstance)
-                        updatedStartingVar[nodeId].instance = !updatedStartingVar[nodeId].instance;
-                    if (isClass)
-                        updatedStartingVar[nodeId].class = !updatedStartingVar[nodeId].class;
-                    if (!updatedStartingVar[nodeId].instance && !updatedStartingVar[nodeId].class)
-                        delete updatedStartingVar[nodeId];
-                } else {
-                    updatedStartingVar[nodeId] = {
-                        ...nodeInfo,
-                        instance: isInstance,
-                        class: isClass
-                    };
-                }
+                nodeIds.forEach(nodeId => {
+                    if (nodeId in updatedStartingVar) {
+                        if (isInstance)
+                            updatedStartingVar[nodeId].instance = !updatedStartingVar[nodeId].instance;
+                        if (isClass)
+                            updatedStartingVar[nodeId].class = !updatedStartingVar[nodeId].class;
+                        if (!updatedStartingVar[nodeId].instance && !updatedStartingVar[nodeId].class)
+                            delete updatedStartingVar[nodeId];
+                    } else {
+                        updatedStartingVar[nodeId] = {
+                            ...nodeInfo,
+                            instance: isInstance,
+                            class: isClass
+                        };
+                    }
+                });
                 return updatedStartingVar;
             });
         };
@@ -198,13 +201,13 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             return (
                 <DropdownMenuItem preventCloseOnClick={true} disableRipple={true} onClick={event => {
                     event.stopPropagation();
-                    toggleNodeSelection(targetedNode.id, nodeContents(targetedNode, isInstance, isClass), isInstance, isClass);
+                    toggleNodeSelection(targetedNode.ids, nodeContents(targetedNode, isInstance, isClass), isInstance, isClass);
                 }}>
                     <span className={ResultTrayStyles.shownNode}>
                         {label}
-                        {(selectedNodesSet.has(targetedNode.id) &&
-                            ((isInstance && startingVar[targetedNode.id]?.instance) ||
-                                (isClass && startingVar[targetedNode.id]?.class))) ?
+                        {(targetedNode.ids.some(id => selectedNodesSet.has(id)) &&
+                            ((isInstance && targetedNode.ids.some(id => startingVar[id]?.instance)) ||
+                                (isClass && targetedNode.ids.some(id => startingVar[id]?.class)))) ?
                             <DeleteIcon sx={{ color: 'darkgray' }} /> :
                             <AddIcon sx={{ color: 'darkgray' }} />}
                     </span>
@@ -215,9 +218,9 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         allNodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
             .forEach(targetedNode => {
                 const baseLabel = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
-                let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && edge.from === targetedNode.id);
-                let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && edge.from === targetedNode.id) ||
-                    !activeGraph.edges.some(edge => edge.from === targetedNode.id);
+                let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && targetedNode.ids.includes(edge.from));
+                let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && targetedNode.ids.includes(edge.from)) ||
+                    !activeGraph.edges.some(edge => targetedNode.ids.includes(edge.from));
                 if (isInstance || isClass) {
                     let instanceLabel = baseLabel + (isInstance ? ' (instance)' : '');
                     let classLabel = baseLabel + (isClass ? ' (class)' : '');

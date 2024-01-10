@@ -343,7 +343,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                             <>
                                 {showFirstCustomInput && (
                                     <input
-                                        type="number"
+                                        type="text"
                                         aria-label="First custom value"
                                         value={firstCustomValue}
                                         onChange={(e) => e.target.value ? setFirstCustomValue(parseInt(e.target.value, 10)) : setFirstCustomValue(0)}
@@ -361,7 +361,6 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                             </>
                         )
                     }
-
                     <select
                         title={getOperatorTooltip(operator)}
                         aria-label="Operator Selector"
@@ -379,7 +378,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
                     </select>
                     {showSecondCustomInput && (
                         <input
-                            type="number"
+                            type="text"
                             aria-label="Second custom value"
                             value={secondCustomValue}
                             onChange={(e) => e.target.value ? setSecondCustomValue(parseInt(e.target.value, 10)) : setSecondCustomValue(0)}
