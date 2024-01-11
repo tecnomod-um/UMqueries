@@ -170,9 +170,8 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     const handleSubmit = () => {
         const updatedNode = { ...selectedNode };
         updatedNode.properties = {};
-
         insideData[selectedNode.type]?.forEach((property) => {
-            const { label } = property;
+            const label = property.label;
             const inputElement = inputRefs[label];
             const asInputElement = asInputRefs[label];
             if (inputElement) {
@@ -185,14 +184,12 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
                     as: asInputElement ? asInputElement.value : ''
                 };
             }
-            if (operators[label]) {
+            if (operators[label])
                 updatedNode.properties[label].operator = operators[label];
-            }
         });
         setNode(updatedNode);
         setDataOpen(false);
     }
-
 
     return (
         <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={875}>

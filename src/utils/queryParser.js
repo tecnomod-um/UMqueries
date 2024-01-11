@@ -1,13 +1,15 @@
 import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
 
 const getOperatorString = (operator, type, value, varNodeData, isDefined) => {
-    const valueString = isDefined ? `?${value}` : ['number', 'decimal', 'datetime'].includes(type) ? value : `"${value}"`;
+    const isValueQuoted = !isDefined && !['number', 'decimal', 'datetime'].includes(type);
+    const valueString = isDefined ? `?${value}` : isValueQuoted ? `"${value}"` : value;
+    
     const operators = {
         '>': `?${varNodeData} > ${valueString}`,
         '<': `?${varNodeData} < ${valueString}`,
         '<=': `?${varNodeData} <= ${valueString}`,
         '>=': `?${varNodeData} >= ${valueString}`,
-        '⊆': `REGEX(?${varNodeData}, ${valueString})`,
+        '⊆': `REGEX(?${varNodeData}, ${valueString}${isValueQuoted ? ', "i"' : ''})`,
         '=': `?${varNodeData} = ${valueString}`,
     }
     return operators[operator] || operators['='];
@@ -101,17 +103,13 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         // If node is a uri list it will be skipped
         if (currentNode.shape === 'box') return;
 
-
-
-
-
         // Regular nodes
         const nodeIsVar = currentNode.varID >= 0;
         const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
         // Detect both general, instance, and data property edges
         let hasClassVariable = !edges.some(edge => (edge.from === currentNode.id));
         let hasInstanceVariable = false;
-        let hasDataPropertyWithGraph = false; // New flag for data property graph check
+        let hasDataPropertyWithGraph = false;
 
         edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
             hasClassVariable = hasClassVariable || !edge.isFromInstance;
@@ -120,17 +118,17 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
 
         // New check for data properties with associated graphs
         Object.values(currentNode.properties).forEach(property => {
-            if (property.show) { // Check if property is shown in results and has a graph
+            if (property.show) {
                 hasDataPropertyWithGraph = true;
             }
         });
 
         // Apply class/graph and data property graph restrictions
         let graph = '';
-        if (hasClassVariable || hasDataPropertyWithGraph) { // Updated condition to include data property graph check
+        if (hasClassVariable || hasDataPropertyWithGraph) {
             if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode.class))
                 parsedQuery.body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`;
-            else if (edges.some(edge => edge.from === currentNode.id) || hasDataPropertyWithGraph) { // Updated condition
+            else if (edges.some(edge => edge.from === currentNode.id) || hasDataPropertyWithGraph) {
                 graph = `GRAPH <${currentNode.graph}> {\n`;
                 parsedQuery.body += graph;
             }
@@ -175,7 +173,6 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
                     propertyUri === uri && nodeIds.has(currentNode.id)
                 )
             );
-
             if (show || data || usedInBinding) {
                 // Use asValue if present, otherwise use the default naming scheme
                 const varProperty = asValue || (!nodeIsVar
@@ -215,7 +212,6 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
             expression = `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`;
         else
             expression = `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
-
         const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
         if (binding.showInResults)
             selectVars.add(isCount ? `COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : `?${bindingName}`);
@@ -224,10 +220,8 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
 
     // Build filters
     filters.forEach(filter => {
-        const firstElement = cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label)));
-        const secondElement = cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label)));
         const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
-        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, secondElement, firstElement, !filter.secondValue.custom)} ) .\n`;
+        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, filter.secondValue.label, filter.firstValue.label, !filter.secondValue.custom)} ) .\n`;
     });
 }
 
@@ -251,7 +245,6 @@ export const parseQuery = (graphs, activeGraphId, startingVar, isDistinct, isCou
     console.log(parsedQuery.select + '\n' + parsedQuery.body + '\n');
     return parsedQuery.select + '\n' + parsedQuery.body + '\n';
 }
-
 
 export const parseResponse = (response) => {
     const resultURIAndLabels = {};

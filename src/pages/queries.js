@@ -9,11 +9,10 @@ import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import FiltersModal from "../components/FiltersModal/filtersModal";
-import config from '../config';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
-
+import config from '../config';
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -50,9 +49,10 @@ function Queries() {
                 let nodeData = uniqueNodesMap.get(nodeKey);
                 if (nodeData) {
                     Object.entries(node.properties).forEach(([propKey, propValue]) => {
+                        nodeData = JSON.parse(JSON.stringify(nodeData));
                         if (nodeData.properties[propKey]) {
                             if (JSON.stringify(nodeData.properties[propKey]) !== JSON.stringify(propValue)) {
-                                let newPropKey = `${propKey}_${Object.keys(nodeData.properties).length}`;
+                                const newPropKey = `${propKey}_${Object.keys(nodeData.properties).length}`;
                                 nodeData.properties[newPropKey] = propValue;
                             }
                         } else
@@ -60,9 +60,9 @@ function Queries() {
                     });
                     if (!nodeData.ids.includes(node.id))
                         nodeData.ids.push(node.id);
-
                 } else {
-                    nodeData = { ...node, ids: [node.id] };
+                    nodeData = JSON.parse(JSON.stringify(node));
+                    nodeData.ids = [node.id];
                     delete nodeData.id;
                     uniqueNodesMap.set(nodeKey, nodeData);
                 }

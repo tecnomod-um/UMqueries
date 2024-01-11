@@ -113,8 +113,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         shownProperties = (<span />);
         shownOptionals = (<span />);
     }
-
-    const numVarsSelected = Object.keys(startingVar).length;
+    const uniqueVars = new Set(Object.values(startingVar).map(({ type, varID }) => `${type}-${varID}`));
+    const numVarsSelected = uniqueVars.size;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
     buttonFilterLabel = activeGraph.filters.length ? activeGraph.filters.length === 1 ?
         `${activeGraph.filters.length} filter set` : `${activeGraph.filters.length} filters set` : "No filters set";
@@ -150,7 +150,6 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         if (isTotal) { }
         // Detects properties marked as shown in vars
         if (!isTotal) {
-            console.log(activeGraph.nodes)
             activeGraph.nodes.filter(generalNode => generalNode && generalNode.varID >= 0)
                 .forEach(targetedNode => {
                     if (targetedNode.properties)
