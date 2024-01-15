@@ -3,7 +3,7 @@ import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpac
 const getOperatorString = (operator, type, value, varNodeData, isDefined) => {
     const isValueQuoted = !isDefined && !['number', 'decimal', 'datetime'].includes(type);
     const valueString = isDefined ? `?${value}` : isValueQuoted ? `"${value}"` : value;
-    
+
     const operators = {
         '>': `?${varNodeData} > ${valueString}`,
         '<': `?${varNodeData} < ${valueString}`,
@@ -112,6 +112,7 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         let hasDataPropertyWithGraph = false;
 
         edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
+            console.log(edge)
             hasClassVariable = hasClassVariable || !edge.isFromInstance;
             hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
         });
