@@ -222,7 +222,10 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
     // Build filters
     filters.forEach(filter => {
         const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
-        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType, filter.secondValue.label, filter.firstValue.label, !filter.secondValue.custom)} ) .\n`;
+        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType,
+            filter.secondValue.isCustom ? filter.secondValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label))),
+            filter.firstValue.isCustom ? filter.firstValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label))),
+            !filter.secondValue.custom)} ) .\n`;
     });
 }
 
