@@ -35,25 +35,54 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
 
     // Creates both property dropdown menus
     const createGroupedMenuItems = (edges, isOptional) => {
-        const edgeGroups = edges?.reduce((acc, edge) => {
-            acc[edge.fromInstance ? 'fromInstance' : 'notFromInstance'].push(
-                <DropdownNestedMenuItem
-                    label={edge.label}
-                    disableRipple={true}
-                    preventCloseOnClick={true}
-                    menu={getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance)}
-                />
-            );
+        const edgeGroupsByLabel = edges?.reduce((acc, edge) => {
+            const key = edge.fromInstance ? 'fromInstance' : 'notFromInstance';
+            const label = edge.label;
+            if (!acc[key][label]) {
+                acc[key][label] = [];
+            }
+            acc[key][label].push(edge);
             return acc;
-        }, { fromInstance: [], notFromInstance: [] });
-        const separator = edgeGroups?.fromInstance.length && edgeGroups?.notFromInstance.length ? (
+        }, { fromInstance: {}, notFromInstance: {} });
+        // Same label properties will be shown as one
+        const createMenuItemsForGroup = (group) => {
+            return Object.entries(group).map(([label, edges]) => {
+                const firstEdge = edges[0];
+                const valuesItem = (
+                    <ValuesItem
+                        inputRef={inputRefs.current[label] || (inputRefs.current[label] = React.createRef())}
+                        uriList={uriList}
+                        selectedNode={selectedNode}
+                        label={label}
+                        property={firstEdge.property}
+                        isOptional={isOptional}
+                        isFromInstance={firstEdge.fromInstance}
+                        setUriList={setUriList}
+                        addNode={addNode}
+                        addEdge={addEdge}
+                    />);
+                const propertyTargets = edges.map((edge, index) => getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance, index === 0)).flat();
+                const menu = propertyTargets.length > 0 ? propertyTargets : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>];
+                return (
+                    <DropdownNestedMenuItem
+                        label={label}
+                        disableRipple={true}
+                        preventCloseOnClick={true}
+                        menu={[valuesItem, ...menu]}
+                    />
+                );
+            });
+        };
+        const fromInstanceMenuItems = createMenuItemsForGroup(edgeGroupsByLabel.fromInstance);
+        const notFromInstanceMenuItems = createMenuItemsForGroup(edgeGroupsByLabel.notFromInstance);
+        const separator = fromInstanceMenuItems.length && notFromInstanceMenuItems.length ? (
             <div className={ResultTrayStyles.dropdownSeparator} />
         ) : null;
-        return [...(edgeGroups?.fromInstance || []), separator, ...(edgeGroups?.notFromInstance || [])].filter(Boolean);
+        return [...fromInstanceMenuItems, separator, ...notFromInstanceMenuItems].filter(Boolean);
     }
 
     // Gets all nodes that could receive a property
-    function getPropertyTargets(isOptional, object, label, property, isFromInstance) {
+    function getPropertyTargets(isOptional, object, label, property, isFromInstance, includeValuesItem) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
         const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
@@ -61,12 +90,13 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             .map(targetedNode => (
                 <DropdownMenuItem onClick={() => {
                     addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
-                }}>{targetedNode.label} </DropdownMenuItem>))
-        if (!inputRefs.current[label])
+                }}>{targetedNode.label} </DropdownMenuItem>));
+        if (includeValuesItem && !inputRefs.current[label]) {
             inputRefs.current[label] = React.createRef();
-        result.unshift(
-            <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} isFromInstance={isFromInstance} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
-        return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
+            result.unshift(
+                <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} isFromInstance={isFromInstance} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
+        }
+        return result;
     }
 
     // Gets all graph nodes that could form a Union
@@ -103,7 +133,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
 
             const edgesForSelectedNode = edgeData[selectedNode.type];
-            shownProperties = createGroupedMenuItems(edgesForSelectedNode, false);
+            shownProperties = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id) ? [] : createGroupedMenuItems(edgesForSelectedNode, false);
             shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
         }
     } else {
@@ -220,13 +250,16 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                 let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && targetedNode.ids.includes(edge.from));
                 let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && targetedNode.ids.includes(edge.from)) ||
                     !activeGraph.edges.some(edge => targetedNode.ids.includes(edge.from));
+
                 if (isInstance || isClass) {
-                    let instanceLabel = baseLabel + (isInstance ? ' (instance)' : '');
-                    let classLabel = baseLabel + (isClass ? ' (class)' : '');
-                    if (isInstance)
+                    let instanceLabel = `${baseLabel} (instance)`;
+                    let classLabel = `${baseLabel}${isInstance ? ' (class)' : ''}`;
+                    if (isInstance) {
                         result.push(createDropdownItem(targetedNode, instanceLabel, true, false));
-                    if (isClass)
                         result.push(createDropdownItem(targetedNode, classLabel, false, true));
+                    } else if (isClass) {
+                        result.push(createDropdownItem(targetedNode, classLabel, false, true));
+                    }
                 }
             });
         let countMenu = [
@@ -292,7 +325,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             window.removeEventListener("keydown", handleKeyPress);
         };
     }, [deleteSelected]);
-
+    const isButtonDisabled = shownOptionals.length === 0;
     return (
         <span className={ResultTrayStyles.container}>
             <div className={ResultTrayStyles.controlColumn}>
@@ -308,7 +341,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                     />
                 </div>
                 <Dropdown
-                    trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
+                    trigger={<button className={ResultTrayStyles.big_button} disabled={isButtonDisabled}>{buttonOptionalLabel}</button>}
                     menu={shownOptionals} />
                 <button className={ResultTrayStyles.big_button} onClick={() => setDataOpen(true)}>{buttonInsideLabel}</button>
             </div>
