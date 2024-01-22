@@ -6,9 +6,9 @@ function getTableHeaders(filteredLists) {
   return Object.keys(filteredLists);
 }
 
-function getTableContent(filteredLists, tbodyElement) {
+function getTableContent(filteredLists, tbodyElement, maxRows) {
   if (!filteredLists || Object.keys(filteredLists).length === 0) return null;
-  const rowCount = Object.values(filteredLists)[0].length;
+  const rowCount = Math.min(Object.values(filteredLists)[0].length, maxRows);
 
   return (
     <tbody className={ResultTableStyles.resTbody} ref={tbodyElement}>
@@ -26,7 +26,7 @@ function getTableContent(filteredLists, tbodyElement) {
 }
 
 // Displays the query results in a compact table with resizable columns
-const ResultTable = ({ filteredLists, minCellWidth }) => {
+const ResultTable = ({ filteredLists, minCellWidth, maxRows = 1000 }) => {
   const [tableHeight, setTableHeight] = useState("auto");
   const [activeIndex, setActiveIndex] = useState(null);
   const [columns, setColumns] = useState(createHeaders(["."]));
@@ -128,7 +128,7 @@ const ResultTable = ({ filteredLists, minCellWidth }) => {
           ))}
         </tr>
       </thead>
-      {getTableContent(filteredLists, tbodyElement)}
+      {getTableContent(filteredLists, tbodyElement, maxRows)}
     </table>
   );
 };

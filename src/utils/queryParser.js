@@ -41,6 +41,45 @@ const defineProjectionVariables = (startingVar, isCount) => {
     return isCount ? countVariables : variables;
 }
 
+// Adds a node's typing to a graph
+const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, edges, nodeIsVar) => {
+    let graph = '';
+    // Node configs
+    //Check the typing definitions needed
+    let hasClassVariable = !edges.some(edge => (edge.from === node.id));
+    let hasInstanceVariable = false;
+    edges.filter(edge => edge.from === node.id).forEach(edge => {
+        hasClassVariable = hasClassVariable || !edge.isFromInstance;
+        hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
+    });
+    // Check if graph definition is needed for classes nodes defining data props 
+    let hasDataPropertyWithGraph = false;
+    Object.values(node.properties).forEach(property => {
+        if (property.show)
+            hasDataPropertyWithGraph = true;
+    });
+    // Filter node class
+    const isSpecialClass = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(node.class);
+
+    if (hasInstanceVariable) {
+        if (nodeIsVar && !isSpecialClass)
+            parsedQuery.body += `${nodeLabelInGraph}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${nodeLabelInGraph} .\n${nodeLabelInGraph} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${node.class}> .\n`;
+        else if (edges.some(edge => edge.from === node.id)) {
+            graph = `GRAPH <${node.graph}> {\n`;
+            parsedQuery.body += graph;
+            parsedQuery.body += `${nodeLabelInGraph}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${nodeLabelInGraph}___class .\n${nodeLabelInGraph}___class <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .\n`;
+        }
+    } else if (hasClassVariable || hasDataPropertyWithGraph) {
+        if (nodeIsVar && !isSpecialClass)
+            parsedQuery.body += `${nodeLabelInGraph} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${node.class}> .\n`;
+        else if (edges.some(edge => edge.from === node.id) || hasDataPropertyWithGraph) {
+            graph = `GRAPH <${node.graph}> {\n`;
+            parsedQuery.body += graph;
+        }
+    }
+    return graph;
+}
+
 // Adds a graphs configuration to the query
 const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) => {
     // Graph components
@@ -102,65 +141,42 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         }
         // If node is a uri list it will be skipped
         if (currentNode.shape === 'box') return;
-
         // Regular nodes
         const nodeIsVar = currentNode.varID >= 0;
         const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
-        // Detect both general, instance, and data property edges
-        let hasClassVariable = !edges.some(edge => (edge.from === currentNode.id));
-        let hasInstanceVariable = false;
-        let hasDataPropertyWithGraph = false;
-
-        edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
-            console.log(edge)
-            hasClassVariable = hasClassVariable || !edge.isFromInstance;
-            hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
-        });
-
-        // New check for data properties with associated graphs
-        Object.values(currentNode.properties).forEach(property => {
-            if (property.show) {
-                hasDataPropertyWithGraph = true;
-            }
-        });
+        // TODO add proper optional implementation
+        const isOptionalDefinition = edges.filter(edge => edge.to === currentNode.id).length > 0 &&
+            edges.filter(edge => edge.to === currentNode.id).every(edge => edge.isOptional);
 
         // Apply class/graph and data property graph restrictions
         let graph = '';
-        if (hasClassVariable || hasDataPropertyWithGraph) {
-            if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode.class))
-                parsedQuery.body += `${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`;
-            else if (edges.some(edge => edge.from === currentNode.id) || hasDataPropertyWithGraph) {
-                graph = `GRAPH <${currentNode.graph}> {\n`;
-                parsedQuery.body += graph;
-            }
-        }
+        if (!isOptionalDefinition)
+            graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar);
 
-        // Apply instance restrictions
-        if (hasInstanceVariable) {
-            if (nodeIsVar && !['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(currentNode?.class))
-                parsedQuery.body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode} .\n${varNode} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${currentNode.class}> .\n`
-            else if (edges.some(edge => edge.from === currentNode.id)) {
-                graph = `GRAPH <${currentNode.graph}> {\n`;
-                parsedQuery.body += graph;
-                parsedQuery.body += `${varNode}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${varNode}___class .\n${varNode}___class <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .\n`;
-            }
-        }
         // Build object properties
         edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
-            let optional = edge.isOptional ? `OPTIONAL { ` : ``;
-            let transitive = edge.isTransitive ? `*` : ``;
-            let targetNode = nodes.find(node => node.id === edge.to);
+            const optional = edge.isOptional ? `OPTIONAL { ` : ``;
+            const transitive = edge.isTransitive ? `*` : ``;
+            const instance = edge.isFromInstance ? `___instance` : ``
+            const targetNode = nodes.find(node => node.id === edge.to);
+
             let subject;
-            let instance = edge.isFromInstance ? `___instance` : ``;
             if (targetNode.shape === 'box') {
                 subject = `?List___${targetNode.id}___URI`;
-                parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }`;
+                parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }\n`;
             }
             else if (targetNode.varID >= 0)
                 subject = targetNode.data;
             else
                 subject = `<${targetNode.data}>`;
-            parsedQuery.body += `${optional}${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
+
+            // TODO Remove optional definitions from here
+            parsedQuery.body += `${optional}`;
+            if (optional) {
+                const targetIsVar = targetNode.varID >= 0;
+                graph += applyClassAndInstanceRestrictions(parsedQuery, targetNode, subject, edges, targetIsVar);
+            }
+            parsedQuery.body += `${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
         });
         // Build data properties
         Object.keys(currentNode.properties).forEach(property => {
@@ -176,7 +192,7 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
             );
             if (show || data || usedInBinding) {
                 // Use asValue if present, otherwise use the default naming scheme
-                const varProperty = asValue || (!nodeIsVar
+                const varProperty = capitalizeFirst(asValue) || (!nodeIsVar
                     ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.label + '___' + currentNode.id)
                     : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.type.toUpperCase() + '___' + currentNode.varID));
 
@@ -223,8 +239,8 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
     filters.forEach(filter => {
         const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
         parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType,
-            filter.secondValue.isCustom ? filter.secondValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label))),
-            filter.firstValue.isCustom ? filter.firstValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label))),
+            filter.secondValue.custom ? filter.secondValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label))),
+            filter.firstValue.custom ? filter.firstValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label))),
             !filter.secondValue.custom)} ) .\n`;
     });
 }

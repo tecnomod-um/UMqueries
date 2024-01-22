@@ -48,11 +48,11 @@ function Queries() {
                 const nodeKey = node.label ? node.label : `${node.type}_${node.varID}`;
                 let nodeData = uniqueNodesMap.get(nodeKey);
                 if (nodeData) {
+                    nodeData = JSON.parse(JSON.stringify(nodeData));
                     Object.entries(node.properties).forEach(([propKey, propValue]) => {
-                        nodeData = JSON.parse(JSON.stringify(nodeData));
                         if (nodeData.properties[propKey]) {
                             if (JSON.stringify(nodeData.properties[propKey]) !== JSON.stringify(propValue)) {
-                                const newPropKey = `${propKey}_${Object.keys(nodeData.properties).length}`;
+                                const newPropKey = `${propKey}(id:${node.id})`;
                                 nodeData.properties[newPropKey] = propValue;
                             }
                         } else
@@ -64,10 +64,11 @@ function Queries() {
                     nodeData = JSON.parse(JSON.stringify(node));
                     nodeData.ids = [node.id];
                     delete nodeData.id;
-                    uniqueNodesMap.set(nodeKey, nodeData);
                 }
+                uniqueNodesMap.set(nodeKey, nodeData);
             });
         });
+
         return Array.from(uniqueNodesMap.values());
     }, [graphs]);
 
@@ -290,6 +291,7 @@ function Queries() {
                     show: false,
                     type: getCategory(property.type),
                     transitive: false,
+                    as: "",
                     operator: '=',
                 }
             });

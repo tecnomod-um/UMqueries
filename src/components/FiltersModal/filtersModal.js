@@ -56,7 +56,8 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
             if (node.properties) {
                 Object.entries(node.properties).forEach(([propName, prop]) => {
                     if (prop.data || prop.show) {
-                        const label = prop.as || `${propName} ${node.label}${node.varID < 0 ? ` ${node.id}` : ''}`;
+                        // TODO Always showing node.ids[0] makes no sense. Specific node filtering needs implementation
+                        const label = prop.as || `${propName} ${node.label}${node.varID < 0 ? ` ${node.ids[0]}` : ''}`;
                         if (!filterableElements.some(element => element.label === label)) {
                             filterableElements.push({
                                 label: label,
