@@ -190,7 +190,7 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
                     propertyUri === uri && nodeIds.has(currentNode.id)
                 )
             );
-            if (show || data || usedInBinding) {
+            if (show || data || usedInBinding || asValue) {
                 // Use asValue if present, otherwise use the default naming scheme
                 const varProperty = capitalizeFirst(asValue) || (!nodeIsVar
                     ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.label + '___' + currentNode.id)
