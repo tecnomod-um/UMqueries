@@ -215,10 +215,10 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
     // Track processed graph nodes to avoid duplication
     const processedNodes = new Set();
     Object.keys(nodes).forEach(nodeInList => {
-        // If node represents a graph, build a UNION operation
         const currentNode = nodes[nodeInList];
         // Skip if the node has already been processed in UNIONS
         if (processedNodes.has(currentNode.id)) return;
+        // If node represents a graph, build a UNION operation
         if (currentNode.shape === 'circle') {
             let isPartOfUnion = false;
             unionPairs.forEach(pair => {
@@ -249,19 +249,18 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         // Regular nodes
         const nodeIsVar = currentNode.varID >= 0;
         const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
-        // TODO add proper optional implementation
-        const isOptionalDefinition = edges.filter(edge => edge.to === currentNode.id).length > 0 &&
-            edges.filter(edge => edge.to === currentNode.id).every(edge => edge.isOptional);
-
-        // Apply class/graph and data property graph restrictions
-        let graph = '';
-        if (!isOptionalDefinition)
-            graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar);
 
         // Property definitions
         defineObjectProperties(currentNode, varNode, edges, nodes, parsedQuery);
         defineDataProperties(currentNode, varNode, parsedQuery, selectVars, isCount, allBindings);
 
+        let graph = '';
+        // TODO add proper optional implementation
+        const isOptionalDefinition = edges.filter(edge => edge.to === currentNode.id).length > 0 &&
+            edges.filter(edge => edge.to === currentNode.id).every(edge => edge.isOptional);
+        // Apply class/graph and data property graph restrictions
+        if (!isOptionalDefinition)
+            graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar);
         if (graph) parsedQuery.body += `}\n`;
     });
     // Binding definitions

@@ -134,6 +134,9 @@ export const handleQuery = (graphs, activeGraphId, startingVar, isDistinct, isCo
         query: parseQuery(graphs, activeGraphId, startingVar, isDistinct, isCount)
     };
 
+    // Capture the start time
+    const startTime = Date.now();
+
     return new Promise((resolve, reject) => {
         axios({
             method: 'post',
@@ -144,12 +147,24 @@ export const handleQuery = (graphs, activeGraphId, startingVar, isDistinct, isCo
         })
             .then(function (response) {
                 setIsLoading(false);
+
+                // Capture the end time and calculate the duration
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                console.log(`Response time: ${responseTime} ms`);
+
                 const result = parseResponse(response);
                 resolve(result);
             })
             .catch(function (error) {
                 console.log(error);
                 setIsLoading(false);
+
+                // Capture the end time even in case of error
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                console.log(`Response time (with error): ${responseTime} ms`);
+
                 reject(error);
             });
     });
