@@ -49,13 +49,16 @@ const defineProjectionVariables = (startingVar, isCount) => {
 }
 
 // Adds a node's typing to a graph
-const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, edges, nodeIsVar) => {
+const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, edges, nodeIsVar, allBindings) => {
     let graph = '';
-    let hasClassVariable = !edges.some(edge => edge.from === node.id);
-    let hasInstanceVariable = edges.some(edge => edge.from === node.id && edge.isFromInstance);
-    let hasDataPropertyWithGraph = Object.values(node.properties).some(property => property.show);
+    const hasInstanceVariable = edges.some(edge => edge.from === node.id && edge.isFromInstance);
     const isSpecialClass = SPECIAL_CLASSES.includes(node.class);
-
+    const needsToDefineDataProperty = Object.keys(node.properties).some(propKey => {
+        const { show, data, uri, as: asValue } = node.properties[propKey] || {};
+        const usedInBinding = allBindings.some(bindingObject =>
+            Object.entries(bindingObject).some(([propertyUri, nodeIds]) => propertyUri === uri && nodeIds.has(node.id)));
+        return show || data || usedInBinding || asValue;
+    });
     if (hasInstanceVariable) {
         const instanceLabel = `${nodeLabelInGraph}___instance`;
         const classLabel = `${nodeLabelInGraph}___class`;
@@ -68,10 +71,10 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
             parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, classLabel);
             parsedQuery.body += addTriple(classLabel, RDFS_SUBCLASSOF_URI, RDF_STATEMENT_URI);
         }
-    } else if (hasClassVariable || hasDataPropertyWithGraph) {
+    } else {
         if (nodeIsVar && !isSpecialClass)
             parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
-        else if (edges.some(edge => edge.from === node.id) || hasDataPropertyWithGraph) {
+        else if (edges.some(edge => edge.from === node.id) || needsToDefineDataProperty) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
         }
@@ -117,7 +120,7 @@ const defineDataProperties = (node, varNode, parsedQuery, selectVars, isCount, a
 }
 
 // Builds the object properties involving a node
-const defineObjectProperties = (currentNode, varNode, edges, nodes, parsedQuery) => {
+const defineObjectProperties = (currentNode, varNode, edges, nodes, parsedQuery, allBindings) => {
     edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
         const optional = edge.isOptional ? `OPTIONAL { ` : ``;
         const transitive = edge.isTransitive ? `*` : ``;
@@ -140,7 +143,7 @@ const defineObjectProperties = (currentNode, varNode, edges, nodes, parsedQuery)
         parsedQuery.body += `${optional}`;
         if (optional) {
             const targetIsVar = targetNode.varID >= 0;
-            const graph = applyClassAndInstanceRestrictions(parsedQuery, targetNode, subject, edges, targetIsVar);
+            const graph = applyClassAndInstanceRestrictions(parsedQuery, targetNode, subject, edges, targetIsVar, allBindings);
             if (graph) parsedQuery.body += graph;
         }
         parsedQuery.body += `${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
@@ -250,17 +253,18 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         const nodeIsVar = currentNode.varID >= 0;
         const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
 
-        // Property definitions
-        defineObjectProperties(currentNode, varNode, edges, nodes, parsedQuery);
-        defineDataProperties(currentNode, varNode, parsedQuery, selectVars, isCount, allBindings);
-
         let graph = '';
         // TODO add proper optional implementation
         const isOptionalDefinition = edges.filter(edge => edge.to === currentNode.id).length > 0 &&
             edges.filter(edge => edge.to === currentNode.id).every(edge => edge.isOptional);
         // Apply class/graph and data property graph restrictions
         if (!isOptionalDefinition)
-            graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar);
+            graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar, allBindings);
+
+        // Property definitions
+        defineObjectProperties(currentNode, varNode, edges, nodes, parsedQuery, allBindings);
+        defineDataProperties(currentNode, varNode, parsedQuery, selectVars, isCount, allBindings);
+
         if (graph) parsedQuery.body += `}\n`;
     });
     // Binding definitions
