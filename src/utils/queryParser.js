@@ -1,5 +1,12 @@
 import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
 
+const RDF_TYPE_URI = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>';
+const RDFS_SUBCLASSOF_URI = '<http://www.w3.org/2000/01/rdf-schema#subClassOf>';
+const RDF_STATEMENT_URI = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>';
+const SPECIAL_CLASSES = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'];
+
+const addTriple = (subject, predicate, object) => `${subject} ${predicate} ${object} .\n`;
+
 const getOperatorString = (operator, type, value, varNodeData, isDefined) => {
     const isValueQuoted = !isDefined && !['number', 'decimal', 'datetime'].includes(type);
     const valueString = isDefined ? `?${value}` : isValueQuoted ? `"${value}"` : value;
@@ -44,40 +51,138 @@ const defineProjectionVariables = (startingVar, isCount) => {
 // Adds a node's typing to a graph
 const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, edges, nodeIsVar) => {
     let graph = '';
-    // Node configs
-    //Check the typing definitions needed
-    let hasClassVariable = !edges.some(edge => (edge.from === node.id));
-    let hasInstanceVariable = false;
-    edges.filter(edge => edge.from === node.id).forEach(edge => {
-        hasClassVariable = hasClassVariable || !edge.isFromInstance;
-        hasInstanceVariable = hasInstanceVariable || edge.isFromInstance;
-    });
-    // Check if graph definition is needed for classes nodes defining data props 
-    let hasDataPropertyWithGraph = false;
-    Object.values(node.properties).forEach(property => {
-        if (property.show)
-            hasDataPropertyWithGraph = true;
-    });
-    // Filter node class
-    const isSpecialClass = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'].includes(node.class);
+    let hasClassVariable = !edges.some(edge => edge.from === node.id);
+    let hasInstanceVariable = edges.some(edge => edge.from === node.id && edge.isFromInstance);
+    let hasDataPropertyWithGraph = Object.values(node.properties).some(property => property.show);
+    const isSpecialClass = SPECIAL_CLASSES.includes(node.class);
 
     if (hasInstanceVariable) {
-        if (nodeIsVar && !isSpecialClass)
-            parsedQuery.body += `${nodeLabelInGraph}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${nodeLabelInGraph} .\n${nodeLabelInGraph} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${node.class}> .\n`;
-        else if (edges.some(edge => edge.from === node.id)) {
+        const instanceLabel = `${nodeLabelInGraph}___instance`;
+        const classLabel = `${nodeLabelInGraph}___class`;
+        if (nodeIsVar && !isSpecialClass) {
+            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, nodeLabelInGraph);
+            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
+        } else if (edges.some(edge => edge.from === node.id)) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
-            parsedQuery.body += `${nodeLabelInGraph}___instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ${nodeLabelInGraph}___class .\n${nodeLabelInGraph}___class <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .\n`;
+            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, classLabel);
+            parsedQuery.body += addTriple(classLabel, RDFS_SUBCLASSOF_URI, RDF_STATEMENT_URI);
         }
     } else if (hasClassVariable || hasDataPropertyWithGraph) {
         if (nodeIsVar && !isSpecialClass)
-            parsedQuery.body += `${nodeLabelInGraph} <http://www.w3.org/2000/01/rdf-schema#subClassOf> <${node.class}> .\n`;
+            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
         else if (edges.some(edge => edge.from === node.id) || hasDataPropertyWithGraph) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
         }
     }
     return graph;
+}
+
+// Builds the data properties involving a node
+const defineDataProperties = (node, varNode, parsedQuery, selectVars, isCount, allBindings) => {
+    Object.keys(node.properties).forEach(property => {
+        const propertyDetails = node.properties[property];
+        const show = propertyDetails.show;
+        const data = propertyDetails.data;
+        const uri = propertyDetails.uri;
+        const asValue = propertyDetails.as;
+
+        const usedInBinding = allBindings.some(bindingObject =>
+            Object.entries(bindingObject).some(([propertyUri, nodeIds]) =>
+                propertyUri === uri && nodeIds.has(node.id)
+            )
+        );
+
+        if (show || data || usedInBinding || asValue) {
+            const varProperty = asValue
+                ? capitalizeFirst(asValue)
+                : (node.varID >= 0
+                    ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + node.type.toUpperCase() + '___' + node.varID)
+                    : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + node.label + '___' + node.id));
+
+            const transitive = propertyDetails.transitive ? `*` : ``;
+            if (show)
+                selectVars.add(isCount ? `COUNT(DISTINCT ?${varProperty}) AS ?${varProperty}___count` : `?${varProperty}`);
+
+            if (data && propertyDetails.operator === '=')
+                parsedQuery.body += addTriple(varNode, `<${uri}>${transitive}`, propertyDetails.type === 'number' ? data : `"${data}"`);
+            else {
+                parsedQuery.body += addTriple(varNode, `<${uri}>${transitive}`, `?${varProperty}`);
+                if (data)
+                    parsedQuery.body += `FILTER ( ${getOperatorString(propertyDetails.operator, propertyDetails.type, data, varProperty, false)} ) .\n`;
+            }
+        }
+    });
+}
+
+// Builds the object properties involving a node
+const defineObjectProperties = (currentNode, varNode, edges, nodes, parsedQuery) => {
+    edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
+        const optional = edge.isOptional ? `OPTIONAL { ` : ``;
+        const transitive = edge.isTransitive ? `*` : ``;
+        const instance = edge.isFromInstance ? `___instance` : ``
+        const targetNode = nodes.find(node => node.id === edge.to);
+
+        let subject;
+        if (targetNode.shape === 'box') {
+            subject = `?List___${targetNode.id}___URI`;
+            if (targetNode.data.length > 1)
+                parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }\n`;
+            else if (targetNode.data.length === 1)
+                parsedQuery.body += `BIND(<${targetNode.data[0]}> AS ${subject})\n`;
+        } else if (targetNode.varID >= 0)
+            subject = targetNode.data;
+        else
+            subject = `<${targetNode.data}>`;
+
+        // TODO Remove optional definitions from here
+        parsedQuery.body += `${optional}`;
+        if (optional) {
+            const targetIsVar = targetNode.varID >= 0;
+            const graph = applyClassAndInstanceRestrictions(parsedQuery, targetNode, subject, edges, targetIsVar);
+            if (graph) parsedQuery.body += graph;
+        }
+        parsedQuery.body += `${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
+    });
+}
+
+// Builds a graph's bindings
+const defineBindings = (bindings, parsedQuery, selectVars, isCount) => {
+    const createBindingElement = (value) => {
+        if (value.isCustom) return value.value;
+        const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId[0]) : value.label;
+        return `?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`;
+    }
+
+    bindings.forEach(binding => {
+        const formattedFirstValue = createBindingElement(binding.firstValue);
+        const formattedSecondValue = createBindingElement(binding.secondValue);
+        let expression;
+        if (binding.operator === '⊆')
+            expression = `CONTAINS(${formattedFirstValue}, ${formattedSecondValue})`;
+        if (binding.operator === '=')
+            expression = `${formattedSecondValue}`;
+        else if (binding.isAbsolute)
+            expression = `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`;
+        else
+            expression = `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
+        const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
+        if (binding.showInResults)
+            selectVars.add(isCount ? `COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : `?${bindingName}`);
+        parsedQuery.body += `BIND (${expression} AS ?${bindingName})\n`;
+    });
+}
+
+// Builds a graph's filters
+const defineFilters = (filters, parsedQuery) => {
+    filters.forEach(filter => {
+        const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
+        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType,
+            filter.secondValue.custom ? filter.secondValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label))),
+            filter.firstValue.custom ? filter.firstValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label))),
+            !filter.secondValue.custom)} ) .\n`;
+    });
 }
 
 // Adds a graphs configuration to the query
@@ -153,96 +258,17 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
         if (!isOptionalDefinition)
             graph += applyClassAndInstanceRestrictions(parsedQuery, currentNode, varNode, edges, nodeIsVar);
 
-        // Build object properties
-        edges.filter(edge => edge.from === currentNode.id).forEach(edge => {
-            const optional = edge.isOptional ? `OPTIONAL { ` : ``;
-            const transitive = edge.isTransitive ? `*` : ``;
-            const instance = edge.isFromInstance ? `___instance` : ``
-            const targetNode = nodes.find(node => node.id === edge.to);
-
-            let subject;
-            if (targetNode.shape === 'box') {
-                subject = `?List___${targetNode.id}___URI`;
-                parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }\n`;
-            }
-            else if (targetNode.varID >= 0)
-                subject = targetNode.data;
-            else
-                subject = `<${targetNode.data}>`;
-
-            // TODO Remove optional definitions from here
-            parsedQuery.body += `${optional}`;
-            if (optional) {
-                const targetIsVar = targetNode.varID >= 0;
-                graph += applyClassAndInstanceRestrictions(parsedQuery, targetNode, subject, edges, targetIsVar);
-            }
-            parsedQuery.body += `${varNode}${instance} <${edge.data}>${transitive} ${subject} ${optional ? '}' : ''}.\n`;
-        });
-        // Build data properties
-        Object.keys(currentNode.properties).forEach(property => {
-            const show = currentNode.properties[property].show;
-            const data = currentNode.properties[property].data;
-            const uri = currentNode.properties[property].uri;
-            const asValue = currentNode.properties[property].as;
-
-            const usedInBinding = allBindings.some(bindingObject =>
-                Object.entries(bindingObject).some(([propertyUri, nodeIds]) =>
-                    propertyUri === uri && nodeIds.has(currentNode.id)
-                )
-            );
-            if (show || data || usedInBinding || asValue) {
-                // Use asValue if present, otherwise use the default naming scheme
-                const varProperty = capitalizeFirst(asValue) || (!nodeIsVar
-                    ? cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.label + '___' + currentNode.id)
-                    : cleanString(capitalizeFirst(removeSpaceChars(property)) + '___' + currentNode.type.toUpperCase() + '___' + currentNode.varID));
-
-                const transitive = currentNode.properties[property].transitive ? `*` : ``;
-                if (show)
-                    selectVars.add(isCount ? `COUNT(DISTINCT ?${varProperty}) AS ?${varProperty}___count` : `?${varProperty}`);
-                // In versions before VIRTUOSO 8, a bug prevents declaring filters using vars declared with '=' inside UNIONS.
-                if (data && currentNode.properties[property].operator === '=')
-                    parsedQuery.body += `${varNode} <${uri}>${transitive} ${currentNode.properties[property].type === 'number' ? data : `"${data}"`} .\n`;
-                else {
-                    parsedQuery.body += `${varNode} <${uri}>${transitive} ?${varProperty} .\n`;
-                    if (data) parsedQuery.body += `FILTER ( ${getOperatorString(currentNode.properties[property].operator, currentNode.properties[property].type, data, varProperty, false)} ) .\n`;
-                }
-            }
-        });
+        // Property definitions
+        defineObjectProperties(currentNode, varNode, edges, nodes, parsedQuery);
+        defineDataProperties(currentNode, varNode, parsedQuery, selectVars, isCount, allBindings);
 
         if (graph) parsedQuery.body += `}\n`;
     });
-    // Build binding variables
-    const createBindingElement = (value) => {
-        if (value.isCustom) return value.value;
-        const valueLabel = value.isFromNode ? (value.isVar ? value.label : value.label + '___' + value.nodeId[0]) : value.label;
-        return `?${cleanString(capitalizeFirst(removeSpaceChars(valueLabel)))}`;
-    };
-    bindings.forEach(binding => {
-        const formattedFirstValue = createBindingElement(binding.firstValue);
-        const formattedSecondValue = createBindingElement(binding.secondValue);
-        let expression;
-        if (binding.operator === '⊆')
-            expression = `CONTAINS(${formattedFirstValue}, ${formattedSecondValue})`;
-        if (binding.operator === '=')
-            expression = `${formattedSecondValue}`;
-        else if (binding.isAbsolute)
-            expression = `ABS(${formattedFirstValue} ${binding.operator} ${formattedSecondValue})`;
-        else
-            expression = `${formattedFirstValue} ${binding.operator} ${formattedSecondValue}`;
-        const bindingName = getItemFromURI(cleanString(capitalizeFirst(removeSpaceChars(binding.label))));
-        if (binding.showInResults)
-            selectVars.add(isCount ? `COUNT(DISTINCT ?${bindingName}) AS ?${bindingName}___count` : `?${bindingName}`);
-        parsedQuery.body += `BIND (${expression} AS ?${bindingName})\n`;
-    });
+    // Binding definitions
+    defineBindings(bindings, parsedQuery, selectVars, isCount);
 
-    // Build filters
-    filters.forEach(filter => {
-        const secondValueType = filter.secondValue.custom && (filter.comparator === '⊆' || filter.comparator === '=') ? 'text' : 'number';
-        parsedQuery.body += `FILTER ( ${getOperatorString(filter.comparator, secondValueType,
-            filter.secondValue.custom ? filter.secondValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.secondValue.label))),
-            filter.firstValue.custom ? filter.firstValue.label : cleanString(capitalizeFirst(removeSpaceChars(filter.firstValue.label))),
-            !filter.secondValue.custom)} ) .\n`;
-    });
+    // Filter definitions
+    defineFilters(filters, parsedQuery);
 }
 
 // Parses a SPARQL query from the apps used structures
