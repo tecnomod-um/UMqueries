@@ -63,13 +63,13 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
         const instanceLabel = `${nodeLabelInGraph}___instance`;
         const classLabel = `${nodeLabelInGraph}___class`;
         if (nodeIsVar && !isSpecialClass) {
-            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, nodeLabelInGraph);
             parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
+            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, nodeLabelInGraph);
         } else if (edges.some(edge => edge.from === node.id)) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
-            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, classLabel);
             parsedQuery.body += addTriple(classLabel, RDFS_SUBCLASSOF_URI, RDF_STATEMENT_URI);
+            parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, classLabel);
         }
     } else {
         if (nodeIsVar && !isSpecialClass)
