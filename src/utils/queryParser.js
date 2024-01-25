@@ -61,7 +61,7 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
     });
     if (hasInstanceVariable) {
         const instanceLabel = `${nodeLabelInGraph}___instance`;
-        const classLabel = `${nodeLabelInGraph}___class`;
+        const classLabel = `${nodeLabelInGraph}`;
         if (nodeIsVar && !isSpecialClass) {
             parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
             parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, nodeLabelInGraph);
