@@ -8,15 +8,15 @@ let debounceTimeout;
 let lastFilter = null;
 
 export const debounceFilteredNodeData = () => {
-    return (filter, setData, setIsLoading) => {
-        if (filter !== lastFilter) {
+    return (filter, data, setData, setIsLoading) => {
+        if (filter !== lastFilter || !data) {
             clearTimeout(debounceTimeout);
             setIsLoading(true);
             debounceTimeout = setTimeout(() =>
                 populateWithFilteredNodeData(filter, setData, setIsLoading), config.debounceDelay);
             lastFilter = filter;
         }
-    };
+    }
 }
 
 export const populateWithFilteredNodeData = (filter, setData, setIsLoading) => {

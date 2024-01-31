@@ -9,8 +9,9 @@ function SearchNodes({ varData, colorList, addNode }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if (searchField.length >= 3 || !data || searchField === '')
-            debounceFilteredNodeData()(searchField, setData, setIsLoading);
+        if (searchField.length >= 3 || !data || searchField === '') {
+            debounceFilteredNodeData()(searchField, data, setData, setIsLoading);
+        }
     }, [searchField, data]);
 
     const handleChange = (e) => setSearchField(e.target.value);
@@ -36,6 +37,7 @@ function SearchNodes({ varData, colorList, addNode }) {
             <input
                 className={SearchNodesStyles.input}
                 type="search"
+                disabled={true} // TODO implement indexes to speed up nodes
                 placeholder={placeholderText}
                 onChange={handleChange}
             />
