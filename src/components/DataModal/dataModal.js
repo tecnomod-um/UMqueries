@@ -3,11 +3,16 @@ import { getCategory, getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { SPECIAL_CLASSES } from "../../utils/typeChecker.js";
 
 // Used to define a node's data properties
-function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode }) {
+function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode, disableToggle }) {
     // Data builder inputs
     const [operators, setOperators] = useState({});
+    const [classTransitive, setClassTransitive] = useState(selectedNode?.classTransitive || false);
+    const [classOmitted, setClassOmitted] = useState(selectedNode?.classOmitted || false);
     const inputRefs = {};
     const asInputRefs = {};
 
@@ -23,7 +28,12 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
         if (['number', 'decimal', 'datetime'].includes(type)) return 'number';
         if (['link', 'text', 'uri'].includes(type)) return 'text';
         return null;
-    };
+    }
+
+    useEffect(() => {
+        setClassTransitive(selectedNode?.classTransitive || false);
+        setClassOmitted(selectedNode?.classOmitted || false);
+    }, [selectedNode, isDataOpen])
 
     useEffect(() => {
         const initialOperators = {};
@@ -166,6 +176,7 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
     if (!selectedNode || !selectedNode.label) {
         return null;
     }
+
     // Checks each field and updates the value in the current selected node
     const handleSubmit = () => {
         const updatedNode = { ...selectedNode };
@@ -187,38 +198,106 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode 
             if (operators[label])
                 updatedNode.properties[label].operator = operators[label];
         });
+        updatedNode.classTransitive = classTransitive;
+        updatedNode.classOmitted = classOmitted;
         setNode(updatedNode);
         setDataOpen(false);
     }
 
+    // Determine the annotation based on the state of both switches
+    const getSwitchLabel = () => {
+        if (classTransitive && !classOmitted) return "The node definition by the subClassOf property will be included and transitive";
+        if (!classTransitive && classOmitted) return "The node definition by the subClassOf property will be excluded";
+        if (!classTransitive && !classOmitted) return "The node definition by the subClassOf property will be included";
+        return "WRONG NODE STATE";
+    }
+
+    // Modify the selected node's class definition type if applicable
+    const renderSwitch = () => {
+        if (selectedNode && (selectedNode.varID >= 0) && !SPECIAL_CLASSES.includes(selectedNode.class)) {
+            return (
+                <div className={DataModalStyles.switchContainer}>
+                    <FormControlLabel
+                        className={DataModalStyles.formControlLabel}
+                        style={{ marginRight: '-5px' }}
+                        control={
+                            <span style={{ transform: 'rotate(90deg)' }}>
+                                <Switch
+                                    checked={classTransitive}
+                                    onChange={(e) => {
+                                        setClassTransitive(e.target.checked);
+                                        if (e.target.checked) setClassOmitted(false);
+                                    }}
+                                    style={{ color: '#6e6e6e' }}
+                                    sx={{
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                            backgroundColor: selectedNode.color,
+                                        }
+                                    }}
+                                />
+                            </span>
+                        }
+                    />
+                    <FormControlLabel
+                        className={DataModalStyles.formControlLabel}
+                        style={{ marginRight: '-5px' }}
+                        control={
+                            <span style={{ transform: 'rotate(90deg)' }}>
+                                <Switch
+                                    checked={classOmitted}
+                                    onChange={(e) => {
+                                        setClassOmitted(e.target.checked);
+                                        if (e.target.checked) setClassTransitive(false);
+                                    }}
+                                    style={{ color: '#6e6e6e' }}
+                                    disabled={disableToggle}
+                                    sx={{
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                            backgroundColor: selectedNode.color,
+                                        }
+                                    }}
+                                />
+                            </span>
+                        }
+                    />
+                    <span className={DataModalStyles.switchLabel}>{getSwitchLabel()}</span>
+                </div>
+            );
+        }
+        return null;
+    }
+
     return (
-        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={875}>
+        <ModalWrapper isOpen={isDataOpen} closeModal={handleClose} maxWidth={900}>
             <div className={DataModalStyles.modalHeader} style={{ background: selectedNode.color }}>
-                <h2
-                    title={insideData[selectedNode.type] ?
-                        `Node '${selectedNode.label}' data properties` :
-                        `${selectedNode.label} has no data properties`}
-                >
-                    {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
-                </h2>
+                <div className={DataModalStyles.titleWrapper}>
+                    <h2
+                        title={insideData[selectedNode.type] ?
+                            `Node '${selectedNode.label}' data properties` :
+                            `${selectedNode.label} has no data properties`}
+                    >
+                        {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
+                    </h2>
+                </div>
             </div>
             <button className={DataModalStyles.closeBtn} onClick={handleClose}>
                 <CloseIcon style={{ marginBottom: "-7px" }} />
             </button>
             {getInsideDataFields()}
             <div className={DataModalStyles.modalActions}>
-                <div className={DataModalStyles.actionsContainer}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <button
-                        style={{ background: selectedNode.color, }}
+                        style={{ background: selectedNode.color }}
                         className={DataModalStyles.setBtn}
                         onClick={handleSubmit}
                     >
                         Set properties
                     </button>
-                    <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
-                        Cancel
-                    </button>
+                    {renderSwitch()}
                 </div>
+                <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
+                    Cancel
+                </button>
             </div>
         </ModalWrapper>
     );

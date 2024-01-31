@@ -60,6 +60,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                         setUriList={setUriList}
                         addNode={addNode}
                         addEdge={addEdge}
+                        disabled={firstEdge.fromInstance && selectedNode?.classOmitted}
                     />);
                 const propertyTargets = edges.map((edge, index) => getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance, index === 0)).flat();
                 const menu = propertyTargets.length > 0 ? propertyTargets : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>];
@@ -85,16 +86,18 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     function getPropertyTargets(isOptional, object, label, property, isFromInstance, includeValuesItem) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
+        const isDisabled = isFromInstance && selectedNode.classOmitted;
         const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
         const result = activeGraph.nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
             .map(targetedNode => (
-                <DropdownMenuItem onClick={() => {
-                    addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
-                }}>{targetedNode.label} </DropdownMenuItem>));
+                <DropdownMenuItem disableRipple={isDisabled} disabled={isDisabled} onClick={() => {
+                    if (!isDisabled) addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
+                }
+                }>{targetedNode.label} </DropdownMenuItem>));
         if (includeValuesItem && !inputRefs.current[label]) {
             inputRefs.current[label] = React.createRef();
             result.unshift(
-                <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} isFromInstance={isFromInstance} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
+                <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} isFromInstance={isFromInstance} setUriList={setUriList} addNode={addNode} addEdge={addEdge} disabled={isDisabled} />);
         }
         return result;
     }

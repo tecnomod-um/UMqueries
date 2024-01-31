@@ -1,3 +1,5 @@
+export const SPECIAL_CLASSES = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'];
+
 export const getCategory = (inputType) => {
     if (Array.isArray(inputType)) {
         return 'select';

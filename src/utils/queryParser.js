@@ -1,9 +1,9 @@
 import { capitalizeFirst, cleanString, getItemFromURI, addSpaceChars, removeSpaceChars } from "./stringFormatter.js";
+import { SPECIAL_CLASSES } from "./typeChecker.js";
 
 const RDF_TYPE_URI = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>';
 const RDFS_SUBCLASSOF_URI = '<http://www.w3.org/2000/01/rdf-schema#subClassOf>';
 const RDF_STATEMENT_URI = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement>';
-const SPECIAL_CLASSES = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'];
 
 const addTriple = (subject, predicate, object) => `${subject} ${predicate} ${object} .\n`;
 
@@ -52,6 +52,8 @@ const defineProjectionVariables = (startingVar, isCount) => {
 const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, edges, nodeIsVar, allBindings) => {
     let graph = '';
     const hasInstanceVariable = edges.some(edge => edge.from === node.id && edge.isFromInstance);
+    const transitivity = node.classTransitive ? '*' : '';
+    const skipsClassDefinitions = node.classOmitted;
     const isSpecialClass = SPECIAL_CLASSES.includes(node.class);
     const needsToDefineDataProperty = Object.keys(node.properties).some(propKey => {
         const { show, data, uri, as: asValue } = node.properties[propKey] || {};
@@ -62,18 +64,18 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
     if (hasInstanceVariable) {
         const instanceLabel = `${nodeLabelInGraph}___instance`;
         const classLabel = `${nodeLabelInGraph}`;
-        if (nodeIsVar && !isSpecialClass) {
-            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
+        if (nodeIsVar && !isSpecialClass && !skipsClassDefinitions) {
+            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI + transitivity, `<${node.class}>`);
             parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, nodeLabelInGraph);
         } else if (edges.some(edge => edge.from === node.id)) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
-            parsedQuery.body += addTriple(classLabel, RDFS_SUBCLASSOF_URI, RDF_STATEMENT_URI);
+            parsedQuery.body += addTriple(classLabel, RDFS_SUBCLASSOF_URI + transitivity, RDF_STATEMENT_URI);
             parsedQuery.body += addTriple(instanceLabel, RDF_TYPE_URI, classLabel);
         }
     } else {
-        if (nodeIsVar && !isSpecialClass)
-            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI, `<${node.class}>`);
+        if (nodeIsVar && !isSpecialClass && !skipsClassDefinitions)
+            parsedQuery.body += addTriple(nodeLabelInGraph, RDFS_SUBCLASSOF_URI + transitivity, `<${node.class}>`);
         else if (edges.some(edge => edge.from === node.id) || needsToDefineDataProperty) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
