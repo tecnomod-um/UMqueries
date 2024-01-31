@@ -10,22 +10,23 @@ function About() {
           <h2 className={AboutStyles.sectionHeader}>Team Members</h2>
           <ul className={AboutStyles.memberList}>
             <li className={AboutStyles.memberItem}>
-              <span className={AboutStyles.memberRole}>Project Supervisor</span>
+              <span className={AboutStyles.memberRole}>Principal Investigator</span>
               <span className={AboutStyles.memberName}>Jesualdo Tomas Fernandez Breis</span>
             </li>
             <li className={AboutStyles.memberItem}>
-              <span className={AboutStyles.memberRole}>Endpoint Developer</span>
+              <span className={AboutStyles.memberRole}>Collaborator</span>
               <span className={AboutStyles.memberName}>Juan Mulero Hernandez</span>
             </li>
             <li className={AboutStyles.memberItem}>
-              <span className={AboutStyles.memberRole}>Main Developer</span>
-              <span className={AboutStyles.memberName}>Daniel Ibáñez Molero</span>
+              <span className={AboutStyles.memberRole}>Lead Developer</span>
+              <span className={AboutStyles.memberName}>Daniel IbÃ¡Ã±ez Molero</span>
             </li>
           </ul>
         </section>
         <div className={AboutStyles.infoResourcesWrapper}>
           <section className={AboutStyles.section}>
             <h2 className={AboutStyles.sectionHeader}>Contact Info</h2>
+<p className={AboutStyles.contactInfo}>Email: jfernand@um.es</p>
             <p className={AboutStyles.contactInfo}>Email: danibanez.info@gmail.com</p>
             <p className={AboutStyles.contactInfo}>Phone: 868 88 87 87</p>
           </section>
