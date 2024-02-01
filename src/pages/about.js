@@ -19,7 +19,7 @@ function About() {
             </li>
             <li className={AboutStyles.memberItem}>
               <span className={AboutStyles.memberRole}>Lead Developer</span>
-              <span className={AboutStyles.memberName}>Daniel IbÃ¡Ã±ez Molero</span>
+              <span className={AboutStyles.memberName}>Daniel Ibáñez Molero</span>
             </li>
           </ul>
         </section>

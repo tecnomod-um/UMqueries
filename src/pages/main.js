@@ -2,17 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MainStyles from "./main.module.css";
 import LandingImage from "../components/LandingImage/landingImage";
-
+import LandingIntroduction from "../components/LandingIntroduction/landingIntroduction";
 import image from "../resources/images/image.jpg";
 
+// Landing page for the app
 function Main() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollOffset(window.pageYOffset);
-    };
+    const handleScroll = () => setScrollOffset(window.scrollY);
 
     window.addEventListener("scroll", handleScroll);
     handleScroll();
@@ -35,24 +34,23 @@ function Main() {
 
     window.addEventListener("scroll", handleScrollIndicator);
     handleScrollIndicator();
-
     return () => {
       window.removeEventListener("scroll", handleScrollIndicator);
     };
   }, [scrollOffset]);
-
 
   const handleScrollToBottom = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
-  };
+  }
 
   return (
     <div className={MainStyles.pageContainer}>
+      <LandingIntroduction />
       <div className={MainStyles.mainContainer}>
-        <h1 className={MainStyles.mainHeader}>UM queries</h1>
+        <h1 className={MainStyles.mainHeader}>Using the app</h1>
         <div className={MainStyles.contentContainer}>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>

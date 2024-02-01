@@ -482,7 +482,8 @@ function Queries() {
     function toggleIsTransitive(edge) {
         let propCanBeTransitive;
         setGraphs(prevGraphs => {
-            propCanBeTransitive = edge.data === 'UNION' ? false : objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
+            propCanBeTransitive = edge.data === 'UNION' ? false :
+                objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type]?.some(propEntry => propEntry.property === edge.data);
             if (propCanBeTransitive) {
                 let label = edge.label;
                 edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";

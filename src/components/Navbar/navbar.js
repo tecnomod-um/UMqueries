@@ -1,39 +1,42 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom"
 import NavbarStyles from "./navbar.module.css";
 import logo from "../../resources/images/umu_coat.png";
 
-// Defines the navbar styles and behavior.
 export default function Navbar() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+
     return (
         <nav className={NavbarStyles.navbar}>
             <Link to="/" className={NavbarStyles.logo}>
                 <img src={logo} width={40} height={40} alt="Home menu, displaying University of Murcia's logo." />
             </Link>
             <ul className={NavbarStyles.navlinks}>
-                <input type="checkbox" id="menuToggle" className={NavbarStyles.checkbox_toggle} />
+                <input type="checkbox" id="menuToggle" className={NavbarStyles.checkbox_toggle} checked={menuOpen} onChange={toggleMenu} />
                 <label htmlFor="menuToggle" className={NavbarStyles.hamburger}>&#9776;</label>
                 <div className={NavbarStyles.menu}>
-                    <li><CustomLink to="/">Home</CustomLink></li>
-                    <li><CustomLink to="/queries">Queries</CustomLink></li>
-                    <li><CustomLink to="/about">About</CustomLink></li>
+                    <li><CustomLink to="/" onClick={toggleMenu}>Home</CustomLink></li>
+                    <li><CustomLink to="/queries" onClick={toggleMenu}>Queries</CustomLink></li>
+                    <li><CustomLink to="/about" onClick={toggleMenu}>About</CustomLink></li>
                 </div>
             </ul>
-
         </nav>
     )
 }
 
-function CustomLink({ to, children, ...props }) {
+function CustomLink({ to, children, onClick, ...props }) {
     const resolvedPath = useResolvedPath(to)
     const isActive = useMatch({ path: resolvedPath.pathname, end: true })
-
     return (
-        <div className={isActive ? "active" : ""}>
-            <Link to={to} {...props}>
+        <div className={isActive ? NavbarStyles.active : ""} onClick={onClick}>
+            <Link to={to} {...props} style={{ display: 'block', width: '100%', height: '100%' }}>
                 {children}
             </Link>
         </div>
     )
 }
+

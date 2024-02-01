@@ -18,19 +18,22 @@ function SearchNodes({ varData, colorList, addNode }) {
 
     let placeholderText = "";
 
-    if (varData) {
-        if (Object.keys(varData).length === 0) placeholderText = "No nodes detected";
-        else {
-            placeholderText = "Search by ";
-            Object.keys(varData).forEach((key) => {
-                placeholderText = placeholderText + key + ", ";
-            });
-            placeholderText = placeholderText.slice(0, -2);
+    if (true) {// TODO implement indexes to speed up nodes
+        placeholderText = "Node search is disabled temporally"
+    } else
+        if (varData) {
+            if (Object.keys(varData).length === 0) placeholderText = "No nodes detected";
+            else {
+                placeholderText = "Search by ";
+                Object.keys(varData).forEach((key) => {
+                    placeholderText = placeholderText + key + ", ";
+                });
+                placeholderText = placeholderText.slice(0, -2);
 
+            }
+        } else {
+            placeholderText = "No elements to display";
         }
-    } else {
-        placeholderText = "No elements to display";
-    }
 
     return (
         <span className={SearchNodesStyles.search}>

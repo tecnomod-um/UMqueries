@@ -39,7 +39,7 @@ export function QueryToFile({ getQueryData }) {
 
   return (
     <button className={QueryExporterStyles.file_button} onClick={exportQueries}>
-      <span className={QueryExporterStyles.buttonText}>Export queries</span>
+      <span className={QueryExporterStyles.buttonText}>Export query</span>
       <DownloadIcon className={QueryExporterStyles.buttonIcon} />
     </button>
   );
@@ -68,7 +68,7 @@ export function FileToQuery({ onFileSelect }) {
         ref={fileInputRef}
         onChange={handleFileSelect}
       />
-      <span className={QueryExporterStyles.buttonText}>Load queries</span>
+      <span className={QueryExporterStyles.buttonText}>Load query</span>
       <UploadFileIcon className={QueryExporterStyles.buttonIcon} />
     </div>
   );
