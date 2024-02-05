@@ -87,6 +87,6 @@
 
 @-moz-document url-prefix() {
     .resultCount {
-        bottom: calc(1px - 1000%);
+        bottom: calc(-980%);
     }
 }

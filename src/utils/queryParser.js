@@ -79,6 +79,10 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
         else if (edges.some(edge => edge.from === node.id) || needsToDefineDataProperty) {
             graph = `GRAPH <${node.graph}> {\n`;
             parsedQuery.body += graph;
+        } else if (!edges.some(edge => edge.from === node.id) && !edges.some(edge => edge.to === node.id)) {
+            graph = `GRAPH <${node.graph}> {\n`;
+            parsedQuery.body += graph;
+            parsedQuery.body += addTriple(nodeLabelInGraph, `?propertyForNode${node.id}`, `?objectForNode${node.id}`);
         }
     }
     return graph;
