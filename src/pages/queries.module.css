@@ -214,12 +214,12 @@
     .VarTrayWrapper {
         height: calc(60vh - 5px);
         transform-origin: bottom;
-        z-index: 2;
+        z-index: 1;
     }
 
     .SearchNodesWrapperActive {
         transform: scaleY(1);
-        z-index: 2;
+        z-index: 1;
     }
 
     .VarTrayWrapperActive {

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 import ModalWrapperStyles from "./modalWrapper.module.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,7 +26,7 @@ const ModalWrapper = ({ isOpen, children, closeModal, maxWidth }) => {
         setMouseDownOnBackdrop(false);
     }
 
-    return (
+    return createPortal(
         <CSSTransition
             in={isOpen}
             timeout={{ enter: 150, exit: 0 }}
@@ -55,7 +56,8 @@ const ModalWrapper = ({ isOpen, children, closeModal, maxWidth }) => {
                 </button>
             </div>
         </CSSTransition>
-    );
+        , document.getElementById('modal')
+    )
 }
 
 export default ModalWrapper;

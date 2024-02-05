@@ -15,6 +15,7 @@ import favicon from "./resources/icons/favicon.png";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ErrorBoundary>
+    <div id="modal"></div>
     <BrowserRouter>
       <Navbar />
       <link rel="icon" href={favicon} />

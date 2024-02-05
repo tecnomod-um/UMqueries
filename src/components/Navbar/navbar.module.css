@@ -25,14 +25,14 @@ li {
     position: fixed;
     top: 0;
     width: 100%;
-   z-index: 11;
+    z-index: 10;
 }
 
 .menu {
     display: flex;
     gap: 1em;
     font-size: 18px;
-    z-index: 20;
+    z-index: 11;
 }
 
 .menu div {
@@ -77,7 +77,7 @@ label[for="menuToggle"] {
         padding: 16px 0;
         transform: translateY(calc(-100% - 50px)); 
         transition: transform 0.3s ease-in-out;
-        z-index: 10;
+        z-index: 11;
         top: 50px;
     }
 
