@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import LandingImageStyles from "./landingImage.module.css";
 
-// Image component used in the landing page
-const LandingImage = ({ imageSrc, width, height }) => {
+const LandingImage = ({ imageSrc, width, height, maintainAspectRatio = false }) => {
     const [animationOffset, setAnimationOffset] = useState(1);
     const imageRef = useRef(null);
 
@@ -26,9 +25,13 @@ const LandingImage = ({ imageSrc, width, height }) => {
         };
     }, []);
 
+    const imageStyle = maintainAspectRatio
+        ? { maxWidth: '100%', maxHeight: '100%' }
+        : { width: width, height: height };
+
     return (
         <div className={LandingImageStyles.image} style={{ opacity: animationOffset }}>
-            <img ref={imageRef} src={imageSrc} alt="Sample" width={width} height={height} />
+            <img ref={imageRef} src={imageSrc} alt="Sample" style={imageStyle} />
         </div>
     );
 }

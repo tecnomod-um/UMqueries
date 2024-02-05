@@ -51,7 +51,7 @@ const ResultTable = ({ filteredLists, minCellWidth, maxRows = 1000 }) => {
   }, [filteredLists]);
 
   useLayoutEffect(() => {
-    if (tbodyElement.current) {
+    if (tbodyElement.current && tbodyElement.current.children.length > 0) {
       requestAnimationFrame(() => {
         let totalHeight = 0;
         const rows = tbodyElement.current.children;

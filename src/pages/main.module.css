@@ -55,15 +55,22 @@
   color: #333;
 }
 
+.lesserText {
+  font-size: 20px;
+  font-style: italic;
+  color: #666;
+}
+
 .imageWrapper {
+  position: relative;
   margin: 10px;
+  width: 100%;
 }
 
 .imageWrapper img {
   width: 100%;
   height: auto;
-  max-width: 500px;
-  max-height: 400px;
+
 }
 
 .buttonContainer {
@@ -126,6 +133,69 @@
   transform: rotate(45deg);
 }
 
+.designSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.linkList {
+  list-style-type: none;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.linkListItem {
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f8f8f8; /* Light gray background */
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  flex: 1;
+  text-align: center;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.linkListItem:hover {
+  background-color: #e9e9e9; /* Slightly darker on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* More pronounced shadow on hover */
+}
+
+.linkItem {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-weight: bold;
+  display: block; /* Makes the entire area clickable */
+}
+
+/* Color scheme based on the hover state */
+.linkListItem:hover .linkItem1 { color: #ff6347; } /* Tomato */
+.linkListItem:hover .linkItem2 { color: #4682b4; } /* SteelBlue */
+.linkListItem:hover .linkItem3 { color: #32cd32; } /* LimeGreen */
+.linkListItem:hover .linkItem4 { color: #ffa500; } /* Orange */
+.linkListItem:hover .linkItem5 { color: #6a5acd; } /* SlateBlue */
+.linkListItem:hover .linkItem6 { color: #ff1493; } /* DeepPink */
+.linkListItem:hover .linkItem7 { color: #00ced1; } /* DarkTurquoise */
+
+.hoverSquare {
+  position: absolute;
+  transition: top 0.3s ease, left 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  opacity: 0.9;
+}
+
+.isHovering .hoverSquare {
+  visibility: visible;
+}
+
 @media (max-width: 768px) {
   .contentContainer {
     padding: 10px;
@@ -136,11 +206,20 @@
   }
 
   .imageWrapper {
+    position: relative;
     margin: 10px 0;
   }
 
   .big_button {
     width: 150px;
     font-size: 14px;
+  }
+
+  .linkList {
+    flex-direction: column;
+  }
+
+  .linkListItem {
+    margin: 5px 0;
   }
 }

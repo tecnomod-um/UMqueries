@@ -1,0 +1,112 @@
+.slideContainer {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    border: 2px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imageContainer {
+    position: relative;
+    height: 50vh;
+    overflow: hidden;
+}
+
+.slideImage {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.active {
+    opacity: 1;
+}
+
+
+.slideTextContainer {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px 20px;
+    color: #333;
+    background-color: #ffffff;
+    /* Lighter background for better readability */
+    border: 1px solid #ccc;
+    /* Softer border color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Slightly larger shadow for depth */
+    border-radius: 8px;
+    /* Increased border-radius for a modern look */
+    max-width: 90%;
+    /* Limiting the maximum width for better text display */
+    margin-left: auto;
+    /* Center align the container */
+    margin-right: auto;
+}
+
+.slideText {
+    font-size: 18px;
+    /* Increased font size */
+    line-height: 1.6;
+    /* Improved line height for readability */
+    color: #555;
+    /* Slightly darker color for contrast */
+    font-weight: 400;
+    /* Normal font-weight for better readability */
+}
+
+.controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.controlButton {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    border-radius: 50%;
+    background-color: #ddd;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.controlButton:hover,
+.activeControl {
+    background-color: #333;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: rgba(51, 51, 51, 0.8);
+    transition: transform 0.3s, color 0.3s;
+}
+
+.arrow:hover {
+    transform: translateY(-50%) scale(1.2);
+    color: #333;
+}
+
+.left {
+    left: 20px;
+}
+
+.right {
+    right: 20px;
+}
+
+.MuiSvgIcon-root {
+    font-size: 3.5rem;
+}

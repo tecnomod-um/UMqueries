@@ -131,9 +131,9 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             shownOptionals = [];
         }
         else {
-            buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
-            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
-            buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
+            buttonPropertyLabel = `Set '${selectedNode.type}' properties`;
+            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties`;
+            buttonInsideLabel = `Set '${selectedNode.type}' data properties`;
 
             const edgesForSelectedNode = edgeData[selectedNode.type];
             shownProperties = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id) ? [] : createGroupedMenuItems(edgesForSelectedNode, false);

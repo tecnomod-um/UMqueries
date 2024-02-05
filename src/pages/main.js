@@ -4,13 +4,16 @@ import MainStyles from "./main.module.css";
 import LandingImage from "../components/LandingImage/landingImage";
 import LandingIntroduction from "../components/LandingIntroduction/landingIntroduction";
 import LandingDownloadLink from "../components/LandingDownloadLink/landingDownloadLink";
-import image from "../resources/images/image.jpg";
+import LandingSlide from '../components/LandingSlide/landingSlide';
 
 // Landing page for the app
 function Main() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const [images, setImages] = useState([]);
+  const [slides, setSlides] = useState([]);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const importImages = async () => {
@@ -22,6 +25,15 @@ function Main() {
       setImages(imageArray);
     }
     importImages();
+  }, []);
+
+  useEffect(() => {
+    const slideImages = [];
+    for (let i = 1; i <= 7; i++) {
+      const image = require(`../resources/images/tutorial/Slide${i}.png`);
+      slideImages.push(image);
+    }
+    setSlides(slideImages);
   }, []);
 
   useEffect(() => {
@@ -68,145 +80,203 @@ function Main() {
       });
   }
 
+  let hoverTimeout = null;
+
+  const handleMouseEnter = (item, widthPercent, heightPercent) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      hoverTimeout = null;
+    }
+
+    setHoveredItem({ ...item, widthPercent, heightPercent });
+    setIsHovering(true);
+  }
+
+  const handleMouseLeave = () => {
+    hoverTimeout = setTimeout(() => {
+      setIsHovering(false);
+      setHoveredItem(null);
+    }, 300);
+  }
+
+  const tutorialSteps = [
+    'No need to know querying languages to explore the RDF.',
+    'Select the first node or subject, in this case, Gene, in the variables section.',
+    'Select the second node or object, in this case, Protein, in the variables section.',
+    'Select the object property that relates both entities, in this case, "encodes".',
+    'Select in "Nodes shown" the data we want to show in the output.',
+    'Click on "Query" to launch the query.',
+    'Click on "Export as" to download the data. Click on "Export query" to save the query.'
+  ];
 
   return (
     <div className={MainStyles.pageContainer}>
       <LandingIntroduction />
       <div className={MainStyles.mainContainer}>
-        <h1 className={MainStyles.mainHeader}>Using INTUITION</h1>
-
+        <h1 className={MainStyles.mainHeader}> </h1>
         {/* Introduction Section */}
         <div className={MainStyles.contentContainer}>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
+              <h2>Introduction</h2>
               <p className={MainStyles.introText}>
-                INTUITION is a web application for user-friendly SPARQL query building, enabling users to exploit RDF knowledge graphs without advanced knowledge in SPARQL query language. It analyses the knowledge network of an accessible endpoint, BioGateway, and allows building queries graphically by representing nodes (entities) and edges (properties).
+                INTUITION is a web application for user-friendly SPARQL query building. It analyses an accessible endpoint, BioGateway, and allows building queries graphically by representing nodes (entities) and edges (properties).
               </p>
-              <p className={MainStyles.introText}>
-                RDF knowledge graphs represent entities through uniform resource identifiers (URIs), and information through triples or statements that represent a directional relationship between two entities, similar to a sentence: {"<"}subject{">"} {"<"}predicate{">"} {"<"}object{">"}. For example: {"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}. The SPARQL query language also uses this pattern to build queries. These queries can be complex by linking multiple triples and including operations. A tutorial for building SPARQL queries in BioGateway (BGW) is available in this repository.
-              </p>
-              {images[0] && <LandingImage imageSrc={images[0]} width={500} height={350} alt="Figure 1" />}
+              <span className={MainStyles.lesserText}>
+                RDF knowledge graphs represent entities through uniform resource identifiers (URIs), and information through triples or statements that represent a directional relationship between two entities, similar to a sentence: {"<"}subject{">"} {"<"}predicate{">"} {"<"}object{">"}. For example: {"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}. The SPARQL query language also uses this pattern to build queries. These queries can be complex by linking multiple triples and including operations. A tutorial for building SPARQL queries in BioGateway (BGW) is available in this repository (https://github.com/juan-mulero/cisreg).
+              </span>
             </div>
           </div>
         </div>
-
         {/* Design Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>Design</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
-                In INTUITION, we distinguish different sections:
-                <ul>
-                  <li>Query building screen.</li>
-                  <li>Entity browser (Currently deactivated).</li>
-                  <li>Graph builder (Used for queries that use union clauses).</li>
-                  <li>Variable selection (Main types of entities in the network).</li>
-                  <li>Properties selection.</li>
+              <h2>Design</h2>
+              <span className={MainStyles.introText}>
+                The INTUITION interface is composed of the following sections:
+              </span>
+              <div className={MainStyles.designSection}>
+                <div className={MainStyles.imageWrapper}>
+                  {images[0] && <LandingImage imageSrc={images[0]} maintainAspectRatio={true} alt="Figure 1" />}
+                  <div
+                    className={`${MainStyles.hoverSquare} ${isHovering ? MainStyles.isHovering : ''}`}
+                    style={{
+                      top: hoveredItem?.top,
+                      left: hoveredItem?.left,
+                      width: hoveredItem?.widthPercent,
+                      height: hoveredItem?.heightPercent,
+                      border: `${hoveredItem ? `4px solid ${hoveredItem?.color}` : 'none'}`,
+                    }}
+                  />
+                </div>
+                <ul className={MainStyles.linkList}>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '8%', left: '26%', color: '#ff6347' }, '54.2%', '60%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem1}>
+                      Query building canvas
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '8%', left: '0%', color: '#4682b4' }, '25.5%', '48%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem2}>
+                      Entity browser (Currently deactivated)
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '7.8%', left: '80%', color: '#32cd32' }, '20%', '61%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem3}>
+                      Union builder
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '55.8%', left: '0%', color: '#ffa500' }, '25.5%', '43%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem4}>
+                      Variable browser (Types of registered entities)
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '69%', left: '26%', size: '50px', color: '#6a5acd' }, '18.8%', '29%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem5}>
+                      Properties selectors
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '69%', left: '45%', size: '50px', color: '#ff1493' }, '35.5%', '29%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem6}>
+                      Output display
+                    </span>
+                  </li>
+                  <li className={MainStyles.linkListItem}
+                    onMouseEnter={() => handleMouseEnter({ top: '69%', left: '81%', size: '50px', color: '#00ced1' }, '18.8%', '29%')}
+                    onMouseLeave={() => handleMouseLeave(null)}>
+                    <span className={MainStyles.linkItem7}>
+                      Query builder
+                    </span>
+                  </li>
                 </ul>
-                Each section plays a vital role in building and executing SPARQL queries effectively.
-              </p>
-              {images[1] && <LandingImage imageSrc={images[1]} width={500} height={350} alt="Figure 2" />}
+              </div>
             </div>
           </div>
         </div>
-
         {/* How to Build a Query Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>How to Build a Query</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
-                We take as an example the previous case: {"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}.
-                <ol>
-                  <li>Select the first node or subject, in this case, Gene, in the variables section.</li>
-                  <li>Select the second node or object, in this case, Protein, in the variables section.</li>
-                  <li>Select the object property that relates both entities, in this case, "encodes".</li>
-                  <li>Select in "Nodes shown" the data we want to show in the output, in this case, Gene and Protein.</li>
-                  <li>Click on "Query" to launch the query.</li>
-                  <li>Click on "Export as" to download the data obtained. Click on "Export query" if you want to save the query as well.</li>
-                </ol>
-              </p>
-              {images[2] && <LandingImage imageSrc={images[2]} width={500} height={350} alt="Figure 3" />}
-              {images[3] && <LandingImage imageSrc={images[3]} width={500} height={350} alt="Figure 4" />}
+              <h2>Query building made easy</h2>
+              <LandingSlide images={slides} steps={tutorialSteps} />
             </div>
           </div>
         </div>
-
         {/* Filters and Other Clauses Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>Filters and Other Clauses</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
+              <h2>Filters and Other Clauses</h2>
+              <span className={MainStyles.introText}>
                 INTUITION offers various clauses like DISTINCT, COUNT, VALUES, and filters to refine your queries. You can easily apply these clauses and filters through the interface to achieve more precise results.
-              </p>
-              {images[4] && <LandingImage imageSrc={images[4]} width={500} height={350} alt="Figure 5" />}
-              {images[5] && <LandingImage imageSrc={images[5]} width={500} height={350} alt="Figure 6" />}
-              {images[6] && <LandingImage imageSrc={images[6]} width={500} height={350} alt="Figure 7" />}
+                {images[4] && <LandingImage imageSrc={images[4]} maintainAspectRatio={true} alt="Figure 5" />}
+                {images[5] && <LandingImage imageSrc={images[5]} maintainAspectRatio={true} alt="Figure 6" />}
+                {images[6] && <LandingImage imageSrc={images[6]} maintainAspectRatio={true} alt="Figure 7" />}
+              </span>
             </div>
           </div>
         </div>
-
         {/* Additional Features Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>Creating and Filtering Variables</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
-                INTUITION supports the generation and filtering of new variables. This functionality is implemented in "Nodes shown" > "Bindings" button. For example, by subtracting the end and start positions of the CRMs we obtain the length of the sequences in a new variable. Then, we can filter this new variable in the “Filters set” button.
-              </p>
-              {images[7] && <LandingImage imageSrc={images[7]} width={500} height={350} alt="Figure 8" />}
+              <h2>Creating and Filtering Variables</h2>
+              <span className={MainStyles.introText}>
+                INTUITION supports the generation and filtering of new variables. This functionality is implemented in "Nodes shown" {">"} "Bindings" button. For example, by subtracting the end and start positions of the CRMs we obtain the length of the sequences in a new variable. Then, we can filter this new variable in the “Filters set” button.
+                {images[7] && <LandingImage imageSrc={images[7]} maintainAspectRatio={true} alt="Figure 8" />}
+              </span>
             </div>
           </div>
         </div>
-
         {/* UNION Clause Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>UNION Clause</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
+              <h2>UNION Clause</h2>
+              <span className={MainStyles.introText}>
                 INTUITION also allows the use of the UNION clause of SPARQL. UNION merges subqueries through common variables in both queries. We illustrate its use through a use case. For example, we retrieve the OMIM entities that contain the string "breast cancer" as a name or synonym. To do that, follow the steps outlined in the tutorial.
-              </p>
-              {images[8] && <LandingImage imageSrc={images[8]} width={500} height={350} alt="Figure 9" />}
+                {images[8] && <LandingImage imageSrc={images[8]} maintainAspectRatio={true} alt="Figure 9" />}
+              </span>
             </div>
           </div>
         </div>
-
         {/* Use Cases Section */}
         <div className={MainStyles.contentContainer}>
-          <h2>Use Cases</h2>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <p className={MainStyles.introText}>
+              <h2>Use Cases</h2>
+              <span className={MainStyles.introText}>
                 The following Use Cases were developed in the paper "Analysis of the landscape of human enhancer sequences in biological databases". The corresponding queries are attached for reproducibility and as examples of use.
-                <ul>
-                  <li>
-                    Use case 1:
-                    <LandingDownloadLink fileName="UC1.zip" label="Download UC1" />
-                  </li>
-                  <li>
-                    Use case 2:
-                    <LandingDownloadLink fileName="UC2.zip" label="Download UC2" />
-                  </li>
-                  <li>
-                    Use case 3:
-                    <LandingDownloadLink fileName="UC3.zip" label="Download UC3" />
-                  </li>
+                <ul className={MainStyles.linkList}>
+                  <li className={MainStyles.linkListItem}>
+                    Use case 1: <LandingDownloadLink fileName="UC1.zip" label="Download UC1" /></li>
+                  <li className={MainStyles.linkListItem}>
+                    Use case 2: <LandingDownloadLink fileName="UC2.zip" label="Download UC2" /></li>
+                  <li className={MainStyles.linkListItem}>
+                    Use case 3: <LandingDownloadLink fileName="UC3.zip" label="Download UC3" /></li>
                 </ul>
-              </p>
+              </span>
             </div>
           </div>
         </div>
-
         {/* Get Started Button */}
         <div className={MainStyles.buttonContainer}>
           <Link to={"/queries"}>
             <button className={MainStyles.big_button}>Get Started</button>
           </Link>
         </div>
-
         {/* Scroll Indicator */}
         {showScrollIndicator && (
           <div className={MainStyles.scrollIndicator} onClick={handleScrollClick}>
@@ -216,8 +286,6 @@ function Main() {
       </div>
     </div>
   );
-
-
 }
 
 export default Main;

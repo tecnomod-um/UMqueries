@@ -35,7 +35,7 @@
 
 .switchRow {
     position: absolute;
-    top: -50px;
+    top: -25%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -98,15 +98,6 @@
 
 .deleteIcon {
     display: none !important;
-}
-
-@media (max-width: 1024px) {
-    .switchRow {
-        flex-direction: column;
-        top: -90px;
-        right: 10px;
-        align-items: flex-start;
-    }
 }
 
 @media (max-width: 768px) {
