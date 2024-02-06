@@ -4,6 +4,12 @@ import userEvent from '@testing-library/user-event';
 import BindingsModal from './bindingsModal';
 
 // Mock data
+
+jest.mock('react-dom', () => ({
+    ...jest.requireActual('react-dom'),
+    createPortal: (element, target) => element,
+}));
+
 const mockNodes = [{
     "id": 0,
     "label": "GENE 0",
@@ -123,10 +129,18 @@ const mockAllBindings = [
 describe('BindingsModal Component Tests', () => {
     let mockSetBindingsOpen;
     let mockSetBindings;
+    let modalRoot;
 
     beforeEach(() => {
+        modalRoot = document.createElement('div');
+        modalRoot.setAttribute('id', 'modal-root');
+        document.body.appendChild(modalRoot);
         mockSetBindingsOpen = jest.fn();
         mockSetBindings = jest.fn();
+    });
+
+    afterEach(() => {
+        document.body.removeChild(modalRoot);
     });
 
     it('should render without crashing', () => {
