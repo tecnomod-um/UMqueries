@@ -23,7 +23,7 @@ export default function Navbar() {
                         <CustomLink to="/" onClick={toggleMenu}>Home</CustomLink>
                     </li>
                     <li className={NavbarStyles.listItem}>
-                        <CustomLink to="/queries" onClick={toggleMenu}>Queries</CustomLink>
+                        <CustomLink to="/intuition" onClick={toggleMenu}>Queries</CustomLink>
                     </li>
                     <li className={NavbarStyles.listItem}>
                         <CustomLink to="/about" onClick={toggleMenu}>About</CustomLink>

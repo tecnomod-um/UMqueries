@@ -25,7 +25,7 @@ root.render(
           element={<Main />}
         ></Route>
         <Route
-          path="/queries"
+          path="/intuition"
           element={<Queries />}
         ></Route>
         <Route

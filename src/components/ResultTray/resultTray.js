@@ -131,7 +131,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             shownOptionals = [];
         }
         else {
-            buttonPropertyLabel = `Set '${selectedNode.type}' properties`;
+            buttonPropertyLabel = `Set '${selectedNode.type}' object properties`;
             buttonOptionalLabel = `Set '${selectedNode.type}' optional properties`;
             buttonInsideLabel = `Set '${selectedNode.type}' data properties`;
 

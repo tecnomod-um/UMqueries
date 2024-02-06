@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import LandingImageStyles from "./landingImage.module.css";
 
-const LandingImage = ({ imageSrc, width, height, maintainAspectRatio = false }) => {
+const LandingImage = ({ imageSrc, width, height, maintainAspectRatio = false, addDarkBorder = false }) => {
     const [animationOffset, setAnimationOffset] = useState(1);
     const imageRef = useRef(null);
 
@@ -29,8 +29,13 @@ const LandingImage = ({ imageSrc, width, height, maintainAspectRatio = false }) 
         ? { maxWidth: '100%', maxHeight: '100%' }
         : { width: width, height: height };
 
+    let imageContainerClass = LandingImageStyles.image;
+    if (addDarkBorder) {
+        imageContainerClass += ` ${LandingImageStyles.darkShadow}`;
+    }
+
     return (
-        <div className={LandingImageStyles.image} style={{ opacity: animationOffset }}>
+        <div className={imageContainerClass} style={{ opacity: animationOffset }}>
             <img ref={imageRef} src={imageSrc} alt="Sample" style={imageStyle} />
         </div>
     );

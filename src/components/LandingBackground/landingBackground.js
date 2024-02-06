@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { useEffect, useState, useRef } from 'react';
+import { Canvas, extend} from '@react-three/fiber';
+import { WebGLRenderer } from 'three';
 import Scene from './scene';
 
 const LandingBackground = () => {
     const [contextLost, setContextLost] = useState(false);
     const [webGLSupported, setWebGLSupported] = useState(true);
+    const canvasRef = useRef();
 
     useEffect(() => {
         const canvasElem = document.createElement('canvas');
         const gl = canvasElem.getContext('webgl') || canvasElem.getContext('experimental-webgl');
-        
+
         if (!gl) {
             setWebGLSupported(false);
             console.log('WebGL is not supported by your browser or device.');
@@ -23,20 +25,25 @@ const LandingBackground = () => {
         const handleContextLost = (event) => {
             event.preventDefault();
             setContextLost(true);
-            console.log("WebGL context lost. Please refresh the page or try with a different browser/device.");
+            console.log("WebGL context lost. Attempting to restore...");
         };
 
         const handleContextRestored = () => {
             setContextLost(false);
-            console.log("WebGL context restored. Reinitializing component...");
+            console.log("WebGL context restored. Reinitializing renderer...");
+            // Reinitialize the renderer here
+            if (canvasRef.current) {
+                const renderer = new WebGLRenderer({ canvas: canvasRef.current });
+                extend({ renderer });
+            }
         };
 
-        document.addEventListener('webglcontextlost', handleContextLost);
-        document.addEventListener('webglcontextrestored', handleContextRestored);
+        canvasElem.addEventListener('webglcontextlost', handleContextLost);
+        canvasElem.addEventListener('webglcontextrestored', handleContextRestored);
 
         return () => {
-            document.removeEventListener('webglcontextlost', handleContextLost);
-            document.removeEventListener('webglcontextrestored', handleContextRestored);
+            canvasElem.removeEventListener('webglcontextlost', handleContextLost);
+            canvasElem.removeEventListener('webglcontextrestored', handleContextRestored);
         };
     }, []);
 
@@ -46,8 +53,8 @@ const LandingBackground = () => {
 
     return (
         contextLost ?
-            <div>WebGL context lost. Please refresh the page or try with a different browser/device.</div> :
-            <Canvas style={{ position: 'absolute', top: 0, left: 0, height: '100vh', zIndex: -1 }}>
+            <div>WebGL context lost. Attempting to restore...</div> :
+            <Canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, height: '100vh', zIndex: -1 }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <Scene />
