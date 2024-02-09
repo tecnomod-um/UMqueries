@@ -29,7 +29,7 @@ const Particle = ({ zPosition = -5, mouse }) => {
         );
         const vel = new THREE.Vector3((Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.02);
         return [pos, vel];
-    }, []);
+    }, [zPosition]);
 
     useFrame(() => {
         // Random movement
