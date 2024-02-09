@@ -1,12 +1,12 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import RotatingBox from './rotatingBox';
-import Particle from './particle';
+//import Particle from './particle';
 
 const Scene = () => {
     const { viewport } = useThree();
     const mouse = useRef([0, 0]);
-    const numParticles = 50;
+    //const numParticles = 50;
 
     const handleMouseMove = useCallback((event) => {
         mouse.current = [event.clientX / viewport.width * 2 - 1, -event.clientY / viewport.height * 2 + 1];
