@@ -9,11 +9,10 @@ import ResultTray from "../components/ResultTray/resultTray";
 import DataModal from "../components/DataModal/dataModal";
 import BindingsModal from "../components/BindingsModal/bindingsModal";
 import FiltersModal from "../components/FiltersModal/filtersModal";
-import config from '../config';
 import { capitalizeFirst } from "../utils/stringFormatter.js";
 import { populateWithEndpointData } from "../utils/petitionHandler.js";
 import { getCategory } from "../utils/typeChecker.js";
-
+import config from '../config';
 
 // Main view. All functional elements will be shown here.
 function Queries() {
@@ -35,11 +34,9 @@ function Queries() {
     // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-    // Hooks used on smaller viewports
+    // Hooks used on smaller viewport
     const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
     const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
-
-
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
@@ -48,13 +45,43 @@ function Queries() {
         const uniqueNodesMap = new Map();
         graphs.forEach(graph => {
             graph.nodes.forEach(node => {
-                const nodeKey = `${node.type}_${node.varID}`;
-                if (!uniqueNodesMap.has(nodeKey)) {
-                    uniqueNodesMap.set(nodeKey, node);
+                const nodeKey = node.label ? node.label : `${node.type}_${node.varID}`;
+                let nodeData = uniqueNodesMap.get(nodeKey);
+                if (nodeData) {
+                    nodeData = JSON.parse(JSON.stringify(nodeData));
+                    Object.entries(node.properties).forEach(([propKey, propValue]) => {
+                        if (nodeData.properties[propKey]) {
+                            if (JSON.stringify(nodeData.properties[propKey]) !== JSON.stringify(propValue)) {
+                                const newPropKey = `${propKey}(id:${node.id})`;
+                                nodeData.properties[newPropKey] = propValue;
+                            }
+                        } else
+                            nodeData.properties[propKey] = propValue;
+                    });
+                    if (!nodeData.ids.includes(node.id))
+                        nodeData.ids.push(node.id);
+                } else {
+                    nodeData = JSON.parse(JSON.stringify(node));
+                    nodeData.ids = [node.id];
+                    delete nodeData.id;
                 }
+                uniqueNodesMap.set(nodeKey, nodeData);
             });
         });
+
         return Array.from(uniqueNodesMap.values());
+    }, [graphs]);
+
+    // Bindings defined though all graphs
+    const allBindings = useMemo(() => {
+        const uniqueBindingsMap = new Map();
+        graphs.forEach(graph => {
+            graph.bindings.forEach(binding => {
+                if (!uniqueBindingsMap.has(binding.label))
+                    uniqueBindingsMap.set(binding.label, binding);
+            });
+        });
+        return Array.from(uniqueBindingsMap.values());
     }, [graphs]);
 
     // Loads endpoint data when first loaded
@@ -153,7 +180,7 @@ function Queries() {
     // Adds the passed graph as a node to the active one
     function addGraphNode(graphId) {
         if (isGraphLoop(graphId, activeGraphId, new Set())) return false;
-        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, null, null, null, null, false, true);
+        return addNode(graphId, graphs[graphs.findIndex(graph => graph.id === graphId)].label, 'graph', null, null, null, false, true);
     }
 
     function addUnion(selectedNodeId, targetNodeId) {
@@ -254,7 +281,9 @@ function Queries() {
                 class: classURI,
                 shape: shape,
                 font: { color: fontColor },
-                properties: {}
+                properties: {},
+                classTransitive: false,
+                classOmmited: false
             }
 
             dataProperties[type]?.forEach(property => {
@@ -264,6 +293,7 @@ function Queries() {
                     show: false,
                     type: getCategory(property.type),
                     transitive: false,
+                    as: "",
                     operator: '=',
                 }
             });
@@ -356,15 +386,19 @@ function Queries() {
 
     function loadQueryFile(importData) {
         const { graphs } = importData;
-        const initialVarIDs = graphs.map(graph => ({
-            id: graph.id,
-            varIdList: Object.fromEntries(
-                Object.keys(graph.nodes.reduce((acc, node) => {
-                    acc[node.type] = 0;
-                    return acc;
-                }, {})).map(type => [type, 0])
-            )
-        }));
+        const initialVarIDs = graphs.map(graph => {
+            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
+                if (node.varID !== -1)
+                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
+                return acc;
+            }, {});
+            return {
+                id: graph.id,
+                varIdList: Object.fromEntries(
+                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
+                )
+            };
+        });
 
         const newGraphs = graphs.map((graph) => {
             const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
@@ -448,7 +482,8 @@ function Queries() {
     function toggleIsTransitive(edge) {
         let propCanBeTransitive;
         setGraphs(prevGraphs => {
-            propCanBeTransitive = edge.data === 'UNION' ? false : objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type].some(obj => obj.property === edge.data);
+            propCanBeTransitive = edge.data === 'UNION' ? false :
+                objectProperties[prevGraphs[activeGraphIndex].nodes.find(node => node.id === edge.to).type]?.some(propEntry => propEntry.property === edge.data);
             if (propCanBeTransitive) {
                 let label = edge.label;
                 edge.isTransitive ? label = label.slice(0, -1) : label = label + "*";
@@ -487,9 +522,9 @@ function Queries() {
                 </span>
                 <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
-            <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} />
-            <BindingsModal allNodes={allNodes} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
-            <FiltersModal nodes={activeGraph.nodes} bindings={activeGraph.bindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
+            <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} disableToggle={activeGraph.edges.some(edge => edge.from === selectedNode?.id && edge.isFromInstance)} />
+            <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
+            <FiltersModal allNodes={allNodes} allBindings={allBindings} isFiltersOpen={isFiltersOpen} filters={activeGraph.filters} setFiltersOpen={setFiltersOpen} setFilters={setFilters} />
         </div >
     );
 }

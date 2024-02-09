@@ -1,8 +1,10 @@
+export const SPECIAL_CLASSES = ['http://www.w3.org/2002/07/owl#Thing', 'Triplet'];
+
 export const getCategory = (inputType) => {
     if (Array.isArray(inputType)) {
         return 'select';
     }
-    const type = inputType.toLowerCase();
+    const type = inputType?.toLowerCase();
     const patterns = [
         { re: /uri|link|url|typed-literal/, return: 'link' },
         { re: /numeric|int|integer|long|decimal|byte|short|nonnegativeinteger|unsignedlong|unsignedint|unsignedshort|unsignedbyte|positiveinteger/, return: 'number' },
@@ -27,6 +29,8 @@ export const getOperatorTooltip = (operator) => {
     switch (operator) {
         case '=':
             return 'is equal to';
+        case '==':
+            return 'is the same as';
         case '!=':
             return 'is not equal to';
         case '<':
@@ -39,7 +43,15 @@ export const getOperatorTooltip = (operator) => {
             return 'is greater than or equal to';
         case '⊆':
             return 'contains';
+        case '+':
+            return 'adds';
+        case '-':
+            return 'subtracts';
+        case '*':
+            return 'multiplies';
+        case '/':
+            return 'divides';
         default:
-            return 'operator';
+            return 'unknown operator';
     }
 }

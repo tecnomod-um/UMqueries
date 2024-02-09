@@ -9,7 +9,6 @@ function Graph({ activeGraph, setSelectedNode, setSelectedEdge, setDataOpen, tog
   const edgesInGraph = activeGraph.edges;
 
   const options = {
-    autoResize: false,
     height: '100%',
     width: '100%',
   };

@@ -20,6 +20,11 @@
     transition: opacity 0.1s ease-out, transform 0.1s ease-out;
 }
 
+* {
+    scrollbar-width: auto;
+}
+
+
 .darkBG {
     background-color: rgba(0, 0, 0, 0.5);
     position: fixed;
@@ -31,7 +36,7 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    z-index: 10;
+    z-index: 999;
 }
 
 .centered {
@@ -47,6 +52,6 @@
     border-radius: 16px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
     position: relative;
-    z-index: 1000;
+    z-index: 1000; 
     text-align: center;
 }

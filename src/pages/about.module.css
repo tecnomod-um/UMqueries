@@ -39,19 +39,25 @@
     color: #333;
     margin-bottom: 20px;
 }
-
 .memberList {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .memberItem {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .memberName {
     font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
 }
 
 .memberRole {
@@ -62,4 +68,22 @@
 .contactInfo {
     font-size: 16px;
     margin-top: 10px;
+}
+
+.infoResourcesWrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Update the .section class if needed to control width and spacing of each column */
+.section {
+    margin-bottom: 30px;
+    flex: 1; /* makes each section take equal space */
+    margin-right: 15px; /* add some space between the columns */
+}
+
+/* This is to make sure the last section does not have extra margin on the right */
+.infoResourcesWrapper > .section:last-child {
+    margin-right: 0;
 }

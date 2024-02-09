@@ -1,5 +1,6 @@
 .queryContainer {
-    padding: 10px;
+    padding: 1vh;
+    min-height: calc(100vh - 55px);
     margin: auto;
     background-color: #ecebeb;
     display: flex;
@@ -213,12 +214,12 @@
     .VarTrayWrapper {
         height: calc(60vh - 5px);
         transform-origin: bottom;
-        z-index: 2;
+        z-index: 1;
     }
 
     .SearchNodesWrapperActive {
         transform: scaleY(1);
-        z-index: 2;
+        z-index: 1;
     }
 
     .VarTrayWrapperActive {

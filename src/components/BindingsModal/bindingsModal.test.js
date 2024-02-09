@@ -4,6 +4,11 @@ import userEvent from '@testing-library/user-event';
 import BindingsModal from './bindingsModal';
 
 // Mock data
+jest.mock('react-dom', () => ({
+    ...jest.requireActual('react-dom'),
+    createPortal: (element, target) => element,
+}));
+
 const mockNodes = [{
     "id": 0,
     "label": "GENE 0",
@@ -98,21 +103,51 @@ const mockBindings = [{
     "showInResults": true
 }];
 
+const mockAllBindings = [
+    ...mockBindings,
+    {
+        "id": 1701791613111,
+        "label": "NewBindingWithGene2",
+        "operator": "*",
+        "firstValue": {
+            "label": "Start of GENE 2",
+            "key": "start",
+            "nodeId": 2,
+            "propertyUri": "http://purl.obolibrary.org/obo/OGI_1000007"
+        },
+        "secondValue": {
+            "label": "End of GENE 2",
+            "key": "end",
+            "nodeId": 2,
+            "propertyUri": "http://purl.obolibrary.org/obo/OGI_1000008"
+        },
+        "showInResults": false
+    }
+];
+
 describe('BindingsModal Component Tests', () => {
     let mockSetBindingsOpen;
     let mockSetBindings;
+    let modalRoot;
 
     beforeEach(() => {
+        modalRoot = document.createElement('div');
+        modalRoot.setAttribute('id', 'modal-root');
+        document.body.appendChild(modalRoot);
         mockSetBindingsOpen = jest.fn();
         mockSetBindings = jest.fn();
     });
 
+    afterEach(() => {
+        document.body.removeChild(modalRoot);
+    });
+
     it('should render without crashing', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
     });
 
     it('should allow adding a new binding', async () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const variableInput = screen.getByLabelText('Variable Input');
         userEvent.type(variableInput, 'New Binding');
         const addButton = screen.getByText('Add binding');
@@ -125,7 +160,7 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should update the operator in binding builder', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const operatorSelector = screen.getByLabelText('Operator Selector');
         userEvent.selectOptions(operatorSelector, '-');
         expect(operatorSelector.value).toBe('-');
@@ -133,7 +168,7 @@ describe('BindingsModal Component Tests', () => {
 
     it('should update custom value inputs in binding builder', () => {
         render(
-            <BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+            <BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         expect(screen.queryByLabelText('First custom value')).toBeNull();
         expect(screen.queryByLabelText('Second custom value')).toBeNull();
         const firstValueDropdown = screen.getByLabelText('First value');
@@ -153,7 +188,7 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should toggle checkboxes', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={[]} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={[]} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const showInResultsCheckbox = screen.getByLabelText('Show in Results');
         const absoluteCheckbox = screen.getByLabelText('Absolute');
         fireEvent.click(showInResultsCheckbox);
@@ -163,7 +198,7 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should show error when binding name is empty or duplicate', async () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const variableInput = screen.getByLabelText('Variable Input');
         variableInput.focus();
         const addButton = screen.getByText('Add binding');
@@ -179,7 +214,7 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should handle removing a binding', async () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const removeButton = screen.getByLabelText(`Remove Binding ${mockBindings[0].id}`);
         userEvent.click(removeButton);
         await waitFor(() => {
@@ -188,21 +223,21 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should close the modal when the close button is clicked', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const closeButtons = screen.getAllByRole('button', { name: /close/i });
         userEvent.click(closeButtons[0]);
         expect(mockSetBindingsOpen).toHaveBeenCalledWith(false);
     });
 
     it('should submit bindings when the set button is clicked', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const setButton = screen.getByText('Set bindings');
         userEvent.click(setButton);
         expect(mockSetBindings).toHaveBeenCalledWith(expect.any(Array));
     });
 
     it('should handle updates to existing bindings', async () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const showInResultsCheckboxes = screen.getAllByLabelText('Show in Results');
         fireEvent.click(showInResultsCheckboxes[0]);
         const setButton = screen.getByText('Set bindings');
@@ -213,7 +248,7 @@ describe('BindingsModal Component Tests', () => {
     });
 
     it('should close the modal correctly when handleClose is triggered', () => {
-        render(<BindingsModal allNodes={mockNodes} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         const closeButton = screen.getByLabelText('Close');
         userEvent.click(closeButton);
         expect(mockSetBindingsOpen).toHaveBeenCalledWith(false);
@@ -221,7 +256,7 @@ describe('BindingsModal Component Tests', () => {
 
     it('should properly handle resizing of window', () => {
         global.innerWidth = 500;
-        render(<BindingsModal allNodes={mockNodes} bindings={[]} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={[]} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
         fireEvent(window, new Event('resize'));
         const addBindingButton = screen.getByLabelText('Add Binding');
         expect(addBindingButton).toBeInTheDocument();

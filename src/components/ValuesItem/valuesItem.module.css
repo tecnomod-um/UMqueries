@@ -4,7 +4,6 @@
     align-items: stretch;
 }
 
-
 .space {
     margin-left: -45px;
 }
@@ -66,4 +65,23 @@
 .inputContainer {
     display: flex;
     align-items: center;
+}
+
+.uriButtonDisabled {
+    background-color: #ccc;
+    border: none;
+    color: #666;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: not-allowed;
+    border-radius: 4px;
+    margin-left: 0.5em;
+}
+
+.uriButtonDisabled:hover {
+    background-color: #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

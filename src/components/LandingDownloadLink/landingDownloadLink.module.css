@@ -1,0 +1,31 @@
+.linkElement {
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    background-color: #3d3d3d;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    text-decoration: none;
+}
+
+.linkElement:hover, .linkElement:focus {
+    background-color: #333333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.linkElement:active {
+    background-color: #0d0d0d;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    transform: translateY(1px);
+}

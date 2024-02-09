@@ -8,15 +8,15 @@ let debounceTimeout;
 let lastFilter = null;
 
 export const debounceFilteredNodeData = () => {
-    return (filter, setData, setIsLoading) => {
-        if (filter !== lastFilter) {
+    return (filter, data, setData, setIsLoading) => {
+        if (filter !== lastFilter || !data) {
             clearTimeout(debounceTimeout);
             setIsLoading(true);
             debounceTimeout = setTimeout(() =>
                 populateWithFilteredNodeData(filter, setData, setIsLoading), config.debounceDelay);
             lastFilter = filter;
         }
-    };
+    }
 }
 
 export const populateWithFilteredNodeData = (filter, setData, setIsLoading) => {
@@ -127,12 +127,15 @@ export const fetchData = (dataFile) => {
     });
 }
 
-export const handleQuery = (graphs, activeGraphId, startingVar, setIsLoading) => {
+export const handleQuery = (graphs, activeGraphId, startingVar, isDistinct, isCount, setIsLoading) => {
     setIsLoading(true);
     let data = {
         endpoint: endpointURL,
-        query: parseQuery(graphs, activeGraphId, startingVar)
+        query: parseQuery(graphs, activeGraphId, startingVar, isDistinct, isCount)
     };
+
+    // Capture the start time
+    const startTime = Date.now();
 
     return new Promise((resolve, reject) => {
         axios({
@@ -144,12 +147,24 @@ export const handleQuery = (graphs, activeGraphId, startingVar, setIsLoading) =>
         })
             .then(function (response) {
                 setIsLoading(false);
+
+                // Capture the end time and calculate the duration
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                console.log(`Response time: ${responseTime} ms`);
+
                 const result = parseResponse(response);
                 resolve(result);
             })
             .catch(function (error) {
                 console.log(error);
                 setIsLoading(false);
+
+                // Capture the end time even in case of error
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                console.log(`Response time (with error): ${responseTime} ms`);
+
                 reject(error);
             });
     });

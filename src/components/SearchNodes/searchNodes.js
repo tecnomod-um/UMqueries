@@ -9,33 +9,38 @@ function SearchNodes({ varData, colorList, addNode }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if (searchField.length >= 3 || !data || searchField === '')
-            debounceFilteredNodeData()(searchField, setData, setIsLoading);
+        if (searchField.length >= 3 || !data || searchField === '') {
+            debounceFilteredNodeData()(searchField, data, setData, setIsLoading);
+        }
     }, [searchField, data]);
 
     const handleChange = (e) => setSearchField(e.target.value);
 
     let placeholderText = "";
 
-    if (varData) {
-        if (Object.keys(varData).length === 0) placeholderText = "No nodes detected";
-        else {
-            placeholderText = "Search by ";
-            Object.keys(varData).forEach((key) => {
-                placeholderText = placeholderText + key + ", ";
-            });
-            placeholderText = placeholderText.slice(0, -2);
+    if (true) {// TODO implement indexes to speed up nodes
+        placeholderText = "Node search is disabled temporally"
+    } else
+        if (varData) {
+            if (Object.keys(varData).length === 0) placeholderText = "No nodes detected";
+            else {
+                placeholderText = "Search by ";
+                Object.keys(varData).forEach((key) => {
+                    placeholderText = placeholderText + key + ", ";
+                });
+                placeholderText = placeholderText.slice(0, -2);
 
+            }
+        } else {
+            placeholderText = "No elements to display";
         }
-    } else {
-        placeholderText = "No elements to display";
-    }
 
     return (
         <span className={SearchNodesStyles.search}>
             <input
                 className={SearchNodesStyles.input}
                 type="search"
+                disabled={true} // TODO implement indexes to speed up nodes
                 placeholder={placeholderText}
                 onChange={handleChange}
             />

@@ -37,17 +37,17 @@
 .resultCount {
     display: none;
     position: absolute;
-    bottom: 0px;
-    right: 0px;
+    bottom: 0;
+    right: 0;
     background-color: lightGray;
     padding: 2px;
     border-radius: 2px;
-    z-index: 10;
+    z-index: 5;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .resultCount.shown {
-    display: inline;
+    display:inline-block; 
 }
 
 .openButton {
@@ -84,9 +84,10 @@
 .input::-webkit-search-cancel-button {
     display: none;
 }
-
+/*
 @-moz-document url-prefix() {
     .resultCount {
-        bottom: calc(1px - 1000%);
+        bottom: calc(-980%);
     }
 }
+*/

@@ -10,6 +10,8 @@ import SearchResults from "../SearchResults/searchResults";
 import TrashIcon from '@mui/icons-material/DeleteOutline';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
 function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
@@ -17,6 +19,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
     const [uriList, setUriList] = useState([]);
+    const [isDistinct, setDistinct] = useState(true);
+    const [isCount, setCount] = useState(false);
     const inputRefs = useRef({});
     // Current elements being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
@@ -31,38 +35,71 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
 
     // Creates both property dropdown menus
     const createGroupedMenuItems = (edges, isOptional) => {
-        const edgeGroups = edges?.reduce((acc, edge) => {
-            acc[edge.fromInstance ? 'fromInstance' : 'notFromInstance'].push(
-                <DropdownNestedMenuItem
-                    label={edge.label}
-                    disableRipple={true}
-                    preventCloseOnClick={true}
-                    menu={getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance)}
-                />
-            );
+        const edgeGroupsByLabel = edges?.reduce((acc, edge) => {
+            const key = edge.fromInstance ? 'fromInstance' : 'notFromInstance';
+            const label = edge.label;
+            if (!acc[key][label]) {
+                acc[key][label] = [];
+            }
+            acc[key][label].push(edge);
             return acc;
-        }, { fromInstance: [], notFromInstance: [] });
-        const separator = edgeGroups?.fromInstance.length && edgeGroups?.notFromInstance.length ? (
+        }, { fromInstance: {}, notFromInstance: {} });
+        // Same label properties will be shown as one
+        const createMenuItemsForGroup = (group) => {
+            return Object.entries(group).map(([label, edges]) => {
+                const firstEdge = edges[0];
+                const valuesItem = (
+                    <ValuesItem
+                        inputRef={inputRefs.current[label] || (inputRefs.current[label] = React.createRef())}
+                        uriList={uriList}
+                        selectedNode={selectedNode}
+                        label={label}
+                        property={firstEdge.property}
+                        isOptional={isOptional}
+                        isFromInstance={firstEdge.fromInstance}
+                        setUriList={setUriList}
+                        addNode={addNode}
+                        addEdge={addEdge}
+                        disabled={firstEdge.fromInstance && selectedNode?.classOmitted}
+                    />);
+                const propertyTargets = edges.map((edge, index) => getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance, index === 0)).flat();
+                const menu = propertyTargets.length > 0 ? propertyTargets : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>];
+                return (
+                    <DropdownNestedMenuItem
+                        label={label}
+                        disableRipple={true}
+                        preventCloseOnClick={true}
+                        menu={[valuesItem, ...menu]}
+                    />
+                );
+            });
+        };
+        const fromInstanceMenuItems = createMenuItemsForGroup(edgeGroupsByLabel.fromInstance);
+        const notFromInstanceMenuItems = createMenuItemsForGroup(edgeGroupsByLabel.notFromInstance);
+        const separator = fromInstanceMenuItems.length && notFromInstanceMenuItems.length ? (
             <div className={ResultTrayStyles.dropdownSeparator} />
         ) : null;
-        return [...(edgeGroups?.fromInstance || []), separator, ...(edgeGroups?.notFromInstance || [])].filter(Boolean);
+        return [...fromInstanceMenuItems, separator, ...notFromInstanceMenuItems].filter(Boolean);
     }
 
     // Gets all nodes that could receive a property
-    function getPropertyTargets(isOptional, object, label, property, isFromInstance) {
+    function getPropertyTargets(isOptional, object, label, property, isFromInstance, includeValuesItem) {
         let textAddition = "";
         if (isOptional) textAddition = " (Optional)";
+        const isDisabled = isFromInstance && selectedNode.classOmitted;
         const acceptsAnyURI = object === 'http://www.w3.org/2001/XMLSchema#anyURI';
         const result = activeGraph.nodes.filter(generalNode => generalNode && (acceptsAnyURI ? generalNode.class === 'http://www.w3.org/2002/07/owl#Thing' : generalNode.type === object) && generalNode.id !== selectedNode.id)
             .map(targetedNode => (
-                <DropdownMenuItem onClick={() => {
-                    addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
-                }}>{targetedNode.label} </DropdownMenuItem>))
-        if (!inputRefs.current[label])
+                <DropdownMenuItem disableRipple={isDisabled} disabled={isDisabled} onClick={() => {
+                    if (!isDisabled) addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
+                }
+                }>{targetedNode.label} </DropdownMenuItem>));
+        if (includeValuesItem && !inputRefs.current[label]) {
             inputRefs.current[label] = React.createRef();
-        result.unshift(
-            <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} setUriList={setUriList} addNode={addNode} addEdge={addEdge} />);
-        return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
+            result.unshift(
+                <ValuesItem inputRef={inputRefs.current[label]} uriList={uriList} selectedNode={selectedNode} label={label} property={property} isOptional={isOptional} isFromInstance={isFromInstance} setUriList={setUriList} addNode={addNode} addEdge={addEdge} disabled={isDisabled} />);
+        }
+        return result;
     }
 
     // Gets all graph nodes that could form a Union
@@ -94,12 +131,12 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             shownOptionals = [];
         }
         else {
-            buttonPropertyLabel = `Set '${selectedNode.type}' properties...`;
-            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties...`;
-            buttonInsideLabel = `Set '${selectedNode.type}' data properties...`;
+            buttonPropertyLabel = `Set '${selectedNode.type}' object properties`;
+            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties`;
+            buttonInsideLabel = `Set '${selectedNode.type}' data properties`;
 
             const edgesForSelectedNode = edgeData[selectedNode.type];
-            shownProperties = createGroupedMenuItems(edgesForSelectedNode, false);
+            shownProperties = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id) ? [] : createGroupedMenuItems(edgesForSelectedNode, false);
             shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
         }
     } else {
@@ -109,8 +146,8 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         shownProperties = (<span />);
         shownOptionals = (<span />);
     }
-
-    const numVarsSelected = Object.keys(startingVar).length;
+    const uniqueVars = new Set(Object.values(startingVar).map(({ type, varID }) => `${type}-${varID}`));
+    const numVarsSelected = uniqueVars.size;
     buttonVarToShowLabel = numVarsSelected === 0 ? 'No nodes shown' : `${numVarsSelected} nodes shown`;
     buttonFilterLabel = activeGraph.filters.length ? activeGraph.filters.length === 1 ?
         `${activeGraph.filters.length} filter set` : `${activeGraph.filters.length} filters set` : "No filters set";
@@ -150,7 +187,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                 .forEach(targetedNode => {
                     if (targetedNode.properties)
                         Object.entries(targetedNode.properties).forEach(([key, value]) => {
-                            let show = value.show;
+                            const show = value.show;
                             const category = getCategory(insideData[targetedNode.type].filter(entry => entry.property === value.uri)[0]?.type);
                             if (show && (category === 'number' || category === 'decimal' || category === 'datetime')) {
                                 result.push(<DropdownMenuItem onClick={() =>
@@ -169,23 +206,25 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
 
         // Toggle selected state for a given node
-        const toggleNodeSelection = (nodeId, nodeInfo, isInstance, isClass) => {
+        const toggleNodeSelection = (nodeIds, nodeInfo, isInstance, isClass) => {
             setStartingVar(prevStartingVar => {
                 const updatedStartingVar = { ...prevStartingVar };
-                if (nodeId in updatedStartingVar) {
-                    if (isInstance)
-                        updatedStartingVar[nodeId].instance = !updatedStartingVar[nodeId].instance;
-                    if (isClass)
-                        updatedStartingVar[nodeId].class = !updatedStartingVar[nodeId].class;
-                    if (!updatedStartingVar[nodeId].instance && !updatedStartingVar[nodeId].class)
-                        delete updatedStartingVar[nodeId];
-                } else {
-                    updatedStartingVar[nodeId] = {
-                        ...nodeInfo,
-                        instance: isInstance,
-                        class: isClass
-                    };
-                }
+                nodeIds.forEach(nodeId => {
+                    if (nodeId in updatedStartingVar) {
+                        if (isInstance)
+                            updatedStartingVar[nodeId].instance = !updatedStartingVar[nodeId].instance;
+                        if (isClass)
+                            updatedStartingVar[nodeId].class = !updatedStartingVar[nodeId].class;
+                        if (!updatedStartingVar[nodeId].instance && !updatedStartingVar[nodeId].class)
+                            delete updatedStartingVar[nodeId];
+                    } else {
+                        updatedStartingVar[nodeId] = {
+                            ...nodeInfo,
+                            instance: isInstance,
+                            class: isClass
+                        };
+                    }
+                });
                 return updatedStartingVar;
             });
         };
@@ -194,13 +233,13 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             return (
                 <DropdownMenuItem preventCloseOnClick={true} disableRipple={true} onClick={event => {
                     event.stopPropagation();
-                    toggleNodeSelection(targetedNode.id, nodeContents(targetedNode, isInstance, isClass), isInstance, isClass);
+                    toggleNodeSelection(targetedNode.ids, nodeContents(targetedNode, isInstance, isClass), isInstance, isClass);
                 }}>
                     <span className={ResultTrayStyles.shownNode}>
                         {label}
-                        {(selectedNodesSet.has(targetedNode.id) &&
-                            ((isInstance && startingVar[targetedNode.id]?.instance) ||
-                                (isClass && startingVar[targetedNode.id]?.class))) ?
+                        {(targetedNode.ids.some(id => selectedNodesSet.has(id)) &&
+                            ((isInstance && targetedNode.ids.some(id => startingVar[id]?.instance)) ||
+                                (isClass && targetedNode.ids.some(id => startingVar[id]?.class)))) ?
                             <DeleteIcon sx={{ color: 'darkgray' }} /> :
                             <AddIcon sx={{ color: 'darkgray' }} />}
                     </span>
@@ -211,16 +250,19 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         allNodes.filter(generalNode => generalNode && (generalNode.varID >= 0 || generalNode.shape === 'box'))
             .forEach(targetedNode => {
                 const baseLabel = targetedNode.shape === 'box' ? `URI values` : targetedNode.label;
-                let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && edge.from === targetedNode.id);
-                let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && edge.from === targetedNode.id) ||
-                    !activeGraph.edges.some(edge => edge.from === targetedNode.id);
+                let isInstance = activeGraph.edges.some(edge => edge.isFromInstance && targetedNode.ids.includes(edge.from));
+                let isClass = activeGraph.edges.some(edge => !edge.isFromInstance && targetedNode.ids.includes(edge.from)) ||
+                    !activeGraph.edges.some(edge => targetedNode.ids.includes(edge.from));
+
                 if (isInstance || isClass) {
-                    let instanceLabel = baseLabel + (isInstance ? ' (instance)' : '');
-                    let classLabel = baseLabel + (isClass ? ' (class)' : '');
-                    if (isInstance)
+                    let instanceLabel = `${baseLabel} (instance)`;
+                    let classLabel = `${baseLabel}${isInstance ? ' (class)' : ''}`;
+                    if (isInstance) {
                         result.push(createDropdownItem(targetedNode, instanceLabel, true, false));
-                    if (isClass)
                         result.push(createDropdownItem(targetedNode, classLabel, false, true));
+                    } else if (isClass) {
+                        result.push(createDropdownItem(targetedNode, classLabel, false, true));
+                    }
                 }
             });
         let countMenu = [
@@ -247,14 +289,20 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
         loadQueryFile(importData);
         if (importData.startingVar)
             setStartingVar(importData.startingVar);
+        if (importData.isDistinct)
+            setDistinct(importData.isDistinct)
+        if (importData.isCount)
+            setCount(importData.isCount)
     }, [loadQueryFile]);
 
     // Set data to export format
     const getQueryData = useCallback(() => {
         const queryData = getGraphData();
         queryData.startingVar = startingVar;
+        queryData.isDistinct = isDistinct;
+        queryData.isCount = isCount;
         return (queryData);
-    }, [getGraphData, startingVar])
+    }, [getGraphData, startingVar, isDistinct, isCount])
 
     // Remove nodes
     const deleteSelected = useCallback(() => {
@@ -280,7 +328,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             window.removeEventListener("keydown", handleKeyPress);
         };
     }, [deleteSelected]);
-
+    const isButtonDisabled = shownOptionals.length === 0;
     return (
         <span className={ResultTrayStyles.container}>
             <div className={ResultTrayStyles.controlColumn}>
@@ -296,7 +344,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                     />
                 </div>
                 <Dropdown
-                    trigger={<button className={ResultTrayStyles.big_button}>{buttonOptionalLabel}</button>}
+                    trigger={<button className={ResultTrayStyles.big_button} disabled={isButtonDisabled}>{buttonOptionalLabel}</button>}
                     menu={shownOptionals} />
                 <button className={ResultTrayStyles.big_button} onClick={() => setDataOpen(true)}>{buttonInsideLabel}</button>
             </div>
@@ -304,6 +352,40 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                 <SearchResults startingData={startingVar} resultData={resultData} />
             </div>
             <div className={ResultTrayStyles.queryColumn}>
+                <div className={ResultTrayStyles.switchRow}>
+                    <FormControlLabel
+                        className={ResultTrayStyles.formControlLabel}
+                        control={
+                            <Switch
+                                checked={isDistinct}
+                                onChange={(e) => setDistinct(e.target.checked)}
+                                style={{ color: '#c22535' }}
+                                sx={{
+                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                        backgroundColor: '#c22535',
+                                    },
+                                }} />
+                        }
+                        label="Distinct"
+                    />
+                    <FormControlLabel
+                        className={ResultTrayStyles.formControlLabel}
+                        control={
+                            <Switch
+                                checked={isCount}
+                                onChange={(e) => setCount(e.target.checked)}
+                                style={{ color: '#c22535' }}
+                                sx={{
+                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                        backgroundColor: '#c22535',
+                                    },
+                                }}
+                            />
+                        }
+                        label="Count" />
+                </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown trigger={<button className={ResultTrayStyles.var_button}>Export as...</button>}
                         menu={
@@ -314,7 +396,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                                 <ResultExporter data={resultData} fileType="ods" />
                                 ] : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No results to export</DropdownMenuItem>]}
                     />
-                    <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} setResultData={setResultData} />
+                    <QueryButton graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} isDistinct={isDistinct} isCount={isCount} setResultData={setResultData} />
                 </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <Dropdown
