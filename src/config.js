@@ -1,5 +1,5 @@
 const config = {
-    backendUrl: 'http://localhost:8888',
+    backendUrl: 'https://semantics.inf.um.es:8888',
     //endpointUrl: 'https://dbpedia.org/sparql',
     //endpointUrl: 'http://ssb4.nt.ntnu.no:23032/sparql',
     //endpointUrl: 'https://biogateway.eu/sparql-endpoint/',

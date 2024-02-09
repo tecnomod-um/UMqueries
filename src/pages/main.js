@@ -110,10 +110,10 @@ function Main() {
 
   const tutorialSteps = [
     'No need to know querying languages to explore the RDF.',
-    'Select the first node or subject, in this case, Gene, in the Variable browser.',
-    'Select the second node or object, in this case, Protein, in the Variable browser.',
-    'Select in the Properties selectors the one that relates both, in this case, "encodes".',
-    'Select in "Nodes shown" in the Query builder the data we want to show in the output.',
+    'Select the first entity (subject node), in this case, Gene, in the Variable browser.',
+    'Select the second entity (object node), in this case, Protein, in the Variable browser.',
+    'Select the relation between both entities in the Properties selectors, in this case, "encodes".',
+    'Select in "Nodes shown" the data you want to show in the output.',
     'Click on "Query" to launch the query.',
     'Click on "Export as" to download the data. Click on "Export query" to save the query.'
   ];
@@ -144,10 +144,10 @@ function Main() {
             <div className={MainStyles.textContainer}>
               <h2 className={MainStyles.centeredHeading}>Introduction</h2>
               <p className={MainStyles.introText}>
-                INTUITION is a web application for user-friendly SPARQL query building. It analyses an accessible endpoint, BioGateway, and allows building queries graphically by representing nodes (entities) and edges (properties).
+                INTUITION is a web application for user-friendly SPARQL query building. It analyses the knowledge network of an accessible endpoint, BioGateway, and allows building biological queries graphically by representing biological entities (nodes) related through properties (edges).
               </p>
               <span className={MainStyles.lesserText}>
-                RDF knowledge graphs represent entities through uniform resource identifiers (URIs), and information through triples or statements that represent a directional relationship between two entities, similar to a sentence: {"<"}subject{">"} {"<"}predicate{">"} {"<"}object{">"}. For example: {"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}. The SPARQL query language also uses this pattern to build queries. These queries can be complex by linking multiple triples and including operations. A tutorial for building SPARQL queries in BioGateway (BGW) is available in this <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
+                RDF knowledge graphs represent entities through Uniform Resource Identifiers (URIs), and information through triples or statements that represent a directional relationship between two entities, similar to a sentence: {"<"}subject{">"} {"<"}predicate{">"} {"<"}object{">"}. For example: {"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}. The SPARQL query language also uses this pattern to build queries. These queries can be complex by linking multiple triples and including operations. A tutorial for building SPARQL queries in BioGateway (BGW) is available in this <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
               </span>
             </div>
           </div>
@@ -242,27 +242,35 @@ function Main() {
         <div className={MainStyles.contentContainer}>
           <div className={MainStyles.textImageContainer}>
             <div className={MainStyles.textContainer}>
-              <h2 className={MainStyles.centeredHeading}>Filters and Other Clauses</h2>
+              <h2 className={MainStyles.centeredHeading}>Data filtering and other possible operations</h2>
               <span className={MainStyles.introText}>
-                Each entity's attributes can also be filtered through the 'Data properties' modal, in the Property Selector.
+                Linking two biological entities or variables by their relation (object property) is the simplest filtering. However, any biological entity can also be filtered by its characteristics or attributes (data properties). For example, the gene name.
               </span>
             </div>
             <OverlappingImages images={[{ src: images[5], alt: "Figure 6" }, { src: images[6], alt: "Figure 7" }]} />
           </div>
           <span className={MainStyles.introText}>
-            INTUITION offers various clauses like DISTINCT and COUNT to refine your queries. You can easily apply these clauses and filters through the interface to achieve more precise results.
+	   Clicking on "data properties" we can filter these attributes. If the value is a string we can use the operator {"'='"} to indicate an exact string, or the operator {"'⊆'"} to indicate a substring contained in the string. If the value is numeric we can use the operators {"'='"}, {"'>'"}, {"'≥'"}, {"'<'"}, {"'≤'"}.
+	  </span>
+	  <span className={MainStyles.introText}>
+	   INTUITION also permits the assignment of one or more values to a specific variable. For example, we can query cis regulatory modules identified in two tissues of interest. To do this, in the "Property Selector", multiple values can be defined introducing each element in the value stack. The input values for filtering must be URIs.
+	  </span>
+          <LandingImage imageSrc={require('../resources/images/tutorial/NewValues.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+	  <br/>
+	  <br/>
+          <span className={MainStyles.introText}>
+	   The output table shows the biological entities consulted. Since the user has the freedom to choose which entities want to include in the output ("Nodes shown" button), the result can include duplicate entities. The Distinct button, activated by default, removes these duplicates. The Count button allows you to count the results obtained.
           </span>
+
           {images[4] && <LandingImage imageSrc={images[4]} maintainAspectRatio={true} alt="Figure 5" addDarkBorder={true} />}
-          <div className={MainStyles.textImageContainer}>
-            {/* Load Values.png before the VALUES text */}
-            <LandingImage imageSrc={require('../resources/images/tutorial/Values.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-            <div className={MainStyles.textContainer}>
-              <span className={MainStyles.introText}>
-                In the Property Selector, VALUES statements can be defined introducing each element of the value pile. The input values for filtering must be URIs.
-              </span>
-            </div>
-          </div>
+	 <div className={MainStyles.imageContainer}>
+          <div className={MainStyles.textContainer}>
+           <span className={MainStyles.introText}>
+           </span>
+         </div>
+         </div>
         </div>
+
         {/* Additional Features Section */}
         <div className={MainStyles.contentContainer}>
           <div className={MainStyles.textImageContainer}>
@@ -279,9 +287,9 @@ function Main() {
         </div>
         {/* UNION Clause Section */}
         <div className={MainStyles.contentContainer}>
-          <h2 className={MainStyles.centeredHeading}>UNION Clause</h2>
+          <h2 className={MainStyles.centeredHeading}>Union of queries</h2>
           <span className={MainStyles.introText}>
-            INTUITION also allows the use of the UNION clause. UNION merges subqueries through common variables in both queries. We illustrate its use through a use case. For example, we retrieve the OMIM entities that contain the string "breast cancer" as a name or synonym. To do that, follow the steps outlined below:
+            INTUITION also allows to merge subqueries that contain common variables in both queries. We illustrate its use through a use case. For example, we retrieve the OMIM entities that contain the string "breast cancer" as a name or synonym. To do that, follow the steps outlined below:
           </span>
           <div className={MainStyles.textImageContainerUnion}>
             <div className={MainStyles.imageContainerUnion}>
@@ -342,7 +350,7 @@ function Main() {
             <div className={MainStyles.textContainer}>
               <h2 className={MainStyles.centeredHeading}>Use Cases</h2>
               <span className={MainStyles.introText}>
-                The following Use Cases were developed in the paper "Analysis of the landscape of human enhancer sequences in biological databases". The corresponding queries are attached for reproducibility and as examples of use.
+                The following Use Cases were developed in the paper "Analysis of the landscape of human enhancer sequences in biological databases". The corresponding queries are attached for reproducibility and as examples of use. We recommend their consultation for a deeper understanding of the concepts introduced. Some more examples can be found <a href="https://github.com/juan-mulero/cisreg/blob/107278c55e9024dda16f8fb9e6d69e690613ba1a/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">here</a>.
                 <ul className={MainStyles.linkList}>
                   <LandingDownloadLink fileName="UC1.zip" label="Try Use Case 1" />
                   <LandingDownloadLink fileName="UC2.zip" label="Try Use Case 2" />
@@ -354,7 +362,7 @@ function Main() {
         </div>
         {/* Get Started Button */}
         <div className={MainStyles.buttonContainer}>
-          <Link to={"/intuition"}>
+          <Link to={"/queries"}>
             <button className={MainStyles.big_button}>Get Started</button>
           </Link>
         </div>

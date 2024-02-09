@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import BindingsModal from './bindingsModal';
 
 // Mock data
-
 jest.mock('react-dom', () => ({
     ...jest.requireActual('react-dom'),
     createPortal: (element, target) => element,

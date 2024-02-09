@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import './index.css'; // TODO this is bad practice. Move css to each component
 import Navbar from "./components/Navbar/navbar";
 import ErrorBoundary from "./components/ErrorBoundary/errorBoundary";
@@ -16,7 +16,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ErrorBoundary>
     <div id="modal"></div>
-    <BrowserRouter>
+    <HashRouter>
       <Navbar />
       <link rel="icon" href={favicon} />
       <Routes>
@@ -25,7 +25,7 @@ root.render(
           element={<Main />}
         ></Route>
         <Route
-          path="/intuition"
+          path="/queries"
           element={<Queries />}
         ></Route>
         <Route
@@ -33,6 +33,6 @@ root.render(
           element={<About />}
         ></Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </ErrorBoundary>
 );
