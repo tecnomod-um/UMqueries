@@ -6,7 +6,6 @@ import AddIcon from '@mui/icons-material/Add';
 
 // Dropdown option that allows to build an URI values list for a property
 function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOptional, isFromInstance, setUriList, addNode, addEdge, disabled }) {
-    //console.log(disabled)
     const handleKeyDown = (event) => {
         event.stopPropagation();
         if (event.key === 'Enter') {

@@ -3,8 +3,12 @@ export const capitalizeFirst = str => {
 }
 
 export const getItemFromURI = str => {
-    return str.substring(str.lastIndexOf('/') + 1);
+    const trimmedStr = str.trim().replace(/\/+$/, '');
+    const lastSegment = trimmedStr.substring(trimmedStr.lastIndexOf('/') + 1);
+    return lastSegment === '' ? trimmedStr : lastSegment;
 }
+
+
 
 export const cleanString = str => {
     const invalidCharsRegex = /[^a-zA-Z0-9_]/g;

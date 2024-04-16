@@ -312,7 +312,7 @@ function Main() {
           <h2 className={MainStyles.centeredHeading}>Variables</h2>
           <table className={MainStyles.variablesTable}>
             <tbody>
-              <tr><td>CRM variable</td><td>cis regulatory module.</td></tr>
+              <tr><td>CRM variable</td><td>cis regulatory module (currently only enhancer sequences).</td></tr>
               <tr><td>Gene variable</td><td>genes.</td></tr>
               <tr><td>Protein variable</td><td>proteins.</td></tr>
               <tr><td>OMIM variable</td><td>entities from OMIM ontology (mainly phenotypes).</td></tr>

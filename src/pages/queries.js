@@ -505,12 +505,14 @@ function Queries() {
     return (
         <div className={mainContainerClass}>
             <div className={QueriesStyles.constraint_container}>
+                {/*
                 <span className={`${QueriesStyles.SearchNodesWrapper} ${!isVarTrayExpanded ? QueriesStyles.SearchNodesWrapperActive : ''}`}>
                     <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
                 <div className={QueriesStyles.toggleTab} onClick={toggleVarTrayAndSearchNodes}>
                     <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
                 </div>
+                */}
                 <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
                     <VarTray varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
@@ -520,7 +522,7 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray varData={varData} activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} disableToggle={activeGraph.edges.some(edge => edge.from === selectedNode?.id && edge.isFromInstance)} />
             <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />

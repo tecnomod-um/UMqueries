@@ -8,6 +8,7 @@ function darken(color, amount) {
     return `#${newRgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
 }
 
+
 // Defines each element in both the var and node lists
 function ListElement({ id, data, type, color, isVar, graph, classURI, addNode }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -29,6 +30,7 @@ function ListElement({ id, data, type, color, isVar, graph, classURI, addNode })
 
     const handleClick = (event) => {
         event.preventDefault();
+        
         addNode(id, data, type, isVar, graph, classURI, false, false);
     };
 

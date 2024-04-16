@@ -32,7 +32,7 @@ function List({ varData, filteredLists, colorList, addNode }) {
                 result.push(
                     elements.map((constraint, idx) => (
                         <ListElement
-                            key={`${getItemFromURI(constraint.uri)}_${idx}`}
+                            key={`${getItemFromURI(constraint.uri)}_${key}_${idx}`}
                             id={constraint.label}
                             data={constraint.uri}
                             type={key}
@@ -47,7 +47,11 @@ function List({ varData, filteredLists, colorList, addNode }) {
             }
         });
 
-        return result;
+        return result.flat().sort((a, b) => {
+            const labelA = a.props.id.toLowerCase();
+            const labelB = b.props.id.toLowerCase();
+            return labelA.localeCompare(labelB);
+        });
     }
 
     return (

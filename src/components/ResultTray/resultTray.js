@@ -4,7 +4,8 @@ import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
 import { getCategory } from "../../utils/typeChecker.js";
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
-import ValuesItem from "../ValuesItem/valuesItem";
+import ValuesItem from "../Dropdown/valuesItem.js";
+import CreateNodeItem from "../Dropdown/createNodeItem.js";
 import ResultTrayStyles from "./resultTray.module.css";
 import SearchResults from "../SearchResults/searchResults";
 import TrashIcon from '@mui/icons-material/DeleteOutline';
@@ -14,7 +15,8 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
+function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
+
     // Data structures used through the app
     const [startingVar, setStartingVar] = useState({});
     const [resultData, setResultData] = useState();
@@ -62,6 +64,7 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                         addEdge={addEdge}
                         disabled={firstEdge.fromInstance && selectedNode?.classOmitted}
                     />);
+
                 const propertyTargets = edges.map((edge, index) => getPropertyTargets(isOptional, edge.object, edge.label, edge.property, edge.fromInstance, index === 0)).flat();
                 const menu = propertyTargets.length > 0 ? propertyTargets : [<DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>];
                 return (
@@ -94,6 +97,28 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
                     if (!isDisabled) addEdge(selectedNode.id, targetedNode.id, label + textAddition, property, isOptional, isFromInstance)
                 }
                 }>{targetedNode.label} </DropdownMenuItem>));
+        // Include node generation in dropdown for ease of access
+        if (acceptsAnyURI && result.length === 0) {
+            result.push(
+                <DropdownMenuItem disabled={true}>
+                    {"No target class defined. Please add it manually."}
+                </DropdownMenuItem>);
+        } else if (!acceptsAnyURI) {
+            result.push(
+                <CreateNodeItem
+                    varKey={object}
+                    graph={varData[object].uri_graph}
+                    classURI={varData[object].uri_element}
+                    selectedNode={selectedNode}
+                    edgeLabel={label + textAddition}
+                    property={property}
+                    isOptional={isOptional}
+                    isFromInstance={isFromInstance}
+                    addNode={addNode}
+                    addEdge={addEdge}
+                />)
+        }
+
         if (includeValuesItem && !inputRefs.current[label]) {
             inputRefs.current[label] = React.createRef();
             result.unshift(
@@ -131,9 +156,9 @@ function ResultTray({ activeGraphId, graphs, allNodes, edgeData, insideData, bin
             shownOptionals = [];
         }
         else {
-            buttonPropertyLabel = `Set '${selectedNode.type}' object properties`;
-            buttonOptionalLabel = `Set '${selectedNode.type}' optional properties`;
-            buttonInsideLabel = `Set '${selectedNode.type}' data properties`;
+            buttonPropertyLabel = `Add relation to '${selectedNode.type}'`;
+            buttonOptionalLabel = `Add optional relation to '${selectedNode.type}'`;
+            buttonInsideLabel = `Set '${selectedNode.type}' attributes`;
 
             const edgesForSelectedNode = edgeData[selectedNode.type];
             shownProperties = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id) ? [] : createGroupedMenuItems(edgesForSelectedNode, false);
