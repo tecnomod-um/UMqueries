@@ -68,10 +68,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
 
     // Checks and loads sample use cases
     useEffect(() => {
-        if (preloadedQuery) {
-            onFileSelect(preloadedQuery);
-            console.log('loadin')
-        }
+        if (preloadedQuery) onFileSelect(preloadedQuery);
     }, [preloadedQuery, onFileSelect]);
     // Hide the tooltip after 3 seconds
     useEffect(() => {
