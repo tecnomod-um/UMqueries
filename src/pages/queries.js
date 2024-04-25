@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
-import SearchNodes from '../components/SearchNodes/searchNodes';
+/* import SearchNodes from '../components/SearchNodes/searchNodes'; */
 import VarTray from '../components/VarTray/varTray';
 import UnionTray from '../components/UnionTray/unionTray';
 import Graph from '../components/Graph/graph';
@@ -34,9 +34,11 @@ function Queries() {
     // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    /*
     // Hooks used on smaller viewport
     const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
     const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
+    */
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
@@ -521,7 +523,7 @@ function Queries() {
                     <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
                 </div>
                 */}
-                <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
+                <span className={`${QueriesStyles.VarTrayWrapper} ${/*isVarTrayExpanded ?*/ QueriesStyles.VarTrayWrapperActive/* : ''*/}`}>
                     <VarTray varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
             </div >

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useContext } from "rea
 import { QueryContext } from '../../contexts/queryContext.js';
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
-import { getCategory } from "../../utils/typeChecker.js";
+/*import { getCategory } from "../../utils/typeChecker.js";*/
 import QueryButton from "../QueryButton/queryButton";
 import ResultExporter from "../ResultExporter/resultExporter";
 import ValuesItem from "../Dropdown/valuesItem";
@@ -227,7 +227,8 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
             "class": isClass
         };
     }
-
+    /*
+    TODO
     const metricContents = (node, property, isTotal, isMax) => {
         return {
             "isMetric": true,
@@ -264,7 +265,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
         }
         return result.length ? result : <DropdownMenuItem className={ResultTrayStyles.noTarget} disabled={true}>No targets available</DropdownMenuItem>
     }
-
+    */
     // Gets all nodes that could be selected as a shown result
     function getShownTargets() {
         const selectedNodesSet = new Set(Object.keys(startingVar).map(key => parseInt(key, 10)));
@@ -329,18 +330,19 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
                     }
                 }
             });
-        let countMenu = [
-            (<DropdownNestedMenuItem
-                label="Get min"
-                menu={getMetricTargets(false, false)} />),
-            (<DropdownNestedMenuItem
-                label="Get max"
-                menu={getMetricTargets(false, true)} />),
-            (<DropdownNestedMenuItem
-                label="Get count"
-                menu={getMetricTargets(true)} />)
-        ];
-        /*result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);*/
+        /*
+    let countMenu = [
+        (<DropdownNestedMenuItem
+            label="Get min"
+            menu={getMetricTargets(false, false)} />),
+        (<DropdownNestedMenuItem
+            label="Get max"
+            menu={getMetricTargets(false, true)} />),
+        (<DropdownNestedMenuItem
+            label="Get count"
+            menu={getMetricTargets(true)} />)
+    ];
+    result.push(<DropdownNestedMenuItem label="Metrics..." menu={countMenu} />);*/
         return result;
     }
 

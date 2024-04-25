@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import List from "../List/list";
 import VarTrayStyles from "./varTray.module.css";
 
+// TODO Readjust when node filtering is back
 function VarTray({ varData, colorList, addNode }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredLists, setFilteredLists] = useState({});
