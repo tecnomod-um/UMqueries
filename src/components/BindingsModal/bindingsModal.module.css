@@ -127,6 +127,7 @@
 }
 
 .addButton {
+    user-select: none;
     background-color: #c22535;
     color: #ffffff;
     border: none;
@@ -290,6 +291,7 @@
 }
 
 .toggleButton {
+    user-select: none;
     background-color: #f3f3f3;
     border: none;
     border-radius: 5px;
@@ -313,7 +315,6 @@
 }
 
 @media (max-width: 768px) {
-
     .bindingBuilder .labelVarname,
     .bindingBuilder .labelCheckbox {
         display: none;

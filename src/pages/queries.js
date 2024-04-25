@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
-import SearchNodes from '../components/SearchNodes/searchNodes';
+/* import SearchNodes from '../components/SearchNodes/searchNodes'; */
 import VarTray from '../components/VarTray/varTray';
 import UnionTray from '../components/UnionTray/unionTray';
 import Graph from '../components/Graph/graph';
@@ -34,9 +34,11 @@ function Queries() {
     // Flags used in the UI loading state
     const [isFading, setIsFading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    /*
     // Hooks used on smaller viewport
     const [isVarTrayExpanded, setVarTrayExpanded] = useState(true);
     const toggleVarTrayAndSearchNodes = () => setVarTrayExpanded(prev => !prev);
+    */
     // Graph currently being displayed
     const activeGraph = graphs.find(graph => graph.id === activeGraphId);
     const activeGraphIndex = graphs.findIndex(graph => graph.id === activeGraphId);
@@ -71,6 +73,75 @@ function Queries() {
 
         return Array.from(uniqueNodesMap.values());
     }, [graphs]);
+
+    const loadQueryFile = useCallback((importData) => {
+        if (!importData || !importData.graphs) {
+            console.error('Invalid import data received:', importData);
+            return;
+        }
+
+        const { graphs } = importData;
+        const initialVarIDs = graphs.map(graph => {
+            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
+                if (node.varID !== -1)
+                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
+                return acc;
+            }, {});
+            return {
+                id: graph.id,
+                varIdList: Object.fromEntries(
+                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
+                )
+            };
+        });
+
+        const newGraphs = graphs.map((graph) => {
+            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
+            let nodeIdToIndexMapping = {};
+            const newNodes = graph.nodes.map((node) => {
+                let varID = node.varID;
+                if (varID !== -1)
+                    varID = currentVarIDObj.varIdList[node.type]++;
+                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
+                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
+                nodeIdToIndexMapping[node.id] = node.id;
+                return {
+                    ...node,
+                    varID,
+                    label,
+                    data: uri,
+                };
+            });
+
+            const newEdges = graph.edges.map(edge => ({
+                ...edge,
+                from: nodeIdToIndexMapping[edge.from],
+                to: nodeIdToIndexMapping[edge.to],
+            }));
+
+            return {
+                ...graph,
+                nodes: newNodes,
+                edges: newEdges,
+                bindings: graph.bindings,
+                filters: graph.filters
+            };
+        });
+
+        if (varData) {
+            const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
+            const updatedVarIDs = initialVarIDs.map(varID => ({
+                ...varID,
+                varIdList: Object.fromEntries(
+                    Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
+                )
+            }));
+            setGraphs(newGraphs);
+            setVarIDs(updatedVarIDs);
+            setActiveGraph(newGraphs[0]?.id || 0);
+        } else
+            console.error("varData is not initialized yet.");
+    }, [varData]);
 
     // Bindings defined though all graphs
     const allBindings = useMemo(() => {
@@ -384,67 +455,6 @@ function Queries() {
         } return false;
     }
 
-    function loadQueryFile(importData) {
-        const { graphs } = importData;
-        const initialVarIDs = graphs.map(graph => {
-            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
-                if (node.varID !== -1)
-                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
-                return acc;
-            }, {});
-            return {
-                id: graph.id,
-                varIdList: Object.fromEntries(
-                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
-                )
-            };
-        });
-
-        const newGraphs = graphs.map((graph) => {
-            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
-            let nodeIdToIndexMapping = {};
-            const newNodes = graph.nodes.map((node) => {
-                let varID = node.varID;
-                if (varID !== -1)
-                    varID = currentVarIDObj.varIdList[node.type]++;
-                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
-                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
-                nodeIdToIndexMapping[node.id] = node.id;
-                return {
-                    ...node,
-                    varID,
-                    label,
-                    data: uri,
-                };
-            });
-
-            const newEdges = graph.edges.map(edge => ({
-                ...edge,
-                from: nodeIdToIndexMapping[edge.from],
-                to: nodeIdToIndexMapping[edge.to],
-            }));
-
-            return {
-                ...graph,
-                nodes: newNodes,
-                edges: newEdges,
-                bindings: graph.bindings,
-                filters: graph.filters
-            };
-        });
-
-        const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
-        const updatedVarIDs = initialVarIDs.map(varID => ({
-            ...varID,
-            varIdList: Object.fromEntries(
-                Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
-            )
-        }));
-        setGraphs(newGraphs);
-        setVarIDs(updatedVarIDs);
-        setActiveGraph(newGraphs[0]?.id || 0);
-    }
-
     function getGraphData() {
         const result = {};
         result.graphs = graphs.map(graph => {
@@ -505,13 +515,15 @@ function Queries() {
     return (
         <div className={mainContainerClass}>
             <div className={QueriesStyles.constraint_container}>
+                {/*
                 <span className={`${QueriesStyles.SearchNodesWrapper} ${!isVarTrayExpanded ? QueriesStyles.SearchNodesWrapperActive : ''}`}>
                     <SearchNodes varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
                 <div className={QueriesStyles.toggleTab} onClick={toggleVarTrayAndSearchNodes}>
                     <span className={`${QueriesStyles.arrowIcon} ${isVarTrayExpanded === true ? QueriesStyles.arrowUp : QueriesStyles.arrowDown}`}>▾</span>
                 </div>
-                <span className={`${QueriesStyles.VarTrayWrapper} ${isVarTrayExpanded ? QueriesStyles.VarTrayWrapperActive : ''}`}>
+                */}
+                <span className={`${QueriesStyles.VarTrayWrapper} ${/*isVarTrayExpanded ?*/ QueriesStyles.VarTrayWrapperActive/* : ''*/}`}>
                     <VarTray varData={varData} colorList={colorList} addNode={addNode} />
                 </span>
             </div >
@@ -520,7 +532,7 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray varData={varData} activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} disableToggle={activeGraph.edges.some(edge => edge.from === selectedNode?.id && edge.isFromInstance)} />
             <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />

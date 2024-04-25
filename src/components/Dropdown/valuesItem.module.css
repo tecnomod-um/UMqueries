@@ -35,6 +35,7 @@
 }
 
 .uriButton {
+    user-select: none;
     background-color: #c22535;
     border: none;
     color: white;
@@ -55,6 +56,7 @@
 }
 
 .uriAddButton {
+    user-select: none;
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;

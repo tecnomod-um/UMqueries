@@ -7,6 +7,8 @@ import ErrorBoundary from "./components/ErrorBoundary/errorBoundary";
 import Main from "./pages/main";
 import Queries from "./pages/queries";
 import About from "./pages/about";
+// Context to load predefined use cases
+import { QueryProvider } from './contexts/queryContext';
 
 //TODO set in public
 import favicon from "./resources/icons/favicon.png";
@@ -14,25 +16,27 @@ import favicon from "./resources/icons/favicon.png";
 // Route definition
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <ErrorBoundary>
-    <div id="modal"></div>
-    <HashRouter>
-      <Navbar />
-      <link rel="icon" href={favicon} />
-      <Routes>
-        <Route
-          path="/"
-          element={<Main />}
-        ></Route>
-        <Route
-          path="/queries"
-          element={<Queries />}
-        ></Route>
-        <Route
-          path="/about"
-          element={<About />}
-        ></Route>
-      </Routes>
-    </HashRouter>
-  </ErrorBoundary>
+    <ErrorBoundary>
+        <div id="modal"></div>
+        <HashRouter>
+            <Navbar />
+            <link rel="icon" href={favicon} />
+            <QueryProvider>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<Main />}
+                    ></Route>
+                    <Route
+                        path="/queries"
+                        element={<Queries />}
+                    ></Route>
+                    <Route
+                        path="/about"
+                        element={<About />}
+                    ></Route>
+                </Routes>
+            </QueryProvider>
+        </HashRouter>
+    </ErrorBoundary>
 );

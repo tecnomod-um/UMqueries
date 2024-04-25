@@ -46,6 +46,7 @@
 .big_button,
 .var_button,
 .del_button {
+    user-select: none;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;

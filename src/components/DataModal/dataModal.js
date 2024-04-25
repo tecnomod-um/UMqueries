@@ -273,8 +273,8 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode,
                 <div className={DataModalStyles.titleWrapper}>
                     <h2
                         title={insideData[selectedNode.type] ?
-                            `Node '${selectedNode.label}' data properties` :
-                            `${selectedNode.label} has no data properties`}
+                            `Node '${selectedNode.label}' attributes` :
+                            `${selectedNode.label} has no attributes`}
                     >
                         {insideData[selectedNode.type] ? `Node '${selectedNode.label}' data properties` : `${selectedNode.label} has no data properties`}
                     </h2>

@@ -46,7 +46,7 @@ function SearchNodes({ varData, colorList, addNode }) {
             />
             <div
                 className={SearchNodesStyles.dataContainer}
-                style={{ overflowY: "auto", overflowX: "hidden", height: "calc(58% - 40px)" }}
+                style={{ overflowY: "auto", overflowX: "hidden", height: "calc(55% - 40px)" }}
             >
                 {isLoading ? (
                     <div className={SearchNodesStyles.loader}>

@@ -25,12 +25,12 @@ const LandingBackground = () => {
         const handleContextLost = (event) => {
             event.preventDefault();
             setContextLost(true);
-            console.log("WebGL context lost. Attempting to restore...");
+            console.log("WebGL context lost. Attempting to restore");
         };
 
         const handleContextRestored = () => {
             setContextLost(false);
-            console.log("WebGL context restored. Reinitializing renderer...");
+            console.log("WebGL context restored. Reinitializing renderer");
             // Reinitialize the renderer here
             if (canvasRef.current) {
                 const renderer = new WebGLRenderer({ canvas: canvasRef.current });

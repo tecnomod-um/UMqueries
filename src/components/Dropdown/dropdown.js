@@ -58,8 +58,25 @@ export function Dropdown({ trigger, menu, keepopen: keepOpenGlobal, isOpen: cont
     return (
         <>
             {React.cloneElement(trigger, {
-                onClick: isOpen ? handleForceClose : handleOpen,
-                ref: anchorRef,
+                ref: (node) => {
+                    anchorRef.current = node;
+                    if (typeof trigger.ref === 'function')
+                        trigger.ref(node);
+                    else if (trigger.ref)
+                        trigger.ref.current = node;
+                },
+                onClick: (event) => {
+                    if (!isOpen) {
+                        if (typeof trigger.props.onClick === 'function')
+                            trigger.props.onClick(event);
+                        if (event.defaultPrevented)
+                            handleForceClose();
+                        else
+                            handleOpen(event);
+                    } else {
+                        handleForceClose();
+                    }
+                },
             })}
             <Menu PaperProps={{ sx: { minWidth: minWidth ?? 0 } }} anchorEl={isOpen} open={!!isOpen} onClose={handleClose}>
                 {React.Children.map(menu, renderMenu)}
