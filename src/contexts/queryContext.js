@@ -1,6 +1,5 @@
 import React, { createContext, useState } from 'react';
 
-// Defines context to preload files onto the queries tool
 export const QueryContext = createContext();
 
 export const QueryProvider = ({ children }) => {
@@ -10,9 +9,13 @@ export const QueryProvider = ({ children }) => {
         setPreloadedQuery(data);
     };
 
+    const resetQueryData = () => {
+        setPreloadedQuery(null);
+    };
+
     return (
-        <QueryContext.Provider value={{ preloadedQuery: preloadedQuery, loadQueryData }}>
+        <QueryContext.Provider value={{ preloadedQuery, loadQueryData, resetQueryData }}>
             {children}
         </QueryContext.Provider>
     );
-}
+};

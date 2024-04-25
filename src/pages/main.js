@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import MainStyles from "./main.module.css";
 import LandingImage from "../components/LandingImage/landingImage";
 import LandingIntroduction from "../components/LandingIntroduction/landingIntroduction";
 import LandingSlide from '../components/LandingSlide/landingSlide';
 import UsecaseButton from "../components/UsecaseButton/usecaseButton";
+import { QueryContext } from '../contexts/queryContext';
 
 // Landing page for the app
 function Main() {
@@ -14,6 +15,13 @@ function Main() {
     const [images, setImages] = useState([]);
     const [slides, setSlides] = useState([]);
     const [isHovering, setIsHovering] = useState(false);
+
+    const { resetQueryData } = useContext(QueryContext);
+
+    // Reset the context data when the component mounts
+    useEffect(() => {
+        resetQueryData();
+    }, [resetQueryData]);
 
     useEffect(() => {
         const importImages = async () => {

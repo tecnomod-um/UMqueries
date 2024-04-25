@@ -49,7 +49,7 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
             const labelMap = new Map();
             allNodes.flatMap(node =>
                 Object.entries(node.properties)
-                    .filter(([_, property]) => property.show)
+                    .filter(([_, property]) => property.show || property.data || property.as)
                     .forEach(([key, property]) => {
                         const label = capitalizeFirst(property.as || `${key} ${node.label}`);
                         if (!labelMap.has(label)) {
@@ -262,12 +262,16 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
         if (value.custom) {
             setCustomInput(true);
             setValue({ custom: true, type: 'custom' });
-            setOperator(operatorLists.custom[0]);
         } else {
             setCustomInput(false);
             setValue(value);
-            setOperator(operatorLists[value.type][0]);
         }
+        // Keep current operator if valid
+        const validOperators = operatorLists[value.type];
+        if (validOperators.includes(operator))
+            setOperator(operator);
+        else
+            setOperator(validOperators[0]);
     }
 
     const handleOperatorChange = (e) => {

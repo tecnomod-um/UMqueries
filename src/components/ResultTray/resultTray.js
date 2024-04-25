@@ -206,8 +206,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
     const uniqueVars = new Set(Object.values(startingVar).map(({ type, varID }) => `${type}-${varID}`));
     const numVarsSelected = uniqueVars.size;
     const graphsAreEmpty = graphs.every(graph => !graph.nodes || graph.nodes.length === 0);
-    const attributesToWorkWith = graphs.some(graph => graph.nodes.some(node => Object.values(node.properties).some(property => property.show)));
-    const attributesNamed = graphs.some(graph => graph.nodes.some(node => Object.values(node.properties).some(property => property.as)));
+    const attributesToWorkWith = graphs.some(graph => graph.nodes.some(node => Object.values(node.properties).some(property => property.show || property.as)));
     buttonVarToShowLabel = numVarsSelected === 0 ? 'Select output' : `${numVarsSelected} nodes shown`;
     buttonFilterLabel = activeGraph.filters.length ? activeGraph.filters.length === 1 ?
         `${activeGraph.filters.length} filter set` : `${activeGraph.filters.length} filters set` : "Set filters";
@@ -430,7 +429,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
                 </div>
                 <div className={ResultTrayStyles.buttonRow}>
                     <button ref={buttonRef4} className={ResultTrayStyles.big_button} onClick={() => {
-                        if (!attributesToWorkWith && !attributesNamed)
+                        if (!attributesToWorkWith)
                             triggerTooltip("No attributes set to show.", buttonRef4);
                         else
                             setFiltersOpen(true);
