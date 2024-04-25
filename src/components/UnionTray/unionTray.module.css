@@ -101,6 +101,7 @@
 }
 
 .addButton {
+    user-select: none;
     padding: 7px 12px;
     border: none;
     border-radius: 10px;

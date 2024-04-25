@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import distinctColors from "distinct-colors";
 import QueriesStyles from "./queries.module.css";
 import SearchNodes from '../components/SearchNodes/searchNodes';
@@ -71,6 +71,75 @@ function Queries() {
 
         return Array.from(uniqueNodesMap.values());
     }, [graphs]);
+
+    const loadQueryFile = useCallback((importData) => {
+        if (!importData || !importData.graphs) {
+            console.error('Invalid import data received:', importData);
+            return;
+        }
+
+        const { graphs } = importData;
+        const initialVarIDs = graphs.map(graph => {
+            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
+                if (node.varID !== -1)
+                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
+                return acc;
+            }, {});
+            return {
+                id: graph.id,
+                varIdList: Object.fromEntries(
+                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
+                )
+            };
+        });
+
+        const newGraphs = graphs.map((graph) => {
+            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
+            let nodeIdToIndexMapping = {};
+            const newNodes = graph.nodes.map((node) => {
+                let varID = node.varID;
+                if (varID !== -1)
+                    varID = currentVarIDObj.varIdList[node.type]++;
+                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
+                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
+                nodeIdToIndexMapping[node.id] = node.id;
+                return {
+                    ...node,
+                    varID,
+                    label,
+                    data: uri,
+                };
+            });
+
+            const newEdges = graph.edges.map(edge => ({
+                ...edge,
+                from: nodeIdToIndexMapping[edge.from],
+                to: nodeIdToIndexMapping[edge.to],
+            }));
+
+            return {
+                ...graph,
+                nodes: newNodes,
+                edges: newEdges,
+                bindings: graph.bindings,
+                filters: graph.filters
+            };
+        });
+
+        if (varData) {
+            const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
+            const updatedVarIDs = initialVarIDs.map(varID => ({
+                ...varID,
+                varIdList: Object.fromEntries(
+                    Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
+                )
+            }));
+            setGraphs(newGraphs);
+            setVarIDs(updatedVarIDs);
+            setActiveGraph(newGraphs[0]?.id || 0);
+        } else
+            console.error("varData is not initialized yet.");
+    }, [varData]);
 
     // Bindings defined though all graphs
     const allBindings = useMemo(() => {
@@ -382,67 +451,6 @@ function Queries() {
             setSelectedEdge(null);
             return true;
         } return false;
-    }
-
-    function loadQueryFile(importData) {
-        const { graphs } = importData;
-        const initialVarIDs = graphs.map(graph => {
-            const typeToSmallestVarID = graph.nodes.reduce((acc, node) => {
-                if (node.varID !== -1)
-                    acc[node.type] = acc[node.type] === undefined ? node.varID : Math.min(acc[node.type], node.varID);
-                return acc;
-            }, {});
-            return {
-                id: graph.id,
-                varIdList: Object.fromEntries(
-                    Object.keys(typeToSmallestVarID).map(type => [type, typeToSmallestVarID[type]])
-                )
-            };
-        });
-
-        const newGraphs = graphs.map((graph) => {
-            const currentVarIDObj = initialVarIDs.find(item => item.id === graph.id);
-            let nodeIdToIndexMapping = {};
-            const newNodes = graph.nodes.map((node) => {
-                let varID = node.varID;
-                if (varID !== -1)
-                    varID = currentVarIDObj.varIdList[node.type]++;
-                const label = varID !== -1 ? `${node.label} ${varID}` : node.label;
-                const uri = varID !== -1 ? `?${capitalizeFirst(node.type)}___${varID}___URI` : node.data;
-                nodeIdToIndexMapping[node.id] = node.id;
-                return {
-                    ...node,
-                    varID,
-                    label,
-                    data: uri,
-                };
-            });
-
-            const newEdges = graph.edges.map(edge => ({
-                ...edge,
-                from: nodeIdToIndexMapping[edge.from],
-                to: nodeIdToIndexMapping[edge.to],
-            }));
-
-            return {
-                ...graph,
-                nodes: newNodes,
-                edges: newEdges,
-                bindings: graph.bindings,
-                filters: graph.filters
-            };
-        });
-
-        const allTypes = new Set([...initialVarIDs.flatMap(item => Object.keys(item.varIdList)), ...Object.keys(varData)]);
-        const updatedVarIDs = initialVarIDs.map(varID => ({
-            ...varID,
-            varIdList: Object.fromEntries(
-                Array.from(allTypes).map(type => [type, varID.varIdList[type] ?? 0])
-            )
-        }));
-        setGraphs(newGraphs);
-        setVarIDs(updatedVarIDs);
-        setActiveGraph(newGraphs[0]?.id || 0);
     }
 
     function getGraphData() {

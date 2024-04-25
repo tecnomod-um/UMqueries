@@ -1,0 +1,21 @@
+.button {
+    padding: 10px 15px;
+    margin: 5px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    flex-grow: 1;
+}
+
+.button:hover {
+    background-color: #5a6268;
+}
+
+.button:active {
+    transform: translateY(1px);
+}

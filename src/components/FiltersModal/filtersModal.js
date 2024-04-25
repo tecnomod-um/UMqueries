@@ -78,7 +78,6 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
         });
         allBindings.forEach(binding => {
             const category = getBindingCategory(binding);
-            // For bindings, you can adjust the label similarly if required
             filterableElements.push({
                 label: binding.label,
                 value: JSON.stringify({

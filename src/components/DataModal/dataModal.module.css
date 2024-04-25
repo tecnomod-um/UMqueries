@@ -201,6 +201,7 @@
 }
 
 .operatorButton {
+    user-select: none;
     position: absolute;
     right: 0;
     top: 0;

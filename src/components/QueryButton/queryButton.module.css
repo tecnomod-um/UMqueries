@@ -15,6 +15,7 @@
 }
 
 .big_button {
+    user-select: none;
     display: inline-block;
     padding: 2px;
     font-size: 1vw;

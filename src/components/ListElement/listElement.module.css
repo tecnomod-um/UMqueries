@@ -1,4 +1,5 @@
 .element {
+    user-select: none; 
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     margin: 1vh;
     padding: 1.2vh;

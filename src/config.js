@@ -2,7 +2,7 @@ const config = {
     // Deployment backend url
     // backendUrl: 'https://semantics.inf.um.es:8888',
     // Development backend url
-    backendUrl: 'https://localhost:8686',
+    backendUrl: 'http://localhost:8686',
 
     //Unused backend urls
     //endpointUrl: 'https://dbpedia.org/sparql',
