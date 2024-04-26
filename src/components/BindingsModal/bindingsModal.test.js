@@ -159,12 +159,23 @@ describe('BindingsModal Component Tests', () => {
         });
     });
 
-    it('should update the operator in binding builder', () => {
+    it('should update the operator in binding builder', async () => {
         render(<BindingsModal allNodes={mockNodes} allBindings={mockAllBindings} bindings={mockBindings} isBindingsOpen={true} setBindingsOpen={mockSetBindingsOpen} setBindings={mockSetBindings} />);
+        const firstValueDropdown = screen.getByLabelText('First value');
+        const secondValueDropdown = screen.getByLabelText('Second value');
         const operatorSelector = screen.getByLabelText('Operator Selector');
-        userEvent.selectOptions(operatorSelector, '-');
+        
+        // Pick numeric options
+        const numericOption1 = JSON.parse(firstValueDropdown.options[1].value);
+        const numericOption2 = JSON.parse(firstValueDropdown.options[2].value);
+        userEvent.selectOptions(firstValueDropdown, JSON.stringify(numericOption1));
+        userEvent.selectOptions(secondValueDropdown, JSON.stringify(numericOption2));
+        await waitFor(() => {
+            userEvent.selectOptions(operatorSelector, '-');
+        });
         expect(operatorSelector.value).toBe('-');
     });
+    
 
     it('should update custom value inputs in binding builder', () => {
         render(

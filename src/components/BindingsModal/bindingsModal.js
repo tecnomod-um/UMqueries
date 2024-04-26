@@ -267,10 +267,8 @@ function BindingsModal({ allNodes, allBindings, bindings, isBindingsOpen, setBin
             setValue(value);
         }
         // Keep current operator if valid
-        const validOperators = operatorLists[value.type];
-        if (validOperators.includes(operator))
-            setOperator(operator);
-        else
+        const validOperators = value.custom ? operatorLists.custom : operatorLists[value.type];
+        if (!validOperators || !validOperators.includes(operator))
             setOperator(validOperators[0]);
     }
 

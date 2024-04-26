@@ -116,10 +116,10 @@ function Main() {
     }
 
     const tutorialSteps = [
-        'Select the first entity (subject node), in this case, Gene, in the Variable browser.',
-        'Select the type of relation you want to use, in this case "encodes", in the Pattern designer.',
-        'Select the second entity (object node), in this case, Protein',
-        'Select in "Select output" the data you want to show in the output.',
+        'Select the first entity (subject node), in this case, "Gene", in the "Variable browser".',
+        'Select the type of relation you want to use, in this case "encodes", in the "Pattern designer".',
+        'Select the second entity (object node), in this case, "Protein"',
+        'Select in "Select output" the data you want to show in the output (click on "+").',
         'Click on "Query" to launch the query.',
         'Click on "Export results" to download the data. Click on "Export query" to save the query.'
     ];
@@ -202,7 +202,7 @@ function Main() {
                                         </span>
                                     </li>
                                     <li className={MainStyles.linkListItem}
-                                        onMouseEnter={() => handleMouseEnter({ top: '55.8%', left: '0%', color: '#ffa500' }, '25.5%', '43%')}
+                                        onMouseEnter={() => handleMouseEnter({ top: '7.8%', left: '0%', color: '#ffa500' }, '25.5%', '91%')}
                                         onMouseLeave={() => handleMouseLeave(null)}>
                                         <span className={MainStyles.linkItem4}>
                                             Variable browser (Types of registered entities)
@@ -239,6 +239,9 @@ function Main() {
                     <div className={MainStyles.textImageContainer}>
                         <div className={MainStyles.textContainer}>
                             <h2 className={MainStyles.centeredHeading}>Query building made easy in 6 steps</h2>
+			     <span className={MainStyles.introText}>
+				The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query: Which proteins do the different genes encode? ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
+                            </span>
                             <LandingSlide images={slides} steps={tutorialSteps} />
                         </div>
                     </div>
