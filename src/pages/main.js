@@ -159,7 +159,7 @@ function Main() {
                                 INTUITION is a web application for user-friendly query building. It lanches these queries against the knowledge graph network of an accessible endpoint, BioGateway, and allows building biological queries graphically by defining search patterns: biological entities (nodes) that can be specified in detail through variables and are related through properties (edges).
                             </p>
                             <span className={MainStyles.lesserText}>
-                                In a graph, nodes represent different types of biological entities, such as genes, proteins or CRMs, and edges (or properties) are used to specify different types of relations that exist between two nodes (for example, {"<"}Gene{">"} {"<"}encoding{">"} {"<"}Protein{">"}).Some properties are also used to add attributes to entities. This tutorial covers the most basic aspects of building queries in INTUITION. A more advanced tutorial is also available <a href="https://github.com/juan-mulero/cisreg/blob/main/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">here</a>.
+                                In a graph, nodes represent different types of biological entities, such as genes, proteins or CRMs, and edges (or properties) are used to specify different types of relations that exist between two nodes (for example, {"<"}Gene{">"} {"<"}encoding{">"} {"<"}Protein{">"}).Some properties are also used to add attributes to entities. This tutorial covers the most basic aspects of building queries in INTUITION. A more extended tutorial is also available <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">here</a>.
                             </span>
                         </div>
                     </div>
@@ -240,7 +240,7 @@ function Main() {
                         <div className={MainStyles.textContainer}>
                             <h2 className={MainStyles.centeredHeading}>Query building made easy in 6 steps</h2>
 			     <span className={MainStyles.introText}>
-				The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query: Which proteins do the different genes encode? ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
+				The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query:<i> Which proteins do the different genes encode?</i> ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
                             </span>
                             <LandingSlide images={slides} steps={tutorialSteps} />
                         </div>
@@ -258,13 +258,24 @@ function Main() {
                         <OverlappingImages images={[{ src: images[5], alt: "Figure 6" }, { src: images[6], alt: "Figure 7" }]} />
                     </div>
                     <span className={MainStyles.introText}>
-                        By defining the desired characteristics of biological entities (by clicking on "set attibutes") we can select entities based on these characteristics (attributes). If the character is defined as "string" composed of letters and/or numbers we can use the operator {"'='"} to find only exact strings, or the operator {"'⊆'"} to find substrings contained in a larger string. If the character is only numeric we can find results equal to, larger, or smaller than, by the use of the operators {"'='"}, {"'>'"}, {"'≥'"}, {"'<'"}, {"'≤'"}.
+			Below we illustrate a use case that extends the previous query to: <i>Which proteins are encoded by the TOX3 gene? </i> To do this, we include the name of the gene in the attributes of the ‘Gene’ node (click on the corresponding node and then on the ‘Set attributes’ button).
                     </span>
-                    <span className={MainStyles.introText}>
-                        To avoid creating repetitive queries when the structure of the query is the same, but the characteristics of the entities are different, INTUITION allows you to assign different values to the variables. For example, if we are interested in searching for cis-regulatory modules (CRM) identified in two or more tissues of interest, we do not need to repeat the same query for each tissue. As shown in the example, we can specify the different tissues in the "Enter URI values" cell, in the "Pattern designer". As BioGateway uses semantic resources to identify entities, the values entered must be Uniform Resource Identifiers (URIs) corresponding to these resources. Detailed information about the vocabularies used can be found in the <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">advanced tutotial</a>.
-                    </span>
-                    <LandingImage imageSrc={require('../resources/images/tutorial/NewValues.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+   		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <br />
+		    <span className={MainStyles.introText}>
+                        By defining the desired characteristics of biological entities (by clicking on "set attibutes") we can select entities based on these characteristics (attributes). If the character is defined as "string" composed of letters and/or numbers we can use the operator {"'='"} to find only exact strings, or the operator {"'⊆'"} to find substrings contained in a larger string. If the character is only numeric we can find results equal to, larger, or smaller than, by the use of the operators {"'='"}, {"'>'"}, {"'≥'"}, {"'<'"}, {"'≤'"}. For example, we can query:<i> Which genes are regulated by enhancers that overlap with the chr16:52565276 mutation? </i> i.e. CRM sequences that positively regulate gene expression. To do this, we create the relations: {"<"}CRM{">"} {"<"}part of{">"} {"<"}Chromosome{">"}, and {"<"}CRM{">"} {"<"}involved in positive regulation of{">"} {"<"}Gene{">"}. Then we add attributes to the Chromosome (chromosome name) and CRM (sequence coordinates) nodes. Then we select the data output (Genes) and run the query.
+                    </span>
+		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+   		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.4.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <br />
+                    <span className={MainStyles.introText}>
+                        To avoid creating repetitive queries when the general structure of the query is the same, but the characteristics of the entities are different, INTUITION allows you to assign different values to the variables. For example, if we are interested in searching for cis-regulatory modules (CRM) identified in two or more tissues of interest, we do not need to repeat the same query for each tissue. As shown in the example (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>), we can specify different tissues in the "Enter URI values" cell of "observed in" property, in "Add relations". As BioGateway uses semantic resources to identify entities, the values entered must be Uniform Resource Identifiers (URIs) corresponding to these resources. Detailed information about the vocabularies used can be found in the <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">extended tutorial</a> and <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
+                    </span>
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex3.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <br />
                     <span className={MainStyles.introText}>
                         The output table shows the biological entities that meet the biological selection criteria. Since a user can design complex query patterns and has the freedom to choose which entities they want to include in the output ("Select output" button), duplicate entities might appear in the result can include duplicate entities. For this reason, the "Distinct" button is activated for automatic filtering. On the other hand, activating the "Count" button shows the number of entities of the query in the results table, instead of each individual entity.
