@@ -1,6 +1,7 @@
 .button {
     padding: 10px 15px;
     margin: 5px;
+    max-height: 15%;
     background-color: #6c757d;
     color: white;
     border: none;
@@ -18,4 +19,12 @@
 
 .button:active {
     transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+
+    .button {
+        max-height: 80%;
+    }
+    
 }

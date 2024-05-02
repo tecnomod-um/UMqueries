@@ -1,25 +1,16 @@
-import React, { useCallback, useRef } from "react";
-import QueryExporterStyles from './queryExporter.module.css';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import DownloadIcon from '@mui/icons-material/Download';
+import React, { useCallback, forwardRef } from "react";
 import { saveAs } from 'file-saver';
+import QueryExporterStyles from './queryExporter.module.css';
+import DownloadIcon from '@mui/icons-material/Download';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-// Exports all query graphs to .json file
-export function QueryToFile({ getQueryData }) {
+export const QueryToFile = forwardRef(({ getQueryData }, ref) => {
   const exportQueries = useCallback(() => {
     const { graphs, bindings, filters, startingVar, isDistinct, isCount } = getQueryData();
-    let modifiedGraphs = graphs.map(graph => ({
+    const modifiedGraphs = graphs.map(graph => ({
       ...graph,
-      nodes: graph.nodes.map(node => {
-        let label = node.label.split(' ')[0];
-        return { ...node, label };
-      }),
-      edges: graph.edges.map(edge => {
-        if (edge.data === 'UNION') {
-          return { ...edge, isUnion: true };
-        }
-        return edge;
-      })
+      nodes: graph.nodes.map(node => ({ ...node, label: node.label.split(' ')[0] })),
+      edges: graph.edges.map(edge => (edge.data === 'UNION' ? { ...edge, isUnion: true } : edge))
     }));
 
     const queryData = {
@@ -38,38 +29,39 @@ export function QueryToFile({ getQueryData }) {
   }, [getQueryData]);
 
   return (
-    <button className={QueryExporterStyles.file_button} onClick={exportQueries}>
+    <button ref={ref} className={QueryExporterStyles.file_button} onClick={exportQueries}>
       <span className={QueryExporterStyles.buttonText}>Export query</span>
       <DownloadIcon className={QueryExporterStyles.buttonIcon} />
     </button>
   );
-}
+});
 
-// Imports a query .json file to the app 
-export function FileToQuery({ onFileSelect }) {
-  const fileInputRef = useRef(null);
+// Imports a query .json file to the app
+export const FileToQuery = forwardRef(({ onFileSelect }, ref) => {
   const handleFileSelect = () => {
-    if (fileInputRef.current.files.length > 0) {
-      const file = fileInputRef.current.files[0];
+    if (ref.current.files.length > 0) {
+      const file = ref.current.files[0];
       const reader = new FileReader();
       reader.onload = (event) => {
         const fileData = event.target.result;
         const queryData = JSON.parse(fileData);
         onFileSelect(queryData);
-      }
+      };
       reader.readAsText(file);
     }
   };
+
   return (
-    <div onClick={() => fileInputRef.current.click()} className={QueryExporterStyles.file_button}>
-      <input className={QueryExporterStyles.hiddenInput}
+    <div onClick={() => ref.current.click()} className={QueryExporterStyles.file_button}>
+      <input
+        className={QueryExporterStyles.hiddenInput}
         type="file"
         accept=".json"
-        ref={fileInputRef}
+        ref={ref}
         onChange={handleFileSelect}
       />
       <span className={QueryExporterStyles.buttonText}>Load query</span>
       <UploadFileIcon className={QueryExporterStyles.buttonIcon} />
     </div>
   );
-}
+});

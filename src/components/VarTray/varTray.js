@@ -6,14 +6,14 @@ import VarTrayStyles from "./varTray.module.css";
 function VarTray({ varData, colorList, addNode }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredLists, setFilteredLists] = useState({});
+    const [uriList, setUriList] = useState([]);
 
     useEffect(() => {
         const newFilteredLists = {};
         for (const [type, data] of Object.entries(varData)) {
             const label = data.label.toLowerCase();
-            if (label.includes(searchTerm.toLowerCase())) {
+            if (label.includes(searchTerm.toLowerCase()))
                 newFilteredLists[`VAR_${type}`] = data.label;
-            }
         }
         setFilteredLists(newFilteredLists);
     }, [varData, searchTerm]);
@@ -32,7 +32,7 @@ function VarTray({ varData, colorList, addNode }) {
                 onChange={handleChange}
             />
             <div className={VarTrayStyles.dataContainer} style={{ overflowY: 'auto', overflowX: 'hidden', height: 'calc(110% - 40px)' }}>
-                <List varData={varData} filteredLists={filteredLists} colorList={colorList} addNode={addNode} />
+                <List varData={varData} filteredLists={filteredLists} colorList={colorList} addNode={addNode} uriList={uriList} setUriList={setUriList} />
             </div>
         </span>
     );

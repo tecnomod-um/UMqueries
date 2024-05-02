@@ -3,7 +3,7 @@ import { handleQuery } from "../../utils/petitionHandler.js";
 import QueryButtonStyles from "./queryButton.module.css";
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 
-const QueryButton = forwardRef(({ graphs, activeGraphId, bindings, startingVar, isDistinct, isCount, setResultData, onValidationError }, ref) => {
+const QueryButton = forwardRef(({ graphs, activeGraphId, bindings, startingVar, isDistinct, isCount, setResultData, onValidationError, showResultsSmallViewport }, ref) => {
     const [isLoading, setIsLoading] = useState(false);
 
     function inputValidator(graphs, startingVar) {
@@ -18,6 +18,7 @@ const QueryButton = forwardRef(({ graphs, activeGraphId, bindings, startingVar, 
             handleQuery(graphs, activeGraphId, startingVar, isDistinct, isCount, setIsLoading)
                 .then(result => {
                     setResultData(result);
+                    showResultsSmallViewport();
                 })
                 .catch(error => {
                     console.log(error);

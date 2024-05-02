@@ -8,8 +8,6 @@ export const getItemFromURI = str => {
     return lastSegment === '' ? trimmedStr : lastSegment;
 }
 
-
-
 export const cleanString = str => {
     const invalidCharsRegex = /[^a-zA-Z0-9_]/g;
     const cleanedString = str.replace(invalidCharsRegex, '');

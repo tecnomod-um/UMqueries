@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 
 // Dropdown option that allows to build an URI values list for a property
-function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOptional, isFromInstance, setUriList, addNode, addEdge, disabled }) {
+function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOptional, isFromInstance, setUriList, addNode, addEdge, disabled, varType, graph, classURI }) {
     const handleKeyDown = (event) => {
         event.stopPropagation();
         if (event.key === 'Enter') {
@@ -62,12 +62,18 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                     className={`${ValuesItemStyles.uriButton} ${disabled ? ValuesItemStyles.uriButtonDisabled : ''}`}
                     onClick={e => {
                         if ((uriList.length > 0) && !disabled) {
-                            const uriId = addNode(uriList.join('\n'), uriList, 'uri', false, '', uriList, true, false).id;
-                            addEdge(selectedNode.id, uriId, label, property, isOptional, isFromInstance);
+                            // Generating var value pile
+                            if (!selectedNode)
+                                addNode(uriList.join('\n'), uriList, varType, false, graph, classURI, true, false)
+                            // Generating Generic value pile
+                            else {
+                                const uriId = addNode(uriList.join('\n'), uriList, false, false, '', uriList, true, false).id;
+                                addEdge(selectedNode.id, uriId, label, property, isOptional, isFromInstance);
+                            }
                             setUriList([]);
                         }
-                    }}
-                >
+                        e.stopPropagation();
+                    }}>
                     OK
                 </button>
             </div>

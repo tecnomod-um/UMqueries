@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
 import { QueryContext } from '../../contexts/queryContext.js';
+import { CSSTransition } from 'react-transition-group';
 import { Dropdown, DropdownMenuItem, DropdownNestedMenuItem } from "../Dropdown/dropdown";
 import { QueryToFile, FileToQuery } from "../QueryExporter/queryExporter.js";
 /*import { getCategory } from "../../utils/typeChecker.js";*/
@@ -14,10 +15,12 @@ import TrashIcon from '@mui/icons-material/DeleteOutline';
 import DeleteIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
 import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import ToggleIcon from '@mui/icons-material/ChangeCircle';
 
 // Contains both control buttons to interact with the graph's nodes and a brief view of the results.
-function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData }) {
+function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, insideData, bindings, selectedNode, selectedEdge, addUnion, addNode, addEdge, removeNode, removeEdge, setDataOpen, setBindingsOpen, setFiltersOpen, loadQueryFile, getGraphData, colorList }) {
 
     // Data structures used through the app
     const [startingVar, setStartingVar] = useState({});
@@ -25,19 +28,11 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
     const [uriList, setUriList] = useState([]);
     const [isDistinct, setDistinct] = useState(true);
     const [isCount, setCount] = useState(false);
-    // Tooltip structures
-    const buttonRef0 = useRef(null);
-    const buttonRef1 = useRef(null);
-    const buttonRef2 = useRef(null);
-    const buttonRef3 = useRef(null);
-    const buttonRef4 = useRef(null);
-    const buttonRef5 = useRef(null);
-    const buttonRef6 = useRef(null);
-    const buttonRef7 = useRef(null);
-    const buttonRef8 = useRef(null);
+    // Button styling structures
+    const buttonRefs = useRef([...Array(11)].map(() => React.createRef()));
     const [tooltipMessage, setTooltipMessage] = useState("Tooltip message.");
     const [isTooltipShown, setTooltipShown] = useState(false);
-    const [tooltipRef, setTooltipRef] = useState(buttonRef0);
+    const [tooltipRef, setTooltipRef] = useState(buttonRefs.current[0]);
     const inputRefs = useRef({});
     // Context for preloaded use cases
     const { preloadedQuery } = useContext(QueryContext);
@@ -46,14 +41,70 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
     // Defined menus and labels
     let shownProperties = (<span />);
     let shownOptionals = (<span />);
+    // Switch positionings up on small viewports
+    const [showControls, setShowControls] = useState(true);
+    const [showResults, setShowResults] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+    const isSmallViewport = windowWidth <= 768;
+    const showResultsSmallViewport = () => { if (isSmallViewport) setShowControls(false) };
     // Static labels
-    const buttonPropertyLabel = "Add relations";
-    const buttonOptionalLabel = "Add optional relations";
-    const buttonInsideLabel = "Set attributes";
+    const buttonPropertyLabel = isSmallViewport ? "Relations" : "Add relations";
+    const buttonOptionalLabel = isSmallViewport ? "Optional Relations" : "Add optional relations";
+    const buttonInsideLabel = isSmallViewport ? "Attributes" : "Set attributes";
     // Dynamic labels
     let buttonVarToShowLabel;
     let buttonFilterLabel;
     let buttonBindingLabel;
+
+    const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+    };
+
+    // Correct behavior on small viewports
+    useEffect(() => { if (showControls) setShowResults(false) }, [showControls]);
+
+    // Updates the positioning on resizing
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => { window.removeEventListener('resize', handleResize); };
+    }, []);
+
+    // Reset to default view when the viewport is resized to a large screen
+    useEffect(() => {
+        if (!isSmallViewport && !showControls)
+            setShowControls(true);
+    }, [windowWidth, isSmallViewport, showControls]);
+
+    // Give the tray buttons a ripple effect
+    const applyRippleEffect = (buttonRef) => {
+        const applyContainerProperties = () => {
+            buttonRef.current.classList.add(ResultTrayStyles.effectContainer);
+        };
+
+        const applyStyles = (e) => {
+            const { offsetX, offsetY } = e;
+            const { style } = buttonRef.current;
+            const sizeOffset = 50;
+            style.setProperty("--effect-top", `${offsetY - sizeOffset}px`);
+            style.setProperty("--effect-left", `${offsetX - sizeOffset}px`);
+        };
+
+        const onClick = (e) => {
+            buttonRef.current.classList.remove(ResultTrayStyles.active);
+            applyStyles(e);
+            buttonRef.current.classList.add(ResultTrayStyles.active);
+        };
+
+        applyContainerProperties();
+        buttonRef.current.addEventListener("mouseup", onClick);
+        return () => buttonRef.current?.removeEventListener("mouseup", onClick);
+    };
+
+    // Apply the ripple effect to all button refs
+    useEffect(() => {
+        const cleanupFunctions = buttonRefs.current.map(ref => applyRippleEffect(ref));
+        return () => cleanupFunctions.forEach(cleanup => cleanup());
+    }, []);
 
     // Load graph from file
     const onFileSelect = useCallback((importData) => {
@@ -148,7 +199,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
         if (acceptsAnyURI && result.length === 0) {
             result.push(
                 <DropdownMenuItem disabled={true}>
-                    {"No target class defined. Please add it manually."}
+                    {"No target class defined. Add it manually."}
                 </DropdownMenuItem>);
         } else if (!acceptsAnyURI) {
             result.push(
@@ -163,6 +214,7 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
                     isFromInstance={isFromInstance}
                     addNode={addNode}
                     addEdge={addEdge}
+                    colorList={colorList}
                 />)
         }
 
@@ -187,19 +239,26 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
 
     // Populate on node selected
     if (selectedNode) {
+        let edgesForSelectedNode;
+
         switch (selectedNode.shape) {
             case 'circle':
                 shownProperties = createUnionMenuItems();
                 shownOptionals = [];
                 break;
             case 'box':
-                shownProperties = [];
-                shownOptionals = [];
-                break;
             default:
-                const edgesForSelectedNode = edgeData[selectedNode.type];
-                shownProperties = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id) ? [] : createGroupedMenuItems(edgesForSelectedNode, false);
-                shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
+                // Fetch edge data if node type exists, otherwise default to empty arrays
+                if (selectedNode.type) {
+                    edgesForSelectedNode = edgeData[selectedNode.type];
+                    const hasOptionalEdge = graphs[activeGraphId].edges.some(edge => edge.isOptional && edge.to === selectedNode.id);
+                    shownProperties = hasOptionalEdge ? [] : createGroupedMenuItems(edgesForSelectedNode, false);
+                    shownOptionals = createGroupedMenuItems(edgesForSelectedNode, true);
+                } else {
+                    shownProperties = [];
+                    shownOptionals = [];
+                }
+                break;
         }
     }
 
@@ -208,10 +267,8 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
     const graphsAreEmpty = graphs.every(graph => !graph.nodes || graph.nodes.length === 0);
     const attributesToWorkWith = graphs.some(graph => graph.nodes.some(node => Object.values(node.properties).some(property => property.show || property.as)));
     buttonVarToShowLabel = numVarsSelected === 0 ? 'Select output' : `${numVarsSelected} nodes shown`;
-    buttonFilterLabel = activeGraph.filters.length ? activeGraph.filters.length === 1 ?
-        `${activeGraph.filters.length} filter set` : `${activeGraph.filters.length} filters set` : "Set filters";
-    buttonBindingLabel = activeGraph.bindings.length ? activeGraph.bindings.length === 1 ?
-        `${activeGraph.bindings.length} binding set` : `${activeGraph.bindings.length} bindings set` : "Set bindings";
+    buttonFilterLabel = activeGraph.filters.length ? `${activeGraph.filters.length} filter${activeGraph.filters.length > 1 ? 's' : ''}` : (isSmallViewport ? "Filters" : "Set filters");
+    buttonBindingLabel = activeGraph.bindings.length ? `${activeGraph.bindings.length} binding${activeGraph.bindings.length > 1 ? 's' : ''}` : (isSmallViewport ? "Bindings" : "Set bindings");
     const nodeContents = (node, isInstance, isClass) => {
         return {
             "isMetric": false,
@@ -385,131 +442,196 @@ function ResultTray({ varData, activeGraphId, graphs, allNodes, edgeData, inside
         return false;
     }
 
+    const controlColumnClasses = {
+        enter: ResultTrayStyles.enter,
+        enterActive: ResultTrayStyles.enterActive,
+        exit: ResultTrayStyles.exit,
+        exitActive: ResultTrayStyles.exitActive,
+    }
+
+    const queryColumnClasses = {
+        enter: ResultTrayStyles.queryEnter,
+        enterActive: ResultTrayStyles.queryEnterActive,
+        exit: ResultTrayStyles.queryExit,
+        exitActive: ResultTrayStyles.queryExitActive,
+    }
+
+    const resultColumnClasses = {
+        enter: ResultTrayStyles.fadeEnter,
+        enterActive: ResultTrayStyles.fadeEnterActive,
+        exit: ResultTrayStyles.fadeExit,
+        exitActive: ResultTrayStyles.fadeExitActive,
+    }
+
     return (
         <span className={ResultTrayStyles.container}>
-            <div className={ResultTrayStyles.controlColumn}>
-                {isTooltipShown && <TooltipPopup message={tooltipMessage} buttonRef={tooltipRef} onClose={() => setTooltipShown(false)} />}
-                <div className={ResultTrayStyles.buttonRow}>
-                    <button ref={buttonRef0} className={ResultTrayStyles.del_button} onClick={() => { if (selectedNode || selectedEdge) deleteSelected(); else triggerTooltip("Please select an item to delete.", buttonRef0) }}>
-                        <span className={ResultTrayStyles.deleteText}>Delete</span>
-                        <TrashIcon className={ResultTrayStyles.deleteIcon} />
-                    </button>
-                    <button ref={buttonRef1} className={ResultTrayStyles.big_button} onClick={() => { if (selectedNode) setDataOpen(true); else triggerTooltip("Please select a node first.", buttonRef1) }}>
-                        {buttonInsideLabel}
-                    </button>
+            {isSmallViewport && (
+                <button
+                    className={ResultTrayStyles.toggleButton}
+                    onClick={() => { if (isSmallViewport) setShowControls(prevShowResults => !prevShowResults) }}>
+                    <ToggleIcon />
+                </button>)}
+            <CSSTransition
+                in={showControls}
+                timeout={300}
+                onEntered={() => setShowResults(false)}
+                onExited={() => setShowResults(true)}
+                classNames={controlColumnClasses}
+                unmountOnExit
+            >
+                <div className={ResultTrayStyles.controlColumn}>
+                    {isTooltipShown && <TooltipPopup message={tooltipMessage} buttonRef={tooltipRef} onClose={() => setTooltipShown(false)} />}
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <button ref={buttonRefs.current[0]} className={ResultTrayStyles.del_button} onClick={() => { if (selectedNode || selectedEdge) deleteSelected(); else triggerTooltip("Please select an item to delete.", buttonRefs.current[0]) }}>
+                            <span className={ResultTrayStyles.deleteText}>Delete</span>
+                            <TrashIcon className={ResultTrayStyles.deleteIcon} />
+                        </button>
+                        <button ref={buttonRefs.current[1]} className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.buttonPressEffect}`} onClick={() => { if (selectedNode) setDataOpen(true); else triggerTooltip("Please select a node first.", buttonRefs.current[1]) }}>
+                            {buttonInsideLabel}
+                        </button>
+                    </div>
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <Dropdown menu={shownProperties} uriList={uriList}
+                            trigger={
+                                <button
+                                    ref={buttonRefs.current[2]}
+                                    className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.buttonPressEffect}`}
+                                    onClick={(event) => {
+                                        if (!selectedNode) {
+                                            triggerTooltip("Please select a node first.", buttonRefs.current[2])
+                                            event.stopPropagation();
+                                        }
+                                    }}
+                                > {buttonPropertyLabel} </button>
+                            } />
+                        <Dropdown menu={shownOptionals}
+                            trigger={
+                                <button
+                                    ref={buttonRefs.current[3]}
+                                    className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.buttonPressEffect}`}
+                                    onClick={(event) => {
+                                        if (!selectedNode) {
+                                            triggerTooltip("Please select a node first.", buttonRefs.current[3])
+                                            event.stopPropagation();
+                                        }
+                                    }}
+                                    disabled={isButtonDisabled}
+                                > {buttonOptionalLabel}</button>
+                            } />
+                    </div>
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <button ref={buttonRefs.current[4]} className={`${ResultTrayStyles.big_button} ${ResultTrayStyles.buttonPressEffect}`} onClick={() => {
+                            if (!attributesToWorkWith)
+                                triggerTooltip("No attributes set to show.", buttonRefs.current[4]);
+                            else
+                                setFiltersOpen(true);
+                        }}>{buttonFilterLabel}</button>
+                        <button ref={buttonRefs.current[5]} className={ResultTrayStyles.big_button} onClick={() => {
+                            if (!attributesToWorkWith)
+                                triggerTooltip("No attributes set to show.", buttonRefs.current[5]);
+                            else
+                                setBindingsOpen(true);
+                        }}>{buttonBindingLabel}</button>
+                    </div>
                 </div>
-                <div className={ResultTrayStyles.buttonRow}>
-                    <Dropdown menu={shownProperties} uriList={uriList}
-                        trigger={
-                            <button
-                                ref={buttonRef2}
-                                className={ResultTrayStyles.big_button}
-                                onClick={(event) => {
-                                    if (!selectedNode) {
-                                        triggerTooltip("Please select a node first.", buttonRef2)
-                                        event.stopPropagation();
-                                    }
-                                }}
-                            > {buttonPropertyLabel} </button>
-                        } />
-                    <Dropdown menu={shownOptionals}
-                        trigger={
-                            <button
-                                ref={buttonRef3}
-                                className={ResultTrayStyles.big_button}
-                                onClick={(event) => {
-                                    if (!selectedNode) {
-                                        triggerTooltip("Please select a node first.", buttonRef3)
-                                        event.stopPropagation();
-                                    }
-                                }}
-                                disabled={isButtonDisabled}
-                            > {buttonOptionalLabel}</button>
-                        } />
-                </div>
-                <div className={ResultTrayStyles.buttonRow}>
-                    <button ref={buttonRef4} className={ResultTrayStyles.big_button} onClick={() => {
-                        if (!attributesToWorkWith)
-                            triggerTooltip("No attributes set to show.", buttonRef4);
-                        else
-                            setFiltersOpen(true);
-                    }}>{buttonFilterLabel}</button>
-                    <button ref={buttonRef5} className={ResultTrayStyles.big_button} onClick={() => {
-                        if (!attributesToWorkWith)
-                            triggerTooltip("No attributes set to show.", buttonRef5);
-                        else
-                            setBindingsOpen(true);
-                    }}>{buttonBindingLabel}</button>
-                </div>
-            </div>
-            <div className={ResultTrayStyles.resultsColumn}>
-                <SearchResults startingData={startingVar} resultData={resultData} />
-            </div>
-            <div className={ResultTrayStyles.queryColumn}>
-                <div className={ResultTrayStyles.switchRow}>
-                    <FormControlLabel
-                        className={ResultTrayStyles.formControlLabel}
-                        label="Distinct"
-                        control={
-                            <Switch
-                                checked={isDistinct}
-                                onChange={(e) => setDistinct(e.target.checked)}
-                                style={{ color: '#c22535' }}
-                                sx={{
-                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
-                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                        backgroundColor: '#c22535',
-                                    },
-                                }} />}
-                    />
-                    <FormControlLabel
-                        className={ResultTrayStyles.formControlLabel}
-                        label="Count"
-                        control={
-                            <Switch
-                                checked={isCount}
-                                onChange={(e) => setCount(e.target.checked)}
-                                style={{ color: '#c22535' }}
-                                sx={{
-                                    '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
-                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                        backgroundColor: '#c22535',
-                                    },
-                                }} />}
-                    />
-                </div>
-                <div className={ResultTrayStyles.buttonRow}>
-                    <Dropdown trigger={<button ref={buttonRef6}
-                        onClick={(event) => {
-                            if (graphsAreEmpty) {
-                                triggerTooltip("Current graphs are empty.", buttonRef6);
-                                event.stopPropagation();
+            </CSSTransition>
+            {(!showControls || !isSmallViewport) &&
+                <CSSTransition
+                    in={showResults || !isSmallViewport}
+                    timeout={150}
+                    classNames={resultColumnClasses}
+                    onEnter={() => setShowResults(true)}
+                    onExited={() => setShowResults(false)}
+                    unmountOnExit
+                >
+                    <div className={ResultTrayStyles.resultsColumn}>
+                        <SearchResults startingData={startingVar} resultData={resultData} />
+                    </div>
+                </CSSTransition>}
+            <CSSTransition
+                in={showControls}
+                timeout={300}
+                onEntered={() => setShowResults(false)}
+                onExited={() => setShowResults(true)}
+                classNames={queryColumnClasses}
+                unmountOnExit
+            >
+                <div className={ResultTrayStyles.queryColumn}>
+                    <div className={ResultTrayStyles.switchRow}>
+                        <FormControlLabel
+                            className={ResultTrayStyles.formControlLabel}
+                            label={<Typography sx={{
+                                fontSize: (windowWidth <= 768) ? '10px' : '16px',
+                                display: (windowWidth <= 480) ? 'none' : 'block'
+                            }}>Distinct</Typography>}
+                            control={
+                                <Switch
+                                    checked={isDistinct}
+                                    onChange={(e) => setDistinct(e.target.checked)}
+                                    style={{ color: '#c22535' }}
+                                    sx={{
+                                        '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                            backgroundColor: '#c22535',
+                                        },
+                                    }} />
                             }
-                        }} className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>} menu={getShownTargets()} />
-                    <QueryButton ref={buttonRef7} graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} isDistinct={isDistinct} isCount={isCount} setResultData={setResultData} onValidationError={(message) => triggerTooltip(message, buttonRef7)} />
-                </div>
-                <div className={ResultTrayStyles.buttonRow}>
-                    <FileToQuery onFileSelect={onFileSelect} />
-                    <QueryToFile getQueryData={getQueryData} />
-                </div>
-                <Dropdown trigger={
-                    <button ref={buttonRef8} className={ResultTrayStyles.big_button}
-                        onClick={(event) => {
-                            if (!resultData || resultData.length === 0) {
-                                triggerTooltip("No results available to export.", buttonRef8);
-                                event.preventDefault();
+                        />
+                        <FormControlLabel
+                            className={ResultTrayStyles.formControlLabel}
+                            label={<Typography sx={{
+                                fontSize: (windowWidth <= 768) ? '10px' : '16px',
+                                display: (windowWidth <= 480) ? 'none' : 'block'
+                            }}>Count</Typography>}
+                            control={
+                                <Switch
+                                    checked={isCount}
+                                    onChange={(e) => setCount(e.target.checked)}
+                                    style={{ color: '#c22535' }}
+                                    sx={{
+                                        '& .MuiSwitch-track': { backgroundColor: 'lightgray' },
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                            backgroundColor: '#c22535',
+                                        },
+                                    }} />
                             }
-                        }}> Export results</button>}
-                    menu={
-                        resultData && resultData.length > 0 ? [
-                            <ResultExporter data={resultData} fileType="csv" />,
-                            <ResultExporter data={resultData} fileType="tsv" />,
-                            <ResultExporter data={resultData} fileType="txt" />,
-                            <ResultExporter data={resultData} fileType="ods" />
-                        ] : []
-                    }
-                />
-            </div>
+                        />
+                    </div>
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <Dropdown trigger={<button ref={buttonRefs.current[6]}
+                            onClick={(event) => {
+                                if (graphsAreEmpty) {
+                                    triggerTooltip("Current graphs are empty.", buttonRefs.current[6]);
+                                    event.stopPropagation();
+                                }
+                            }} className={ResultTrayStyles.big_button}>{buttonVarToShowLabel}</button>} menu={getShownTargets()} />
+                        <QueryButton ref={buttonRefs.current[7]} graphs={graphs} activeGraphId={activeGraphId} bindings={bindings} startingVar={startingVar} isDistinct={isDistinct} isCount={isCount} setResultData={setResultData} onValidationError={(message) => triggerTooltip(message, buttonRefs.current[7])} showResultsSmallViewport={showResultsSmallViewport} />
+                    </div>
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <FileToQuery ref={buttonRefs.current[8]} onFileSelect={onFileSelect} />
+                        <QueryToFile ref={buttonRefs.current[9]} getQueryData={getQueryData} />
+                    </div>
+                    <div className={ResultTrayStyles.buttonRow}>
+                        <Dropdown trigger={
+                            <button ref={buttonRefs.current[10]} className={ResultTrayStyles.big_button}
+                                onClick={(event) => {
+                                    if (!resultData || resultData.length === 0) {
+                                        triggerTooltip("No results available to export.", buttonRefs.current[10]);
+                                        event.preventDefault();
+                                    }
+                                }}> Export results</button>}
+                            menu={
+                                resultData && resultData.length > 0 ? [
+                                    <ResultExporter data={resultData} fileType="csv" />,
+                                    <ResultExporter data={resultData} fileType="tsv" />,
+                                    <ResultExporter data={resultData} fileType="txt" />,
+                                    <ResultExporter data={resultData} fileType="ods" />
+                                ] : []
+                            }
+                        />
+                    </div>
+                </div>
+            </CSSTransition>
         </span >
     )
 }

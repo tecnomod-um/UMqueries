@@ -8,7 +8,7 @@ const IntroductionSection = () => {
             <LandingBackground />
             <div className={LandingIntroductionStyles.introSection}>
                 <h1 className={LandingIntroductionStyles.fadeIn}>Intuition - Explore RDFs with Ease</h1>
-                <p className={LandingIntroductionStyles.fadeIn}>Intuition is your gateway to understanding and manipulating RDF data through intuitive, visual query formulation.</p>
+                <p className={LandingIntroductionStyles.fadeIn}>Intuition is your gateway to build and run queries about the biology of gene regulation in BioGateay through small graphs (subgraphs).</p>
             </div>
         </>
     );

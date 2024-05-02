@@ -188,11 +188,20 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
         const isCustomValue = parsedValue.custom;
         setCustomInput && setCustomInput(isCustomValue);
 
-        if (isCustomValue)
+        if (isCustomValue) {
             setValue({ label: "Custom Value", custom: true });
-        else
+        } else {
             setValue(parsedValue);
+        }
+
+
+        const validOperators = operatorLists[parsedValue.category] || operatorLists['text'];
+        if (!validOperators.includes(operator))
+            setComparator(validOperators[0]);
+        else
+            setComparator(operator);
     }
+
 
     const getBindingCategory = (binding) => {
         if (['>', '<', '>=', '<='].includes(binding.operator))

@@ -54,7 +54,7 @@
 
     .file_button .buttonIcon {
         display: inline-block !important;
-        font-size: 4vw;
+        font-size: 2rem;
         max-height: 100%;
     }
 }

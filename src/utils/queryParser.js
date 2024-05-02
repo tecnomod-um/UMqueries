@@ -61,6 +61,12 @@ const applyClassAndInstanceRestrictions = (parsedQuery, node, nodeLabelInGraph, 
             Object.entries(bindingObject).some(([propertyUri, nodeIds]) => propertyUri === uri && nodeIds.has(node.id)));
         return show || data || usedInBinding || asValue;
     });
+    if (node.shape === 'box')
+        if (node.data.length > 1)
+            parsedQuery.body += `VALUES ${nodeLabelInGraph} { ${node.data.map(item => `<${item}>`).join(' ')} }\n`;
+        else if (node.data.length === 1)
+            parsedQuery.body += `BIND(<${node.data[0]}> AS ${nodeLabelInGraph})\n`;
+
     if (hasInstanceVariable) {
         const instanceLabel = `${nodeLabelInGraph}___instance`;
         const classLabel = `${nodeLabelInGraph}`;
@@ -136,10 +142,13 @@ const defineObjectProperties = (currentNode, varNode, edges, nodes, parsedQuery,
         let subject;
         if (targetNode.shape === 'box') {
             subject = `?List___${targetNode.id}___URI`;
-            if (targetNode.data.length > 1)
-                parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }\n`;
-            else if (targetNode.data.length === 1)
-                parsedQuery.body += `BIND(<${targetNode.data[0]}> AS ${subject})\n`;
+            // If it doesnt have types node was skipped during node definition
+            if (!targetNode.type) {
+                if (targetNode.data.length > 1)
+                    parsedQuery.body += `VALUES ${subject} { ${targetNode.data.map(item => `<${item}>`).join(' ')} }\n`;
+                else if (targetNode.data.length === 1)
+                    parsedQuery.body += `BIND(<${targetNode.data[0]}> AS ${subject})\n`;
+            }
         } else if (targetNode.varID >= 0)
             subject = targetNode.data;
         else
@@ -254,11 +263,11 @@ const addGraphDefinitions = (graph, graphs, parsedQuery, isCount, selectVars) =>
             return;
         }
         // If node is a uri list it will be skipped
-        if (currentNode.shape === 'box') return;
+        if (currentNode.shape === 'box' && !currentNode.type) return;
         // Regular nodes
         const nodeIsVar = currentNode.varID >= 0;
-        const varNode = nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
-
+        const varNode = currentNode.shape === 'box' ? `?List___${currentNode.id}___URI` :
+            nodeIsVar ? currentNode.data : `<${currentNode.data}>`;
         let graph = '';
         // TODO add proper optional implementation
         const isOptionalDefinition = edges.filter(edge => edge.to === currentNode.id).length > 0 &&

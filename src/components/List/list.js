@@ -4,7 +4,7 @@ import ListElement from '../ListElement/listElement';
 import { getItemFromURI } from "../../utils/stringFormatter";
 
 // Displays both all the elements and their variables
-function List({ varData, filteredLists, colorList, addNode }) {
+function List({ varData, filteredLists, colorList, addNode, uriList, setUriList }) {
     if (!filteredLists) return null;
 
     function listContent() {
@@ -23,6 +23,8 @@ function List({ varData, filteredLists, colorList, addNode }) {
                         graph={varData[key].uri_graph}
                         classURI={varData[key].uri_element}
                         addNode={addNode}
+                        uriList={uriList}
+                        setUriList={setUriList}
                     />
                 );
             }
@@ -41,6 +43,8 @@ function List({ varData, filteredLists, colorList, addNode }) {
                             graph={varData[key].uri_graph}
                             classURI={varData[key].uri_element}
                             addNode={addNode}
+                            uriList={uriList}
+                            setUriList={setUriList}
                         />
                     ))
                 );

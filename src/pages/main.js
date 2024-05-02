@@ -14,6 +14,8 @@ function Main() {
     const [hoveredItem, setHoveredItem] = useState(null);
     const [images, setImages] = useState([]);
     const [slides, setSlides] = useState([]);
+    const [unionslides, setUnionSlides] = useState([]);
+    const [UseCaseSlides, setUseCaseSlides] = useState([]);
     const [isHovering, setIsHovering] = useState(false);
 
     const { resetQueryData } = useContext(QueryContext);
@@ -50,6 +52,24 @@ function Main() {
             slideImages.push(image);
         }
         setSlides(slideImages);
+    }, []);
+
+    useEffect(() => {
+        const slideImages = [];
+        for (let i = 1; i <= 6; i++) {
+            const image = require(`../resources/images/tutorial/union${i}.png`);
+            slideImages.push(image);
+        }
+        setUnionSlides(slideImages);
+    }, []);
+
+    useEffect(() => {
+        const slideImages = [];
+        for (let i = 1; i <= 6; i++) {
+            const image = require(`../resources/images/tutorial/Q${i}.png`);
+            slideImages.push(image);
+        }
+        setUseCaseSlides(slideImages);
     }, []);
 
     useEffect(() => {
@@ -123,6 +143,25 @@ function Main() {
         'Click on "Query" to launch the query.',
         'Click on "Export results" to download the data. Click on "Export query" to save the query.'
     ];
+
+    const unionSteps = [
+        'We first create a new graph for each UNION block and add the relevant elements, in our case, OMIM.',
+        'We then configure the OMIM attributes in both graphs to display "has name" and "has synonym" as the attribute "label".',
+        'We add each of the created blocks as a node...',
+        '...And join them together using the special property "UNION".',
+        'From this point, we can use the configured "label" to define filters.',
+        'Selecting OMIM as an output yields the expected results.'
+    ];
+
+    const UseCaseSteps = [
+        'First, we insert the CRM node by clicking on the CRM variable ("Variable browser" section).',
+        'We link the CRM to the chromosome variable ("Add relations" button).',
+        'And modify the attributes of both variables to select only those CRMs that overlap with the mutation (chr16:52565276) ("Set attributes" button).',
+        'We link the CRM entity with its database and target genes. We also link the genes to their encoded proteins ("Add relations" button).',
+        'We include the relation between CRM and phenotype as an optional pattern (information that is included additionally and does not act as a filter) ("Add optional relations" button).',
+        'Select the output data of interest ("Select ouput") and run the query ("Query"). Save the results with "Export results" and "Export query".'
+    ];
+
 
     const useCases = [
         { id: "UC1", files: ["1.json", "2.json", "3.1.json", "3.2.json", "3.3.json", "4.1.json", "4.2.json", "5.1.json", "5.2.json", "5.3.json"] },
@@ -239,8 +278,8 @@ function Main() {
                     <div className={MainStyles.textImageContainer}>
                         <div className={MainStyles.textContainer}>
                             <h2 className={MainStyles.centeredHeading}>Query building made easy in 6 steps</h2>
-			     <span className={MainStyles.introText}>
-				The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query:<i> Which proteins do the different genes encode?</i> ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
+                            <span className={MainStyles.introText}>
+                                The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query:<i> Which proteins do the different genes encode?</i> ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
                             </span>
                             <LandingSlide images={slides} steps={tutorialSteps} />
                         </div>
@@ -258,27 +297,36 @@ function Main() {
                         <OverlappingImages images={[{ src: images[5], alt: "Figure 6" }, { src: images[6], alt: "Figure 7" }]} />
                     </div>
                     <span className={MainStyles.introText}>
-			Below we illustrate a use case that extends the previous query to: <i>Which proteins are encoded by the TOX3 gene? </i> To do this, we include the name of the gene in the attributes of the ‘Gene’ node (click on the corresponding node and then on the ‘Set attributes’ button).
+                        Below we illustrate a use case that extends the previous query to: <i>Which proteins are encoded by the TOX3 gene? </i> To do this, we include the name of the gene in the attributes of the ‘Gene’ node (click on the corresponding node and then on the ‘Set attributes’ button).
                     </span>
-		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-   		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex1.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <br />
-		    <span className={MainStyles.introText}>
-                        By defining the desired characteristics of biological entities (by clicking on "set attibutes") we can select entities based on these characteristics (attributes). If the character is defined as "string" composed of letters and/or numbers we can use the operator {"'='"} to find only exact strings, or the operator {"'⊆'"} to find substrings contained in a larger string. If the character is only numeric we can find results equal to, larger, or smaller than, by the use of the operators {"'='"}, {"'>'"}, {"'≥'"}, {"'<'"}, {"'≤'"}. For example, we can query:<i> Which genes are regulated by enhancers that overlap with the chr16:52565276 mutation? </i> i.e. CRM sequences that positively regulate gene expression. To do this, we create the relations: {"<"}CRM{">"} {"<"}part of{">"} {"<"}Chromosome{">"}, and {"<"}CRM{">"} {"<"}involved in positive regulation of{">"} {"<"}Gene{">"}. Then we add attributes to the Chromosome (chromosome name) and CRM (sequence coordinates) nodes. Then we select the data output (Genes) and run the query.
-                    </span>
-		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-   		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-		    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.4.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
-		    <br />
                     <span className={MainStyles.introText}>
-                        To avoid creating repetitive queries when the general structure of the query is the same, but the characteristics of the entities are different, INTUITION allows you to assign different values to the variables. For example, if we are interested in searching for cis-regulatory modules (CRM) identified in two or more tissues of interest, we do not need to repeat the same query for each tissue. As shown in the example (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>), we can specify different tissues in the "Enter URI values" cell of "observed in" property, in "Add relations". As BioGateway uses semantic resources to identify entities, the values entered must be Uniform Resource Identifiers (URIs) corresponding to these resources. Detailed information about the vocabularies used can be found in the <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">extended tutorial</a> and <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
+                        By defining the desired characteristics of biological entities (by clicking on "Set attibutes") we can select entities based on these characteristics (attributes). If the character is defined as "string" composed of letters and/or numbers we can use the operator {"'='"} to find only exact strings, or the operator {"'⊆'"} to find substrings contained in a larger string. If the character is only numeric we can find results equal to, larger, or smaller than, by the use of the operators {"'='"}, {"'>'"}, {"'≥'"}, {"'<'"}, {"'≤'"}. For example, we can query:<i> Which genes are regulated by enhancers that overlap with the chr16:52565276 mutation? </i> i.e. CRM sequences that positively regulate gene expression. To do this, we create the relations: {"<"}CRM{">"} {"<"}part of{">"} {"<"}Chromosome{">"}, and {"<"}CRM{">"} {"<"}involved in positive regulation of{">"} {"<"}Gene{">"}. Then we add attributes to the Chromosome (chromosome name) and CRM (sequence coordinates) nodes. Then we select the data output (Genes) and run the query.
+                    </span>
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <LandingImage imageSrc={require('../resources/images/tutorial/Ex2.4.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <br />
+                    <span className={MainStyles.introText}>
+                        <b>Optional relations</b>: INTUITION also allows to include optional relations ("Add optional relations"). As this is an optional pattern, the information is added if it exists, so it does not work as a filter. In this way, INTUITION allows queries like: <i>What proteins are encoded by the human TOX3 gene? Do these protein products interact with any other proteins? Is there information on proteins orthologous to those encoded by the human TOX3 gene?</i>
+                    </span>
+                    <LandingImage imageSrc={require('../resources/images/tutorial/optional.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <span className={MainStyles.introText}>
+                        <br />
+                        <b>Multiple values</b>: To avoid creating repetitive queries when the general structure of the query is the same, but the characteristics of the entities are different, INTUITION allows you to assign different values to the variables. For example, if we are interested in searching for cis-regulatory modules (CRM) identified in two or more tissues of interest, we do not need to repeat the same query for each tissue. As shown in the example (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>), we can specify different tissues in the "Enter URI values" cell of "observed in" property, in "Add relations". As BioGateway uses semantic resources to identify entities, the values entered must be Uniform Resource Identifiers (URIs) corresponding to these resources. Detailed information about the vocabularies used can be found in the <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">extended tutorial</a> and <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
                     </span>
                     <LandingImage imageSrc={require('../resources/images/tutorial/Ex3.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <br />
                     <span className={MainStyles.introText}>
-                        The output table shows the biological entities that meet the biological selection criteria. Since a user can design complex query patterns and has the freedom to choose which entities they want to include in the output ("Select output" button), duplicate entities might appear in the result can include duplicate entities. For this reason, the "Distinct" button is activated for automatic filtering. On the other hand, activating the "Count" button shows the number of entities of the query in the results table, instead of each individual entity.
+                        <b>Unique values</b>: The output table shows the biological entities that meet the biological selection criteria. Since a user can design complex query patterns and has the freedom to choose which entities they want to include in the output ("Select output" button), duplicate entities might appear in the result can include duplicate entities. For example, in the previous query (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>) we can select the CRM sequences and tissues in the output ("Select output"). But we can also select only the CRM sequences, or only the tissues. However, since a CRM can be found in both the heart and the liver, those CRMs found in both tissues would appear duplicated if we only chose CRMs in the output. This is because the CRM fits the search pattern in both cases. For this reason, the "Distinct" button is activated for automatic filtering.
+                    </span>
+                    <br />
+                    <span className={MainStyles.introText}>
+                        <b> Count entities</b>: On the other hand, activating the "Count" button displays the number of entities that fit the search pattern of the query. For example, following the example above: <i>How many CRMs have been identified in heart and liver?</i>
                     </span>
 
                     {images[4] && <LandingImage imageSrc={images[4]} maintainAspectRatio={true} alt="Figure 5" addDarkBorder={true} />}
@@ -296,37 +344,31 @@ function Main() {
                         <div className={MainStyles.textContainer}>
                             <h2 className={MainStyles.centeredHeading}>Creating and Filtering Variables</h2>
                             <span className={MainStyles.introText}>
-                                INTUITION allow a user to create their own selection variables. This functionality is implemented in "Set bindings" button, in the "Pattern designer. For example, by subtracting the end and start positions of the CRMs we obtain the length of the sequences in a new variable. Then, we can filter this new variable in the “Set filters” button. Below we illustrate an example:
-                                {images[7] && <LandingImage imageSrc={images[7]} maintainAspectRatio={true} alt="Figure 8" addDarkBorder={true} />}
-                                {images[8] && <LandingImage imageSrc={images[8]} maintainAspectRatio={true} alt="Figure 9" addDarkBorder={true} />}
-                                {images[9] && <LandingImage imageSrc={images[9]} maintainAspectRatio={true} alt="Figure 10" addDarkBorder={true} />}
+                                INTUITION allow a user to create their own selection variables. This functionality is implemented in "Set bindings" button, in the "Pattern designer". For example, by subtracting the end and start positions of the CRMs we obtain the length of the sequences in a new variable. Then, we can filter this new variable in the "Set filters" button. Below we illustrate an example: <i>Which CRMs with a length less than or equal to 500 bp positively regulate the human TOX3 gene?</i> For this: (1) We generate the relation {"<"}CRM{">"} {"<"}involved in positive regulation of{">"} {"<"}Gene{">"}. (2) Assign the attributes corresponding to the gene (name TOX3, and taxon). (3) Select the CRM attributes that we are going to use to generate the new variables. (4) Create the new variable in "Set bindings". (5) We filter in "Set filters" the new variable.
                             </span>
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure8.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure9.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure10.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure11.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure12.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                            <LandingImage imageSrc={require('../resources/images/tutorial/Figure13.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                         </div>
                     </div>
                 </div>
-                {/* UNION Clause Section */}
+
+                {/* UNION of queries */}
                 <div className={MainStyles.contentContainer}>
-                    <h2 className={MainStyles.centeredHeading}>Union of queries</h2>
-                    <span className={MainStyles.introText}>
-                        INTUITION also allows a user to construct a new query from queries that address related biological aspects, by merging them. We illustrate this through a use case. For example, we want to retrieve the OMIM entities that contain the string "breast cancer" as a name or synonym. To do that, the steps outlined below need to be followed:
-                    </span>
-                    <div className={MainStyles.textImageContainerUnion}>
-                        <div className={MainStyles.imageContainerUnion}>
-                            {images[10] && <LandingImage imageSrc={images[10]} maintainAspectRatio={true} alt="Figure 11" />}
-                        </div>
-                        <div className={MainStyles.textContainerUnion}>
-                            <ol className={MainStyles.unionSteps}>
-                                <li>We first create a new graph for each UNION block and add the relevant elements, in our case, OMIM.</li>
-                                <li>We then configure the OMIM element in the first graph to display a property as it's 'label'.</li>
-                                <li>We then do the same but for the OMIM in the other graph selecting a different property.</li>
-                                <li>In the first graph we add each of the created blocks as a node...</li>
-                                <li>...And join them together using the special property 'UNION'.</li>
-                                <li>From this point, we can use the configured 'label' to define filters.</li>
-                                <li>Selecting OMIM as an output yields the expected results.</li>
-                            </ol>
+                    <div className={MainStyles.textImageContainer}>
+                        <div className={MainStyles.textContainer}>
+                            <h2 className={MainStyles.centeredHeading}>Union of queries</h2>
+                            <span className={MainStyles.introText}>
+                                INTUITION also allows a user to construct a new query from queries that address related biological aspects, by merging them. We illustrate this through a use case. For example, we want to retrieve the OMIM entities that contain the string "breast cancer" as a name or synonym (<i>Which OMIM entities contain "breast cancer" in their preferred label or alternative label?</i>). To do that, the steps outlined below need to be followed:
+                            </span>
+                            <LandingSlide images={unionslides} steps={unionSteps} />
                         </div>
                     </div>
                 </div>
+
                 <div className={MainStyles.contentContainer}>
                     <h2 className={MainStyles.centeredHeading}>Variables</h2>
                     <table className={MainStyles.variablesTable}>
@@ -367,7 +409,7 @@ function Main() {
                 <div className={MainStyles.contentContainer}>
                     <h2 className={MainStyles.centeredHeading}>Use Cases</h2>
                     <span className={MainStyles.introText}>
-                        The following Use Cases were developed in the paper "Analysis of the landscape of human enhancer sequences in biological databases". The corresponding queries are attached for reproducibility and as examples of use. We recommend their consultation for a deeper understanding of the concepts introduced. Some more examples can be found <a href="https://github.com/juan-mulero/cisreg/blob/107278c55e9024dda16f8fb9e6d69e690613ba1a/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">here</a>.
+                        The following Use Cases were developed in the paper <i>"Integration of chromosome locations and functional aspects of enhancers and topologically associating domains in knowledge graphs enables versatile queries about gene regulation"</i>. The corresponding queries are attached for reproducibility and as examples of use. We recommend their consultation for a deeper understanding of the concepts introduced. Some more examples can be found <a href="https://github.com/juan-mulero/cisreg/blob/107278c55e9024dda16f8fb9e6d69e690613ba1a/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">here</a>.
                     </span>
                     <div className={MainStyles.useCaseButtons}>
                         {useCases.map(useCase => (
@@ -383,6 +425,11 @@ function Main() {
                             </div>
                         ))}
                     </div>
+
+                    <span className={MainStyles.introText}>
+                        A guided step-by-step guide to building Use Case 1.1 is shown below: <i>Is the rs4784227 mutation (chr16:52565276) located in any enhancer sequence linked to target genes in the network? What databases support the sequence and what are their target genes? Is the enhancer related to any disease? Which proteins are encoded by the genes?</i>
+                    </span>
+                    <LandingSlide images={UseCaseSlides} steps={UseCaseSteps} />
                 </div>
                 {/* Get Started Button */}
                 <div className={MainStyles.buttonContainer}>

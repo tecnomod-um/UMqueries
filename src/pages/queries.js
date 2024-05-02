@@ -339,7 +339,7 @@ function Queries() {
                 });
             }
             const shape = uriOnly ? 'box' : isGraph ? 'circle' : 'big ellipse';
-            const color = uriOnly ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
+            const color = !type ? '#D3D3D3' : isGraph ? '#C22535' : colorList[type];
             const fontColor = isGraph ? 'white' : 'black';
             newNode = {
                 id: maxId + 1,
@@ -532,7 +532,7 @@ function Queries() {
                     <UnionTray activeGraphId={activeGraphId} graphs={graphs} isGraphLoop={isGraphLoop} addGraph={addGraph} removeGraph={removeGraph} changeActiveGraph={changeActiveGraph} addGraphNode={addGraphNode} isUnionTrayOpen={isUnionTrayOpen} toggleUnionTray={toggleUnionTray} />
                     <Graph activeGraph={activeGraph} setSelectedNode={setSelectedNode} setSelectedEdge={setSelectedEdge} setDataOpen={setDataOpen} toggleIsTransitive={toggleIsTransitive} />
                 </span>
-                <ResultTray varData={varData} activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} />
+                <ResultTray varData={varData} activeGraphId={activeGraphId} graphs={graphs} allNodes={allNodes} edgeData={objectProperties} insideData={dataProperties} bindings={activeGraph.bindings} selectedNode={selectedNode} selectedEdge={selectedEdge} addUnion={addUnion} addNode={addNode} addEdge={addEdge} removeNode={removeNode} removeEdge={removeEdge} setDataOpen={setDataOpen} setBindingsOpen={setBindingsOpen} setFiltersOpen={setFiltersOpen} loadQueryFile={loadQueryFile} getGraphData={getGraphData} colorList={colorList} />
             </div>
             <DataModal insideData={dataProperties} selectedNode={selectedNode} isDataOpen={isDataOpen} setDataOpen={setDataOpen} setNode={setNode} disableToggle={activeGraph.edges.some(edge => edge.from === selectedNode?.id && edge.isFromInstance)} />
             <BindingsModal allNodes={allNodes} allBindings={allBindings} bindings={activeGraph.bindings} isBindingsOpen={isBindingsOpen} setBindingsOpen={setBindingsOpen} setBindings={setBindings} />
