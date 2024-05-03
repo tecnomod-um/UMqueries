@@ -50,7 +50,8 @@ function ValuesItem({ inputRef, uriList, selectedNode, label, property, isOption
                 <input
                     className={ValuesItemStyles.uriTextBox}
                     type="text"
-                    placeholder="Enter URI values"
+                    placeholder= {selectedNode ? "Enter URI values" : `Enter values as ${/^[aeiou]/i.test(varType) ? 'an' : 'a'} ${varType}`
+                }
                     ref={inputRef}
                     id={`inputUri+${label}`}
                     onFocus={(e) => { e.stopPropagation(); e.preventDefault(); }}

@@ -158,7 +158,7 @@ function Main() {
         'We link the CRM to the chromosome variable ("Add relations" button).',
         'And modify the attributes of both variables to select only those CRMs that overlap with the mutation (chr16:52565276) ("Set attributes" button).',
         'We link the CRM entity with its database and target genes. We also link the genes to their encoded proteins ("Add relations" button).',
-        'We include the relation between CRM and phenotype as an optional pattern (information that is included additionally and does not act as a filter) ("Add optional relations" button).',
+        'We include the OMIM node for phenotypes and the optional relation between CRM and OMIM (information that is included additionally and does not act as a filter) ("Add optional relations" button).',
         'Select the output data of interest ("Select ouput") and run the query ("Query"). Save the results with "Export results" and "Export query".'
     ];
 
@@ -282,6 +282,13 @@ function Main() {
                                 The query building process involves linking entities with their attributes and/or other entities. We take as an example the previous case, the query:<i> Which proteins do the different genes encode?</i> ({"<"}Gene{">"} {"<"}encodes{">"} {"<"}Protein{">"}).
                             </span>
                             <LandingSlide images={slides} steps={tutorialSteps} />
+			    <br />
+			    <br />
+                            <span className={MainStyles.introText}>
+				<i>Note</i>: Links between entities can also be established by first introducing the two nodes of interest and then the relation between them. Following the previous example:
+                            </span>
+			    <LandingImage imageSrc={require('../resources/images/tutorial/nodes.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+			    <LandingImage imageSrc={require('../resources/images/tutorial/rel.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                         </div>
                     </div>
                 </div>
@@ -315,11 +322,18 @@ function Main() {
                         <b>Optional relations</b>: INTUITION also allows to include optional relations ("Add optional relations"). As this is an optional pattern, the information is added if it exists, so it does not work as a filter. In this way, INTUITION allows queries like: <i>What proteins are encoded by the human TOX3 gene? Do these protein products interact with any other proteins? Is there information on proteins orthologous to those encoded by the human TOX3 gene?</i>
                     </span>
                     <LandingImage imageSrc={require('../resources/images/tutorial/optional.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/optional2.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+		    <LandingImage imageSrc={require('../resources/images/tutorial/optional3.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <span className={MainStyles.introText}>
                         <br />
                         <b>Multiple values</b>: To avoid creating repetitive queries when the general structure of the query is the same, but the characteristics of the entities are different, INTUITION allows you to assign different values to the variables. For example, if we are interested in searching for cis-regulatory modules (CRM) identified in two or more tissues of interest, we do not need to repeat the same query for each tissue. As shown in the example (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>), we can specify different tissues in the "Enter URI values" cell of "observed in" property, in "Add relations". As BioGateway uses semantic resources to identify entities, the values entered must be Uniform Resource Identifiers (URIs) corresponding to these resources. Detailed information about the vocabularies used can be found in the <a href="https://github.com/juan-mulero/cisreg/blob/f4abace5e36f579882a35ef74615b58fc3a15f36/INTUITION_Tutorial.pdf" target="_blank" rel="noopener noreferrer">extended tutorial</a> and <a href="https://github.com/juan-mulero/cisreg" target="_blank" rel="noopener noreferrer">repository</a>.
                     </span>
                     <LandingImage imageSrc={require('../resources/images/tutorial/Ex3.1.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
+                    <br />
+ 		    <span className={MainStyles.introText}>
+			We can also add multiple values to the node that acts as the subject of the triplet:
+                    </span>
+		    <LandingImage imageSrc={require('../resources/images/tutorial/mult_subject.png')} maintainAspectRatio={true} alt="Values" addDarkBorder={true} />
                     <br />
                     <span className={MainStyles.introText}>
                         <b>Unique values</b>: The output table shows the biological entities that meet the biological selection criteria. Since a user can design complex query patterns and has the freedom to choose which entities they want to include in the output ("Select output" button), duplicate entities might appear in the result can include duplicate entities. For example, in the previous query (<i>Which CRMs have been identified in heart (UBERON_0000948) and liver (UBERON_0002107)?</i>) we can select the CRM sequences and tissues in the output ("Select output"). But we can also select only the CRM sequences, or only the tissues. However, since a CRM can be found in both the heart and the liver, those CRMs found in both tissues would appear duplicated if we only chose CRMs in the output. This is because the CRM fits the search pattern in both cases. For this reason, the "Distinct" button is activated for automatic filtering.

@@ -101,7 +101,7 @@
           ],
           "label": "http://purl.bioontology.org/ontology/OMIM/114480\nhttp://purl.obolibrary.org/obo/DOID_1612\nhttps://id.nlm.nih.gov/mesh/D001943",
           "color": "#D3D3D3",
-          "type": "uri",
+          "type": false,
           "varID": -1,
           "graph": "",
           "class": [
