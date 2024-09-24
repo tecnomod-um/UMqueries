@@ -26,6 +26,7 @@
     top: 0;
     width: 100%;
     z-index: 10;
+    min-height: 55px;
 }
 
 .menu {
@@ -66,6 +67,11 @@ label[for="menuToggle"] {
     cursor: pointer;
 }
 
+.animate {
+    transform: translateY(0);
+    transition: transform 0.3s ease-in-out;
+}
+
 @media (max-width: 768px) {
     .menu {
         display: block;
@@ -75,14 +81,13 @@ label[for="menuToggle"] {
         left: 0;
         text-align: center;
         padding: 16px 0;
-        transform: translateY(calc(-100% - 50px)); 
-        transition: transform 0.3s ease-in-out;
-        z-index: 11;
+        transform: translateY(calc(-100% - 50px));
         top: 50px;
     }
 
-    input[type=checkbox]:checked ~ .menu {
+    .animate {
         transform: translateY(0);
+        transition: transform 0.3s ease-in-out;
     }
 
     .hamburger {

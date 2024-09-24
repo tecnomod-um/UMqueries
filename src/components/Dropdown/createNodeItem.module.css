@@ -15,11 +15,6 @@
 }
 
 
-.createNodeItem:hover {
-    background-color: #e6e6e6;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
 .createNodeText {
     color: #555;
     font-weight: 400;
@@ -31,4 +26,9 @@
 .createNodeIcon {
     color: #555;
     text-align: left;
+}
+
+.createNodeItem:hover .createNodeText,
+.createNodeItem:hover .createNodeIcon {
+    text-shadow: 0.5px 0.5px 0 currentColor
 }

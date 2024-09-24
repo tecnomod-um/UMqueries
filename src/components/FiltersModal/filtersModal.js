@@ -30,7 +30,8 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
         binary: ['=', '!='],
         link: ['=', '!=', '⊆'],
         uri: ['=', '!=', '⊆'],
-        select: ['=']
+        select: ['='],
+        custom: ['<', '<=', '=', '>=', '>', '!=', '⊆']
     }), []);
 
     // Check if a filter is valid
@@ -143,17 +144,6 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // If a numeric comparator value is selected, update with the first available numeric value
-    useEffect(() => {
-        const isNumericOperator = ['<', '<=', '>=', '>'].includes(operator);
-        const firstValueCategory = firstFilterValue?.category || 'text';
-        if (isNumericOperator && (firstValueCategory === 'number' || firstValueCategory === 'decimal')) {
-            const numericOptions = getFilterableElements().filter(item => ['number', 'decimal'].includes(JSON.parse(item.value).category));
-            if (numericOptions.length > 0)
-                setSecondFilterValue(JSON.parse(numericOptions[0].value));
-        }
-    }, [operator, firstFilterValue, getFilterableElements]);
-
     // Fading in effect
     useEffect(() => {
         const currentFilterIds = [...filters, ...tempFilters].map(item => item.id);
@@ -162,10 +152,11 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
 
     // Updates the comparator to the selected element's type
     useEffect(() => {
-        const currentElement = getFilterableElements().find(prop => prop.key === firstFilterValue);
-        const currentCategory = currentElement?.category || 'text';
-        setComparator(operatorLists[currentCategory][0]);
-    }, [firstFilterValue, getFilterableElements, operatorLists]);
+        const currentCategory = firstFilterValue?.category || 'text';
+        const validOperators = operatorLists[currentCategory];
+        if (!validOperators.includes(operator))
+            setComparator(validOperators[0]);
+    }, [firstFilterValue, getFilterableElements, operatorLists,operator]);
 
     // Sets up the builder visibility
     useEffect(() => {
@@ -188,9 +179,9 @@ function FiltersModal({ allNodes, allBindings, isFiltersOpen, setFiltersOpen, fi
         const isCustomValue = parsedValue.custom;
         setCustomInput && setCustomInput(isCustomValue);
 
-        if (isCustomValue)
+        if (isCustomValue) 
             setValue({ label: "Custom Value", custom: true });
-        else
+         else 
             setValue(parsedValue);
     }
 

@@ -8,17 +8,17 @@ const LandingSlide = ({ images, steps }) => {
 
     const changeSlide = (index) => {
         setCurrentStep(index);
-    };
+    }
 
     const nextSlide = () => {
         setCurrentStep((current) => (current + 1) % images.length);
-    };
+    }
 
     const prevSlide = () => {
         setCurrentStep((current) => (current - 1 + images.length) % images.length);
-    };
+    }
 
-    const iconStyle = { fontSize: '4rem' };
+    const iconStyle = { fontSize: '4rem' }
 
     return (
         <div className={styles.slideContainer}>
@@ -53,7 +53,7 @@ const LandingSlide = ({ images, steps }) => {
                 ))}
             </div>
         </div>
-    );
+    )
 }
 
 export default LandingSlide;

@@ -259,3 +259,34 @@
     font-style: italic;
     margin-top: 10px;
 }
+
+.buttonText {
+    vertical-align: middle;
+}
+
+.actionIcon {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .buttonText {
+        display: none;
+    }
+
+    .actionIcon {
+        display: block !important;
+        margin-right: 0;
+    }
+
+    .setBtn,
+    .cancelBtn {
+        padding: 10px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .switchLabel {
+        display: none;
+    }
+}

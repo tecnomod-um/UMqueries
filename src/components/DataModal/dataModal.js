@@ -3,6 +3,8 @@ import { getCategory, getOperatorTooltip } from "../../utils/typeChecker.js";
 import ModalWrapper from '../ModalWrapper/modalWrapper';
 import DataModalStyles from "./dataModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { SPECIAL_CLASSES } from "../../utils/typeChecker.js";
@@ -291,12 +293,14 @@ function DataModal({ insideData, selectedNode, isDataOpen, setDataOpen, setNode,
                         className={DataModalStyles.setBtn}
                         onClick={handleSubmit}
                     >
-                        Set properties
+                        <CheckCircleIcon className={DataModalStyles.actionIcon} />
+                        <span className={DataModalStyles.buttonText}>Set properties</span>
                     </button>
                     {renderSwitch()}
                 </div>
                 <button className={DataModalStyles.cancelBtn} onClick={handleClose}>
-                    Cancel
+                    <CancelIcon className={DataModalStyles.actionIcon} />
+                    <span className={DataModalStyles.buttonText}>Cancel</span>
                 </button>
             </div>
         </ModalWrapper>

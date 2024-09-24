@@ -7,6 +7,7 @@
 
 .controlColumn,
 .queryColumn {
+    will-change: transform;
     position: relative;
     margin: 1vh 0 0 0;
     display: flex;
@@ -14,15 +15,34 @@
     align-items: center;
     justify-content: space-around;
     width: 25%;
-    box-sizing: border-box;
 }
 
 .resultsColumn {
+    position: relative;
     margin: 1vh 0 1vh 0;
     border-right: 1vw solid transparent;
     border-left: 1vw solid transparent;
     width: 50%;
     max-height: 27vh;
+    transition: ease-in-out;
+}
+
+.toggleButton {
+    position: absolute;
+    top: calc(50% + 75px);
+    left: 8%;
+    display: block;
+    z-index: 10;
+    background-color: #c22535;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    outline: none;
+    line-height: 0 !important;
 }
 
 .buttonRow {
@@ -35,7 +55,7 @@
 
 .switchRow {
     position: absolute;
-    top: -25%;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -48,7 +68,6 @@
 .del_button {
     user-select: none;
     max-width: 100%;
-    overflow: hidden;
     text-overflow: ellipsis;
     padding: 2px;
     display: inline-block;
@@ -101,7 +120,24 @@
     display: none !important;
 }
 
+.toggleButton {
+    display: none !important;
+}
+
+@media (max-width: 1250px) {
+    .switchRow {
+        flex-direction: column;
+        top: -90px;
+        right: -60px;
+        align-items: flex-start;
+    }
+}
+
 @media (max-width: 768px) {
+
+    .toggleButton {
+        display: inline-block !important;
+    }
 
     .switchRow {
         flex-direction: column;
@@ -113,7 +149,7 @@
     .del_button,
     .var_button,
     .big_button {
-        font-size: 2vw;
+        font-size: 0.9rem;
     }
 
     .del_button .deleteText {
@@ -124,7 +160,6 @@
         display: inline-block !important;
         color: #ffffff;
         font-size: 2rem;
-        font-size: 4vw;
     }
 
     .big_button .queryText {
@@ -138,8 +173,123 @@
     }
 }
 
-@media (max-width: 480px) {
-    :global(.MuiFormControlLabel-label) {
-        display: none;
+@media (max-width: 768px) {
+    .queryColumn {
+        margin-left: 0.5vh;
+        width: 50%;
+    }
+
+    .switchRow {
+        left: 75%;
+    }
+
+    .controlColumn {
+        margin-right: 0.5vh;
+        width: 50%;
+    }
+
+    .resultsColumn {
+        width: 100%;
+    }
+}
+
+.enter {
+    transform: translateX(-100%);
+}
+
+.enterActive {
+    transform: translateX(0);
+    transition: transform 300ms ease-in-out;
+}
+
+.exit {
+    transform: translateX(0);
+}
+
+.exitActive {
+    transform: translateX(-100%);
+    transition: transform 300ms ease-in-out;
+}
+
+.queryEnter {
+    transform: translateX(100%);
+}
+
+.queryEnterActive {
+    transform: translateX(0);
+    transition: transform 300ms ease-in-out;
+}
+
+.queryExit {
+    transform: translateX(0);
+}
+
+.queryExitActive {
+    transform: translateX(100%);
+    transition: transform 300ms ease-in-out;
+}
+
+.fadeEnter {
+    opacity: 0;
+}
+
+.fadeEnterActive {
+    opacity: 1;
+    transition: opacity 150ms ease-in;
+}
+
+.fadeExit {
+    opacity: 1;
+}
+
+.fadeExitActive {
+    opacity: 0;
+    transition: opacity 150ms ease-in;
+}
+
+
+.effectContainer {
+    position: relative;
+    overflow: hidden;
+
+    --effect-name: ripple;
+    --effect-duration: 1000ms;
+
+    --effect-top: 0px;
+    --effect-left: 0px;
+    --effect-height: 100px;
+    --effect-width: 100px;
+    --effect-color: white;
+
+}
+
+.effectContainer::before {
+    content: "";
+    position: absolute;
+    opacity: 0.3;
+
+    top: var(--effect-top);
+    left: var(--effect-left);
+    height: var(--effect-height);
+    width: var(--effect-width);
+
+    border-radius: 50%;
+    transform: scale(0);
+    background: var(--effect-color);
+}
+
+.effectContainer.active::before {
+    border-radius: 50%;
+    animation: ripple var(--effect-duration) linear forwards;
+}
+
+@keyframes ripple {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(6);
+        opacity: 0;
     }
 }
